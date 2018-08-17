@@ -28,17 +28,6 @@
 }
 
 
-.App__Form__BG{
-  width: 50%;
-  height: 50%;
-  background-image: url('imgs/delphus.png');
-  background-repeat: no-repeat;
-  background-size: contain;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: auto;
-}
-
 .PageSwitcher {
   display: flex;
   justify-content: flex-end;
@@ -103,7 +92,7 @@
   font-size: 1.7em;
   margin: 0 10px;
   padding-bottom: 5px;
-  border-bottom: 1px solid #199087;
+  border-bottom: 1px solid #306639c0;
 }
 
 .FormField {
@@ -134,7 +123,7 @@
 }
 
 .FormField__Button {
-  background-color: #52C4B9;
+  background-color: #306639c0;
   color: white;
   border: none;
   outline: none;
