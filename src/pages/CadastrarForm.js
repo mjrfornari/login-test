@@ -18,7 +18,7 @@ class CadastrarForm extends Component {
                   <input type="email" id="email" className="FormField__Input" placeholder="Digite seu e-mail" name="email"/>
                 </div>
                 <div className="FormField">
-                  <button className="FormField__Button mr-20">Entrar</button> 
+                  <button className="FormField__Button mr-20">Cadastrar</button> 
                   <a href="#" className="FormField__Link">Já possuo cadastro</a>
                 </div>
               </form>
