@@ -1,9 +1,16 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+
+
+
 
 class CadastrarForm extends Component {
 
+
     constructor(){
+        
+
         super();
 
         this.state = {
@@ -14,26 +21,34 @@ class CadastrarForm extends Component {
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+
+    }
+
+    handleSubmit (e) {
+        e.preventDefault();
+        fetch('http://localhost:3001/user').then(r => r.json()).then(r => console.log(r))
+        // console.log(this.state)
     }
 
 
 
     handleChange(e){
-        let target = e.target
-        let value = target.type === 'checkbox' ? target.checked : target.value
-        let name = target.name
+         let target = e.target
+         let value = target.type === 'checkbox' ? target.checked : target.value
+         let name = target.name
 
-        this.setState({
-            [name]: value
-        });
+         this.setState({
+             [name]: value
+         });
     }
     
-    handleSubmit(e){
-        e.preventDefault();
-        console.log('The form was submitted with the followind data:')
-        console.log(this.state)
+    // handleSubmit(e){
+        // e.preventDefault();
+        // console.log('The form was submitted with the followind data:')
+        // console.log(this.state)
 
-    }
+
+    // }
 
     render(){
         return(
@@ -57,6 +72,11 @@ class CadastrarForm extends Component {
                 <div className="FormField">
                     <button className="FormField__Button mr-20">Cadastrar</button> 
                     <Link to="/entrar" className="FormField__Link">Já possuo cadastro</Link>
+                </div>
+                <div>
+                    <p>{this.state.email}</p>
+                    <p>{this.state.password}</p>
+                    <p>{this.state.name}</p>
                 </div>
               </form>
             </div>

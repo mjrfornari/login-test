@@ -5,6 +5,7 @@ import CadastrarForm from './pages/CadastrarForm';
 import EntrarForm from './pages/EntrarForm';
 import './App.css';
 
+
 class App extends Component {
   render() {
     return (
