@@ -1,87 +1,131 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
+import React from "react";
+import { render } from "react-dom";
+import _ from "lodash";
+import { makeData, Logo, Tips } from "./Utils";
+
+// Import React Table
+import ReactTable from "react-table";
+import "react-table/react-table.css";
+
+
+const rawData = makeData();
 
 
 
+const requestData = (pageSize, page, sorted, filtered) => {
+  return new Promise((resolve, reject) => {
+    // You can retrieve your data however you want, in this case, we will just use some local data.
+    let filteredData = []
+    // fetch('http://localhost:3001/user').then(r => r.json()).then(r => {
+    //            filteredData=r
+    // })
+    filteredData = rawData
 
-class CadastrarForm extends Component {
-
-
-    constructor(){
-        
-
-        super();
-
-        this.state = {
-            email:'',
-            password:'',
-            name:''
+    // You can use the filters in your request, but you are responsible for applying them.
+    if (filtered.length) {
+      filteredData = filtered.reduce((filteredSoFar, nextFilter) => {
+        return filteredSoFar.filter(row => {
+          return (row[nextFilter.id] + "").includes(nextFilter.value);
+        });
+      }, filteredData);
+    }
+    // You can also use the sorting in your request, but again, you are responsible for applying it.
+    const sortedData = _.orderBy(
+      filteredData,
+      sorted.map(sort => {
+        return row => {
+          if (row[sort.id] === null || row[sort.id] === undefined) {
+            return -Infinity;
+          }
+          return typeof row[sort.id] === "string"
+            ? row[sort.id].toLowerCase()
+            : row[sort.id];
         };
+      }),
+      sorted.map(d => (d.desc ? "desc" : "asc"))
+    );
 
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+    // You must return an object containing the rows of the current page, and optionally the total pages number.
+    const res = {
+      rows: sortedData.slice(pageSize * page, pageSize * page + pageSize),
+      pages: Math.ceil(filteredData.length / pageSize)
+    };
 
-    }
-
-    handleSubmit (e) {
-        e.preventDefault();
-        fetch('http://localhost:3001/user').then(r => r.json()).then(r => console.log(r))
-        // console.log(this.state)
-    }
-
-
-
-    handleChange(e){
-         let target = e.target
-         let value = target.type === 'checkbox' ? target.checked : target.value
-         let name = target.name
-
-         this.setState({
-             [name]: value
-         });
-    }
-    
-    // handleSubmit(e){
-        // e.preventDefault();
-        // console.log('The form was submitted with the followind data:')
-        // console.log(this.state)
+    // Here we'll simulate a server response with 500ms of delay.
+    setTimeout(() => resolve(res), 500);
+  });
+};
 
 
-    // }
 
-    render(){
-        return(
-            <div className="FormCenter">
-                <form className="FormFields" onSubmit={this.handleSubmit}>
-                    <div className="FormField">
-                    <label className="FormField__Label" htmlFor="name">Nome Completo</label>
-                    <input type="text" id="name" className="FormField__Input" placeholder="Digite seu nome completo" 
-                    name="name" value={this.state.name} onChange={this.handleChange}/>
-                </div>
-                <div className="FormField">
-                    <label className="FormField__Label" htmlFor="password">Senha</label>
-                    <input type="password" id="password" className="FormField__Input" placeholder="Digite sua senha" 
-                    name="password" value={this.state.password} onChange={this.handleChange}/>
-                </div>
-                <div className="FormField">
-                    <label className="FormField__Label" htmlFor="email">E-Mail</label>
-                    <input type="email" id="email" className="FormField__Input" placeholder="Digite seu e-mail" 
-                    name="email" value={this.state.email} onChange={this.handleChange}/>
-                </div>
-                <div className="FormField">
-                    <button className="FormField__Button mr-20">Cadastrar</button> 
-                    <Link to="/entrar" className="FormField__Link">Já possuo cadastro</Link>
-                </div>
-                <div>
-                    <p>{this.state.email}</p>
-                    <p>{this.state.password}</p>
-                    <p>{this.state.name}</p>
-                </div>
-              </form>
-            </div>
-        );
-    }
+
+
+class Example extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      data: [],
+      pages: null,
+      loading: true
+    };
+    this.fetchData = this.fetchData.bind(this);
+  }
+
+  fetchData(state, instance) {
+    // Whenever the table model changes, or the user sorts or changes pages, this method gets called and passed the current table model.
+    // You can set the `loading` prop of the table to true to use the built-in one or show you're own loading bar if you want.
+    this.setState({ loading: true });
+    // Request the data however you want.  Here, we'll use our mocked service we created earlier
+    requestData(
+      state.pageSize,
+      state.page,
+      state.sorted,
+      state.filtered
+    ).then(res => {
+      // Now just get the rows of data to your React Table (and update anything else like total pages or loading)
+      this.setState({
+        data: res.rows,
+        pages: res.pages,
+        loading: false
+      });
+    });
+  }
+
+
+  render() {
+    const { data, pages, loading } = this.state;
+    return (
+      <div>
+        <br/>
+        <ReactTable
+          data={data}
+          manual
+          pages={pages} 
+          loading={loading}
+          columns={[
+            {
+              Header: "First Name",
+              accessor: "firstName"
+            },
+            {
+              Header: "Last Name",
+              id: "lastName",
+              accessor: d => d.lastName
+            },
+            {
+              Header: "Age",
+              accessor: "age"
+            }
+          ]}
+          defaultPageSize={20}
+          onFetchData={this.fetchData}
+          filterable
+          className="-striped -highlight"
+        />
+        <br />
+      </div>
+    );
+  }
 }
 
-export default CadastrarForm;
+export default Example;
