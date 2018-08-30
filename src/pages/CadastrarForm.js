@@ -8,19 +8,18 @@ import ReactTable from "react-table";
 import "react-table/react-table.css";
 
 
-const rawData = makeData();
+const rawData = [];
 
-
+filteredData = [];
 
 const requestData = (pageSize, page, sorted, filtered) => {
   return new Promise((resolve, reject) => {
     // You can retrieve your data however you want, in this case, we will just use some local data.
-    let filteredData = []
-    // fetch('http://localhost:3001/user').then(r => r.json()).then(r => {
-    //            filteredData=r
-    // })
-    filteredData = rawData
-
+    
+    let a = (fetch('http://localhost:3001/user').then(r => r.json()).then(r => {
+    filteredData=r  
+    return r}))
+    console.log(filteredData)
     // You can use the filters in your request, but you are responsible for applying them.
     if (filtered.length) {
       filteredData = filtered.reduce((filteredSoFar, nextFilter) => {
@@ -44,13 +43,13 @@ const requestData = (pageSize, page, sorted, filtered) => {
       }),
       sorted.map(d => (d.desc ? "desc" : "asc"))
     );
-
+    
     // You must return an object containing the rows of the current page, and optionally the total pages number.
     const res = {
       rows: sortedData.slice(pageSize * page, pageSize * page + pageSize),
       pages: Math.ceil(filteredData.length / pageSize)
     };
-
+    
     // Here we'll simulate a server response with 500ms of delay.
     setTimeout(() => resolve(res), 500);
   });
@@ -105,16 +104,11 @@ class Example extends React.Component {
           columns={[
             {
               Header: "First Name",
-              accessor: "firstName"
-            },
-            {
-              Header: "Last Name",
-              id: "lastName",
-              accessor: d => d.lastName
+              accessor: "PK_CLI"
             },
             {
               Header: "Age",
-              accessor: "age"
+              accessor: "RAZAO_SOCIAL"
             }
           ]}
           defaultPageSize={20}
