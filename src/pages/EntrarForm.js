@@ -25,7 +25,7 @@ class EntrarForm extends Component {
     handleSubmit (e) {
         e.preventDefault();
         if ((this.state.user!=='') && (this.state.password!=='')){
-            fetch('http://localhost:3001/login/'+this.state.user+'/'+this.state.password).then(r => r.json()).then(r => {
+            fetch('https://delphusback.herokuapp.com/login/'+this.state.user+'/'+this.state.password).then(r => r.json()).then(r => {
                 this.logado=false;
             
                 if (Object.keys(r).length > 0){
