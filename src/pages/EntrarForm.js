@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { Link, Router, Route } from 'react-router-dom';
+import { Link, Router, Route, Redirect } from 'react-router-dom';
 import {browserHistory} from 'react-router';
 import axios from 'axios';
 
 
 
 class EntrarForm extends Component {
-   
+
     constructor(){
         super();
 
@@ -27,18 +27,20 @@ class EntrarForm extends Component {
         if ((this.state.user!=='') && (this.state.password!=='')){
             fetch('http://localhost:3001/login/'+this.state.user+'/'+this.state.password).then(r => r.json()).then(r => {
                 this.logado=false;
+            
                 if (Object.keys(r).length > 0){
                     if (r[0]["PK_VEN"] !== '') {
                         this.logado=true
-                        this.props.history.push('/entrar')                               
+                        this.props.history.push('/entrar')   
+                                          
                     }
                 }
                 console.log(this.logado)
+                localStorage.setItem("logou", this.logado);
             })
         }
     }
     
-
 
 
     handleChange(e){
@@ -74,7 +76,6 @@ class EntrarForm extends Component {
   
    
     render(){
-      
         return(
             <div className="FormCenter">
                 <form className="FormFields" onSubmit={this.handleSubmit}>

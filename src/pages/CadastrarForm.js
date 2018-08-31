@@ -2,24 +2,20 @@ import React from "react";
 import { render } from "react-dom";
 import _ from "lodash";
 import { makeData, Logo, Tips } from "./Utils";
-
 // Import React Table
 import ReactTable from "react-table";
 import "react-table/react-table.css";
 
 
-const rawData = [];
+const rawData = makeData();
 
-filteredData = [];
 
-const requestData = (pageSize, page, sorted, filtered) => {
+
+const requestData = (pageSize, page, sorted, filtered) => {  
   return new Promise((resolve, reject) => {
+
+    let filteredData=rawData
     // You can retrieve your data however you want, in this case, we will just use some local data.
-    
-    let a = (fetch('http://localhost:3001/user').then(r => r.json()).then(r => {
-    filteredData=r  
-    return r}))
-    console.log(filteredData)
     // You can use the filters in your request, but you are responsible for applying them.
     if (filtered.length) {
       filteredData = filtered.reduce((filteredSoFar, nextFilter) => {
@@ -93,6 +89,8 @@ class Example extends React.Component {
 
   render() {
     const { data, pages, loading } = this.state;
+    let logou = localStorage.getItem("logou");
+    if (logou == "true") {
     return (
       <div>
         <br/>
@@ -103,11 +101,11 @@ class Example extends React.Component {
           loading={loading}
           columns={[
             {
-              Header: "First Name",
+              Header: "Código",
               accessor: "PK_CLI"
             },
             {
-              Header: "Age",
+              Header: "Razão Social",
               accessor: "RAZAO_SOCIAL"
             }
           ]}
@@ -118,7 +116,7 @@ class Example extends React.Component {
         />
         <br />
       </div>
-    );
+    );} else { return <div>Não logou</div>}
   }
 }
 

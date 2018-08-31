@@ -26,12 +26,10 @@ const newPerson = () => {
 };
 
 export function makeData(len = 5553) {
-  return range(len).map(d => {
-    return {
-      ...newPerson(),
-      children: range(10).map(newPerson)
-    };
-  });
+  fetch('http://localhost:3001/user').then(r => r.json()).then(r => { 
+    localStorage.setItem('myStorage', JSON.stringify(r))})
+  return (JSON.parse(localStorage.getItem('myStorage')))
+  
 }
 
 export const Logo = () =>
