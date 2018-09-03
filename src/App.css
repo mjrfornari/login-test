@@ -4,8 +4,13 @@
   color: white;
 }
 
+
 .App__Aside {
   width: 30%;
+  background-color: #306639c0;
+}
+
+.MenuBar {
   background-color: #306639c0;
 }
 
@@ -165,6 +170,22 @@
   border-radius: 25px;
   padding: 15px 70px;
   font-size: .8em;
+  font-weight: 500;
+}
+
+
+.FormField__MenuButton {
+  background-color: #649764;
+  color: white;
+  border: none;
+  outline: none;
+  position: relative;
+  margin-left: -20%;
+  left: 50%;
+  margin-top: 10%;
+  border-radius: 25px; 
+  padding: 15px 70px;
+  font-size: .9em;
   font-weight: 500;
 }
 

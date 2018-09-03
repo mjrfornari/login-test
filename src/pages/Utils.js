@@ -26,7 +26,7 @@ const newPerson = () => {
 };
 
 export function makeData(len = 5553) {
-  fetch('https://delphusback.herokuapp.com/user').then(r => r.json()).then(r => { 
+  fetch('http://192.168.0.251:3001/clientes').then(r => r.json()).then(r => { 
     localStorage.setItem('myStorage', JSON.stringify(r))})
   return (JSON.parse(localStorage.getItem('myStorage')))
   

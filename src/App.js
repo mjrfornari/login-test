@@ -1,7 +1,12 @@
 import React, { Component, PureComponent } from 'react';
 import {BrowserRouter as Router, Route, Link, NavLink} from 'react-router-dom';
 import logo from './delphus.svg';
-import CadastrarForm from './pages/CadastrarForm';
+import Menu from './pages/Menu';
+import Clientes from './pages/Clientes';
+import Pedidos from './pages/Pedidos';
+import NotasFiscais from './pages/NotasFiscais';
+import Sync from './pages/Sincronizacao';
+import Produtos from './pages/Produtos';
 import EntrarForm from './pages/EntrarForm';
 import './App.css';
 
@@ -12,19 +17,24 @@ class App extends Component {
     render() {
         return (
         <Router>  
-            <div className="App">
-            <div className="App__Aside">
-            {/* <div className="App__Aside__BG"></div> */}
-            <img src='/logo.png' className='App__Aside__BG' alt='Delphus'/>  
-            </div>
-            <div className="App__Form">
+            <div>
 
                 <Route exact path="/" component={EntrarForm}>
                 </Route>
-                <Route path="/entrar" component={CadastrarForm}>
+                <Route path="/home" component={Menu}>
                 </Route>
-            </div>  
-        </div>
+                <Route path="/clientes" component={Clientes}>
+                </Route>
+                <Route path="/pedidos" component={Pedidos}>
+                </Route>
+                <Route path="/produtos" component={Produtos}>
+                </Route>
+                <Route path="/notas" component={NotasFiscais}>
+                </Route>
+                <Route path="/sync" component={Sync}>
+                </Route>
+
+            </div>
         </Router>
         );
   }
