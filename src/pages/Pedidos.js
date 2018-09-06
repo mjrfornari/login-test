@@ -17,7 +17,7 @@ import ReactTable from "react-table";
 import "react-table/react-table.css";
 
 
-const rawData = makeData();
+const rawData = makeData("pedidos");
 
 
 

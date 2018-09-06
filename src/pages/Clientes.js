@@ -11,13 +11,13 @@ import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_sync} from 'react-icons-kit/md/ic_sync'
 import {ic_assignment} from 'react-icons-kit/md/ic_assignment'
-import { makeData, Logo, Tips } from "./Utils";
+import { makeData, exportaData, Logo, Tips } from "./Utils";
 // Import React Table
 import ReactTable from "react-table";
 import "react-table/react-table.css";
 
 
-const rawData = makeData();
+const rawData = yield exportaData()
 
 
 
@@ -25,6 +25,11 @@ const requestData = (pageSize, page, sorted, filtered) => {
   return new Promise((resolve, reject) => {
 
     let filteredData=rawData
+    console.log(filteredData)
+    if (typeof filteredData == "undefined"){
+      filteredData=[]
+    }
+
     // You can retrieve your data however you want, in this case, we will just use some local data.
     // You can use the filters in your request, but you are responsible for applying them.
     if (filtered.length) {
@@ -57,7 +62,7 @@ const requestData = (pageSize, page, sorted, filtered) => {
     };
     
     // Here we'll simulate a server response with 500ms of delay.
-    setTimeout(() => resolve(res), 1000);
+    setTimeout(() => resolve(res), 500);
   });
 };
 

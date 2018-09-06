@@ -1,6 +1,8 @@
 import React from "react";
 import namor from "namor";
 import "../App.css";
+import PouchDB from 'pouchdb';
+
 
 const range = len => {
   const arr = [];
@@ -25,11 +27,52 @@ const newPerson = () => {
   };
 };
 
-export function makeData(len = 5553) {
-  fetch('http://192.168.0.251:3001/clientes').then(r => r.json()).then(r => { 
-    localStorage.setItem('myStorage', JSON.stringify(r))})
-  return (JSON.parse(localStorage.getItem('myStorage')))
-  
+export function makeData(tabela) {
+
+}
+
+export function exportaData(){
+    //Requiring the package
+
+    //Creating the database object
+    let db = new PouchDB('macropecas');
+
+    //Reading the contents of a Document
+    db.get('002', function(err, doc) {
+      if (err) {
+          return console.log(err);
+      } else {
+          callback(doc);
+      }
+    });
+}
+
+
+
+export function syncData(){
+    let tabelas = {
+        clientes:{},
+        produtos:{}
+    }
+
+    //CLIENTES
+    fetch('http://192.168.0.251:3001/clientes').then(r => r.json()).then(r => {
+      console.log(r) 
+      localStorage.setItem('myStorage', JSON.stringify(r))})
+    
+
+
+
+    //PRODUTOS
+    fetch('http://192.168.0.251:3001/produtos').then(r => r.json()).then(r => {
+      console.log(r) 
+      localStorage.setItem('myStorage', JSON.stringify(r))})
+
+    // console.log(localStorage.getItem('myStorage'))
+    // // tabelas.produtos=JSON.stringify(localStorage.getItem('myStorage'))
+    // console.log(JSON.stringify(tabelas))
+    
+
 }
 
 export const Logo = () =>

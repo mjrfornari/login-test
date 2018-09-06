@@ -17,7 +17,7 @@ import ReactTable from "react-table";
 import "react-table/react-table.css";
 
 
-const rawData = makeData();
+const rawData = makeData("produtos");
 
 
 
@@ -160,30 +160,25 @@ class Example extends React.Component {
                             columns={[
                               {
                                 Header: "Cód.",
-                                accessor: "PK_CLI",
+                                accessor: "PK_PRO",
                                 width: 80,
                                 filterMethod: (filter, row) => row[filter.id].startsWith(filter.value) &&row[filter.id].endsWith(filter.value)
                   
                               },
                               {
-                                Header: "Código Repres.",
+                                Header: "Cód. Repres.",
                                 accessor: "CODIGO_REPRESENTADA",
                                 width: 120
                               },
                               {
-                                Header: "Razão Social",
-                                accessor: "RAZAO_SOCIAL",
+                                Header: "Cód. Macropeças",
+                                accessor: "CODIGO_MACROPECAS",
                                 filterMethod: (filter, row) => row[filter.id].startsWith(filter.value) &&row[filter.id].endsWith(filter.value)
                               },
                               {
-                                Header: "CNPJ",
-                                accessor: "CNPJ",
+                                Header: "Nome ",
+                                accessor: "NOME_MACROPECAS",
                                 width: 160
-                              },
-                              {
-                                Header: "Telefone",
-                                accessor: "FONE1",
-                                width: 120
                               }
                             ]}
                             defaultPageSize={10}

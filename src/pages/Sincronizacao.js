@@ -11,55 +11,14 @@ import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_sync} from 'react-icons-kit/md/ic_sync'
 import {ic_assignment} from 'react-icons-kit/md/ic_assignment'
-import { makeData, Logo, Tips } from "./Utils";
+import { syncData, Logo, Tips } from "./Utils";
+import Clock from 'react-live-clock';
 // Import React Table
 import ReactTable from "react-table";
 import "react-table/react-table.css";
+import PouchDB from "pouchdb"
 
 
-const rawData = makeData();
-
-
-
-const requestData = (pageSize, page, sorted, filtered) => {  
-  return new Promise((resolve, reject) => {
-
-    let filteredData=rawData
-    // You can retrieve your data however you want, in this case, we will just use some local data.
-    // You can use the filters in your request, but you are responsible for applying them.
-    if (filtered.length) {
-      filteredData = filtered.reduce((filteredSoFar, nextFilter) => {
-        return filteredSoFar.filter(row => {
-          return (row[nextFilter.id] + "").includes(nextFilter.value);
-        });
-      }, filteredData);
-    }
-    // You can also use the sorting in your request, but again, you are responsible for applying it.
-    const sortedData = _.orderBy(
-      filteredData,
-      sorted.map(sort => {
-        return row => {
-          if (row[sort.id] === null || row[sort.id] === undefined) {
-            return -Infinity;
-          }
-          return typeof row[sort.id] === "string"
-            ? row[sort.id].toLowerCase()
-            : row[sort.id];
-        };
-      }),
-      sorted.map(d => (d.desc ? "desc" : "asc"))
-    );
-    
-    // You must return an object containing the rows of the current page, and optionally the total pages number.
-    const res = {
-      rows: sortedData.slice(pageSize * page, pageSize * page + pageSize),
-      pages: Math.ceil(filteredData.length / pageSize)
-    };
-    
-    // Here we'll simulate a server response with 500ms of delay.
-    setTimeout(() => resolve(res), 1000);
-  });
-};
 
 
 
@@ -73,34 +32,36 @@ class Example extends React.Component {
       pages: null,
       loading: true
     };
-    this.fetchData = this.fetchData.bind(this);
+
+    this.handleSync = this.handleSync.bind(this);
   }
 
-  fetchData(state, instance) {
-    // Whenever the table model changes, or the user sorts or changes pages, this method gets called and passed the current table model.
-    // You can set the `loading` prop of the table to true to use the built-in one or show you're own loading bar if you want.
-    this.setState({ loading: true });
-    // Request the data however you want.  Here, we'll use our mocked service we created earlier
-    requestData(
-      state.pageSize,
-      state.page,
-      state.sorted,
-      state.filtered
-    ).then(res => {
-      // Now just get the rows of data to your React Table (and update anything else like total pages or loading)
-      this.setState({
-        data: res.rows,
-        pages: res.pages,
-        loading: false
-      });
-    });
-  }
+    handleSync (e) {
+        e.preventDefault();
+        // syncData();
+        let db = new PouchDB('macropecas')
+        console.log("Database created!")
+        let doc = {
+            _id : '002',
+            PK_CLI: '1',
+            RAZAO_SOCIAL : 'TESTEEE',
+            CNPJ : '123123123',
+            FONE1 : '9999999',
+            CODIGO_REPRESENTADA : 'aaaa'
+            }
+            //Inserting Document
+        db.put(doc, function(err, response) {
+            if (err) {
+                return console.log(err);
+            } else {
+                console.log("Document created Successfully");
+            }
+            })
 
+    }
 
   render() {
-    const { data, pages, loading } = this.state;
     let logou = localStorage.getItem("logou");
-    console.log('a '+logou)
     if (logou == "true") {
     return (
               <div className="App">
@@ -148,50 +109,14 @@ class Example extends React.Component {
                 <div className="App__Form">
                     <div className="FormCenter">
                         <form className="FormFields">
-                         <br/>
-                          <ReactTable
-                            data={data}
-                            manual
-                            pages={pages} 
-                            loading={loading}
-                            noDataText="Sem registros"
-                            loadingText="Carregando..."
-                            defaultFilterMethod={(filter, row) =>String(row[filter.id]) === filter.value}
-                            columns={[
-                              {
-                                Header: "Cód.",
-                                accessor: "PK_CLI",
-                                width: 80,
-                                filterMethod: (filter, row) => row[filter.id].startsWith(filter.value) &&row[filter.id].endsWith(filter.value)
-                  
-                              },
-                              {
-                                Header: "Código Repres.",
-                                accessor: "CODIGO_REPRESENTADA",
-                                width: 120
-                              },
-                              {
-                                Header: "Razão Social",
-                                accessor: "RAZAO_SOCIAL",
-                                filterMethod: (filter, row) => row[filter.id].startsWith(filter.value) &&row[filter.id].endsWith(filter.value)
-                              },
-                              {
-                                Header: "CNPJ",
-                                accessor: "CNPJ",
-                                width: 160
-                              },
-                              {
-                                Header: "Telefone",
-                                accessor: "FONE1",
-                                width: 120
-                              }
-                            ]}
-                            defaultPageSize={10}
-                            onFetchData={this.fetchData}
-                            filterable
-                            className="-striped -highlight"
-                          />
-                          <br />
+                        <div className="FormTitle"> 
+                            <Clock format={'DD/MM/YYYY - HH:mm'} ticking={true}/> 
+                            <br/>
+                            <h1 className="FormTitle__Link--Active">Sincronização</h1>
+                        </div>
+                        <div className="FormField">
+                            <input type="submit" className="FormField__Button mr-20" value="Sincronizar" onClick={this.handleSync}/>
+                        </div>
                         </form>
                     </div>
                 </div>
