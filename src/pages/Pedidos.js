@@ -1,6 +1,6 @@
 import React from "react";
-import { render } from "react-dom";
-import { Link, Router, Route, Redirect } from 'react-router-dom';
+// import { render } from "react-dom";
+import { Redirect } from 'react-router-dom';
 import SideNav, { Nav, NavIcon, NavText } from 'react-sidenav';
 import SvgIcon from 'react-icons-kit';
 import _ from "lodash";
@@ -11,21 +11,21 @@ import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_sync} from 'react-icons-kit/md/ic_sync'
 import {ic_assignment} from 'react-icons-kit/md/ic_assignment'
-import { makeData, Logo, Tips } from "./Utils";
+import { syncData } from "./Utils";
 // Import React Table
 import ReactTable from "react-table";
 import "react-table/react-table.css";
 
 
-const rawData = makeData("pedidos");
+const rawData = syncData();
 
 
 
-const requestData = (pageSize, page, sorted, filtered) => {  
+const requestData = (pageSize, page, sorted, filtered) => {
   return new Promise((resolve, reject) => {
-
-    let filteredData=rawData
     // You can retrieve your data however you want, in this case, we will just use some local data.
+    let filteredData = rawData;
+
     // You can use the filters in your request, but you are responsible for applying them.
     if (filtered.length) {
       filteredData = filtered.reduce((filteredSoFar, nextFilter) => {
@@ -49,15 +49,15 @@ const requestData = (pageSize, page, sorted, filtered) => {
       }),
       sorted.map(d => (d.desc ? "desc" : "asc"))
     );
-    
+
     // You must return an object containing the rows of the current page, and optionally the total pages number.
     const res = {
       rows: sortedData.slice(pageSize * page, pageSize * page + pageSize),
       pages: Math.ceil(filteredData.length / pageSize)
     };
-    
+
     // Here we'll simulate a server response with 500ms of delay.
-    setTimeout(() => resolve(res), 1000);
+    setTimeout(() => resolve(res), 500);
   });
 };
 
@@ -101,7 +101,7 @@ class Example extends React.Component {
     const { data, pages, loading } = this.state;
     let logou = localStorage.getItem("logou");
     console.log('a '+logou)
-    if (logou == "true") {
+    if (logou === "true") {
     return (
               <div className="App">
                 <div className="App__Aside">
@@ -109,7 +109,7 @@ class Example extends React.Component {
                     <div> 
                         <SideNav highlightColor='white' highlightBgColor='#506b55' defaultSelected='pedidos' 
                         onItemSelection={ (id, parent) => {
-                            if (id=='exit'){  
+                            if (id==='exit'){  
                                 localStorage.setItem("logou", false);    
                                 this.props.history.push('../')
                             } else this.props.history.push('../'+id)

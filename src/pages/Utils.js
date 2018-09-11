@@ -1,37 +1,16 @@
-import React from "react";
-import namor from "namor";
+// import React from "react";
+// import namor from "namor";
+// import { render } from "react-dom";
 import "../App.css";
 import PouchDB from 'pouchdb';
 
 
-const range = len => {
-  const arr = [];
-  for (let i = 0; i < len; i++) {
-    arr.push(i);
-  }
-  return arr;
-};
-
-const newPerson = () => {
-  const statusChance = Math.random();
-  return {
-    firstName: namor.generate({ words: 1, numbers: 0 }),
-    lastName: namor.generate({ words: 1, numbers: 0 }),
-    age: Math.floor(Math.random() * 30),
-    visits: Math.floor(Math.random() * 100),
-    progress: Math.floor(Math.random() * 100),
-    status:
-      statusChance > 0.66
-        ? "relationship"
-        : statusChance > 0.33 ? "complicated" : "single"
-  };
-};
 
 export function makeData(tabela) {
 
 }
 
-export function exportaData(){
+export function exportaData(callback){
     //Requiring the package
 
     //Creating the database object
@@ -42,18 +21,20 @@ export function exportaData(){
       if (err) {
           return console.log(err);
       } else {
-          callback(doc);
+        callback(doc);
       }
-    });
+    })
+
 }
 
 
 
+
 export function syncData(){
-    let tabelas = {
-        clientes:{},
-        produtos:{}
-    }
+    // let tabelas = {
+    //     clientes:{},
+    //     produtos:{}
+    // }
 
     //CLIENTES
     fetch('http://192.168.0.251:3001/clientes').then(r => r.json()).then(r => {
@@ -61,12 +42,12 @@ export function syncData(){
       localStorage.setItem('myStorage', JSON.stringify(r))})
     
 
+    return localStorage.getItem('myStorage')
 
-
-    //PRODUTOS
-    fetch('http://192.168.0.251:3001/produtos').then(r => r.json()).then(r => {
-      console.log(r) 
-      localStorage.setItem('myStorage', JSON.stringify(r))})
+    // //PRODUTOS
+    // fetch('http://192.168.0.251:3001/produtos').then(r => r.json()).then(r => {
+    //   console.log(r) 
+    //   localStorage.setItem('myStorage', JSON.stringify(r))})
 
     // console.log(localStorage.getItem('myStorage'))
     // // tabelas.produtos=JSON.stringify(localStorage.getItem('myStorage'))
@@ -74,20 +55,3 @@ export function syncData(){
     
 
 }
-
-export const Logo = () =>
-  <div style={{ margin: '1rem auto', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center'}}>
-    For more examples, visit {''}
-  <br />
-    <a href="https://github.com/react-tools/react-table" target="_blank">
-      <img
-        src="https://github.com/react-tools/media/raw/master/logo-react-table.png"
-        style={{ width: `150px`, margin: ".5em auto .3em" }}
-      />
-    </a>
-  </div>;
-
-export const Tips = () =>
-  <div style={{ textAlign: "center" }}>
-    <em>Tip: Hold shift when sorting to multi-sort!</em>
-  </div>;

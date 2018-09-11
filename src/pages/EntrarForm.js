@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Link, Router, Route, Redirect } from 'react-router-dom';
-import {browserHistory} from 'react-router';
-import axios from 'axios';
+// import { Link, Router, Route, Redirect } from 'react-router-dom';
+// import {browserHistory} from 'react-router';
+// import axios from 'axios';
 
 
 
@@ -70,7 +70,7 @@ class EntrarForm extends Component {
    
     render(){
         let logou = localStorage.getItem("logou");
-        if (logou == "true") {this.props.history.push('/home')}
+        if (logou === "true") {this.props.history.push('/home')}
         return(
             <div className="App">
                 <div className="App__Aside">

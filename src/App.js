@@ -1,6 +1,6 @@
-import React, { Component, PureComponent } from 'react';
-import {BrowserRouter as Router, Route, Link, NavLink} from 'react-router-dom';
-import logo from './delphus.svg';
+import React, { Component } from 'react';
+import {BrowserRouter as Router, Route} from 'react-router-dom';
+// import logo from './delphus.svg';
 import Menu from './pages/Menu';
 import Clientes from './pages/Clientes';
 import Pedidos from './pages/Pedidos';

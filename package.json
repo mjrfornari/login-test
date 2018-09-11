@@ -22,6 +22,7 @@
     "react-live-clock": "^2.0.3",
     "react-md": "^1.5.0",
     "react-redux": "^5.0.7",
+    "react-resolver": "^3.1.2",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
     "react-scripts": "1.1.4",

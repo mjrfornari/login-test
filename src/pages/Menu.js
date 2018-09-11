@@ -1,7 +1,7 @@
 import React from "react";
-import { render } from "react-dom";
+// import { render } from "react-dom";
 import Clock from 'react-live-clock';
-import { Link, Router, Route, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import SideNav, { Nav, NavIcon, NavText } from 'react-sidenav';
 import SvgIcon from 'react-icons-kit';
 import _ from "lodash";
@@ -12,9 +12,9 @@ import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_sync} from 'react-icons-kit/md/ic_sync'
 import {ic_assignment} from 'react-icons-kit/md/ic_assignment'
-import { makeData, Logo, Tips } from "./Utils";
+import { makeData } from "./Utils";
 // Import React Table
-import ReactTable from "react-table";
+// import ReactTable from "react-table";
 import "react-table/react-table.css";
 
 
@@ -105,10 +105,10 @@ class Example extends React.Component {
   }
 
   render() {
-    const { data, pages, loading } = this.state;
+    // const { data, pages, loading } = this.state;
     let logou = localStorage.getItem("logou");
     console.log('a '+logou)
-    if (logou == "true") {
+    if (logou === "true") {
     return (
         <div className="App">
                 <div className="App__Aside">
@@ -116,7 +116,7 @@ class Example extends React.Component {
                     <div> 
                         <SideNav highlightColor='white' highlightBgColor='#506b55' defaultSelected='home' 
                         onItemSelection={ (id, parent) => {
-                            if (id=='exit'){  
+                            if (id==='exit'){  
                                 localStorage.setItem("logou", false);    
                                 this.props.history.push('../')
                             } else this.props.history.push('../'+id)

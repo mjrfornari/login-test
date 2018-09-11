@@ -1,9 +1,8 @@
 import React from "react";
-import { render } from "react-dom";
-import { Link, Router, Route, Redirect } from 'react-router-dom';
+// import { render } from "react-dom";
+import { Redirect } from 'react-router-dom';
 import SideNav, { Nav, NavIcon, NavText } from 'react-sidenav';
 import SvgIcon from 'react-icons-kit';
-import _ from "lodash";
 import { ic_account_box } from 'react-icons-kit/md/ic_account_box';
 import { ic_home } from 'react-icons-kit/md/ic_home'
 import { ic_add_shopping_cart } from 'react-icons-kit/md/ic_add_shopping_cart';
@@ -11,11 +10,8 @@ import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_sync} from 'react-icons-kit/md/ic_sync'
 import {ic_assignment} from 'react-icons-kit/md/ic_assignment'
-import { syncData, Logo, Tips } from "./Utils";
+// import { syncData, Logo, Tips } from "./Utils";
 import Clock from 'react-live-clock';
-// Import React Table
-import ReactTable from "react-table";
-import "react-table/react-table.css";
 import PouchDB from "pouchdb"
 
 
@@ -62,7 +58,7 @@ class Example extends React.Component {
 
   render() {
     let logou = localStorage.getItem("logou");
-    if (logou == "true") {
+    if (logou === "true") {
     return (
               <div className="App">
                 <div className="App__Aside">
@@ -70,7 +66,7 @@ class Example extends React.Component {
                     <div> 
                         <SideNav highlightColor='white' highlightBgColor='#506b55' defaultSelected='sync' 
                         onItemSelection={ (id, parent) => {
-                            if (id=='exit'){  
+                            if (id==='exit'){  
                                 localStorage.setItem("logou", false);    
                                 this.props.history.push('../')
                             } else this.props.history.push('../'+id)
