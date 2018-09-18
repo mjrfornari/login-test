@@ -36,6 +36,7 @@ class EntrarForm extends Component {
                 }
                 console.log(this.logado)
                 localStorage.setItem("logou", this.logado);
+                localStorage.setItem("macropecas", r[0]["PK_VEN"]);
                 window.location.reload()
             })
         }

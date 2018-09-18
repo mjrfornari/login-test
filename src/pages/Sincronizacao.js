@@ -10,12 +10,12 @@ import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_sync} from 'react-icons-kit/md/ic_sync'
 import {ic_assignment} from 'react-icons-kit/md/ic_assignment'
-// import { syncData, Logo, Tips } from "./Utils";
+ import { syncData } from "./Utils";
 import Clock from 'react-live-clock';
 import PouchDB from "pouchdb"
 
 
-
+const db = new PouchDB('macropecas')
 
 
 
@@ -34,26 +34,9 @@ class Example extends React.Component {
 
     handleSync (e) {
         e.preventDefault();
-        // syncData();
-        let db = new PouchDB('macropecas')
-        console.log("Database created!")
-        let doc = {
-            _id : '002',
-            PK_CLI: '1',
-            RAZAO_SOCIAL : 'TESTEEE',
-            CNPJ : '123123123',
-            FONE1 : '9999999',
-            CODIGO_REPRESENTADA : 'aaaa'
-            }
-            //Inserting Document
-        db.put(doc, function(err, response) {
-            if (err) {
-                return console.log(err);
-            } else {
-                console.log("Document created Successfully");
-            }
-            })
-
+        syncData(localStorage.getItem("macropecas"));
+        
+        
     }
 
   render() {

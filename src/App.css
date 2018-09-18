@@ -5,9 +5,24 @@
 }
 
 
-.App__Aside {
-  width: 30%;
-  background-color: #306639c0;
+
+
+
+@media screen and (min-width: 601px) {
+  .App__Aside {
+    width: 30%;
+    font-size: 1vw;
+    background-color: #306639c0;
+  }
+}
+
+/* If the screen size is 600px wide or less, set the font-size of <div> to 30px */
+@media screen and (max-width: 600px) {
+  .App__Aside {
+    width: 30%;
+    font-size: 2.5vw;
+    background-color: #306639c0;
+  }
 }
 
 .App__Aside__Hidden {
@@ -27,6 +42,12 @@
     left:50%;
     margin-left: -35%;
     margin-top: -15%;
+}
+
+
+.GridsBg {
+  background-color: #649764;
+  color: #649764;
 }
 
 
