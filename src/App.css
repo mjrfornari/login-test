@@ -198,6 +198,26 @@
   margin-top: 10px;
 }
 
+.FormFilter__Label {
+  /* display: block; */
+  text-transform: uppercase;
+  font-size: .9em;
+  color: white;
+  padding-right: 0.5em;
+}
+.FormFilter__Input {
+  width: 50%;
+  background-color: transparent;
+  border: none;
+  color: white;
+  outline: none;
+  border-bottom: 1px solid #445366;
+  font-size: 1em;
+  font-weight: 300;
+  padding-bottom: 10px;
+  margin-top: 10px;
+}
+
 .FormField__Input::placeholder {
   color: #616E7F;
 }
@@ -207,10 +227,50 @@
   color: white;
   border: none;
   outline: none;
+  width: 100px;
   border-radius: 25px;
-  padding: 15px 70px;
-  font-size: .8em;
-  font-weight: 500;
+  padding: 8px 10px;
+  font-size: 0.9em;
+  font-weight: 400;
+}
+
+.FormField__ButtonDisabled {
+  background-color: rgb(68, 87, 94);
+  color: white;
+  border: none;
+  outline: none;
+  width: 100px;
+  border-radius: 25px;
+  padding: 8px 10px;
+  font-size: 0.9em;
+  font-weight: 400;
+}
+
+.Grid__Button {
+  background-color: transparent;
+  color: white;
+  border: 2px;
+  border-style: solid;
+  border-color: white;
+  /* outline: 10px; */
+  outline-color: white;
+  border-radius: 25px;
+  /* padding: 15px 70px; */
+
+}
+
+.Grid__Button:hover {
+  background-color: #649764;
+}
+
+.FormField__Grid {
+  background-color: #649764;
+  color: white;
+}
+
+.FormField__Grid:hover {
+  background-color: #506b55;
+  color: white;
 }
 
 
@@ -256,6 +316,7 @@
   color: #646F7D;
   font-size: .9em;
 }
+
 
 .FormField__Checkbox {
   position: relative;

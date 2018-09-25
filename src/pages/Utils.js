@@ -6,6 +6,105 @@ import PouchDB from 'pouchdb';
 
 const db = new PouchDB('macropecas');
 
+export function editData(tabela, item, id) {
+
+  //console.log(item)
+  readData(Data => { 
+       
+        let read = Data
+        db.get('read').then(function(doc) {
+        let newRead = {
+          _id: 'read',
+          data:  Data.data,
+          _rev: doc._rev
+        }     
+        newRead.data[tabela][id] = item  
+        // newRead.data[tabela].map(function(_, i) { 
+        //   if (_.PK_CLI == item.PK_CLI) {
+        //     newRead.data[tabela][i] = item
+        //   }
+        // })
+
+        return db.put(newRead)
+      }).then(function(response) {
+        console.log('Read updated!')
+      }).catch(function (err) {
+        if (err.name === 'not_found') {
+          db.put(read).then(function (response) {
+              console.log('Read Created!')
+          }).catch(function (err) {
+            console.log(err);
+          });
+        }
+      });})
+
+  
+
+}
+
+export function appendData(tabela, item) {
+
+  //console.log(item)
+  readData(Data => { 
+       
+        let read = Data
+        db.get('read').then(function(doc) {
+        let newRead = {
+          _id: 'read',
+          data:  Data.data,
+          _rev: doc._rev
+        }     
+
+        newRead.data[tabela].push(item)
+        return db.put(newRead)
+      }).then(function(response) {
+        console.log('Read updated!')
+      }).catch(function (err) {
+        if (err.name === 'not_found') {
+          db.put(read).then(function (response) {
+              console.log('Read Created!')
+          }).catch(function (err) {
+            console.log(err);
+          });
+        }
+      });})
+
+  
+
+}
+
+export function deleteData(tabela, id) {
+
+  //console.log(item)
+  readData(Data => { 
+       
+        let read = Data
+        db.get('read').then(function(doc) {
+        let newRead = {
+          _id: 'read',
+          data:  Data.data,
+          _rev: doc._rev
+        }     
+
+        newRead.data[tabela].splice(id, 1)
+        return db.put(newRead)
+      }).then(function(response) {
+        console.log('Read updated!')
+      }).catch(function (err) {
+        if (err.name === 'not_found') {
+          db.put(read).then(function (response) {
+              console.log('Read Created!')
+          }).catch(function (err) {
+            console.log(err);
+          });
+        }
+      });})
+
+  
+
+}
+
+
 export function makeData(tabela) {
 
 }
@@ -33,6 +132,7 @@ export function syncData(user){
           clientes: r
         }
       }
+      console.log(r)
 
       db.get('base').then(function(doc) {
         let newResult = {

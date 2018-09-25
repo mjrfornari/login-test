@@ -35,6 +35,7 @@ class Example extends React.Component {
     handleSync (e) {
         e.preventDefault();
         syncData(localStorage.getItem("macropecas"));
+        alert('Sincronizado!')
         
         
     }
