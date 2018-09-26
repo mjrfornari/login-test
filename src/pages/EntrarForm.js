@@ -31,12 +31,18 @@ class EntrarForm extends Component {
                 if (Object.keys(r).length > 0){
                     if (r[0]["PK_VEN"] !== '') {
                         this.logado=true
-                        this.props.history.push('/home')                   
+                        this.props.history.push('/home') 
+                        localStorage.setItem("macropecas", r[0]["PK_VEN"]);                  
                     }
+
+                }
+                if (this.logado === false) {
+                    alert('Login/senha incorreto(s)!')
                 }
                 console.log(this.logado)
                 localStorage.setItem("logou", this.logado);
-                localStorage.setItem("macropecas", r[0]["PK_VEN"]);
+                // console.log(r[0]["PK_VEN"])
+                // localStorage.setItem("macropecas", r[0]["PK_VEN"]);
                 window.location.reload()
             })
         }
