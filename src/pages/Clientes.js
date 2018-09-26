@@ -173,11 +173,13 @@ class Example extends React.Component {
                         </div>
                         {/* <form className="FormFields">   */}
                             <div className="FormField">
-                                    <label className="FormFilter__Label" htmlFor="RAZAO_SOCIAL">Razão Social:</label>
-                                    <input type="text" id="RAZAO_SOCIAL" className="FormFilter__Input" 
-                                    name="RAZAO_SOCIAL" value={this.state.filter.RAZAO_SOCIAL} onChange={this.handleChange}/>
-                            <button className="FormField__Button" onClick={this.handleRefresh}>Filtrar</button>  
-                            <button className="FormField__Button mr-20" onClick={this.handleClean}>Limpar</button> 
+                                <label className="FormFilter__Label" htmlFor="RAZAO_SOCIAL">Razão Social:</label>
+                                <input type="text" id="RAZAO_SOCIAL" className="FormFilter__Input" 
+                                name="RAZAO_SOCIAL" value={this.state.filter.RAZAO_SOCIAL} onChange={this.handleChange}/>
+                                <div>
+                                    <button className="FormField__Button" onClick={this.handleRefresh}>Filtrar</button>  
+                                    <button className="FormField__Button" onClick={this.handleClean}>Limpar</button> 
+                                </div>
                             </div>
                             <div>
                                 
