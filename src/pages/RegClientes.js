@@ -15,7 +15,7 @@ import {ic_sync} from 'react-icons-kit/md/ic_sync'
 import {ic_assignment} from 'react-icons-kit/md/ic_assignment'
 import {ListGroup, ListGroupItem, Button, Modal, OverlayTrigger, Tooltip, Popover} from 'react-bootstrap'
 import PouchDB from "pouchdb"
-import { readData, editData, appendData } from "./Utils";
+import { readTable, editData, appendData } from "./Utils";
 
 
 
@@ -30,7 +30,7 @@ class Example extends React.Component {
     super(props, context);
     this.state = {
         clientes  : [],
-        now : {PK_CLI: 0, RAZAO_SOCIAL: '', CNPJ: ''},
+        now : {PK_CLI: 0, RAZAO_SOCIAL: '', CNPJ: '', FONE1: '', CODIGO_REPRESENTADA:''},
         append: false,
         isLoading: true,
         id: 0,
@@ -55,7 +55,7 @@ class Example extends React.Component {
     if (this.state.isLoading == true) {
         if (this.props.location.pathname !== '/clientes/registro') {
             let ID = this.props.location.pathname.replace('/clientes/registro/','');
-            readData(Data => { this.setState({clientes: Data.data.clientes, isLoading: true})
+            readTable(Data => { this.setState({clientes: Data.data.clientes, isLoading: true})
                 this.setState({now: Data.data.clientes[ID], id: ID, isLoading: false})  
             // Data.data.clientes.forEach(element => {
             //         if (element.PK_CLI == ID){
@@ -113,8 +113,8 @@ class Example extends React.Component {
                                 onItemSelection={ (id, parent) => {
                                     if (id==='exit'){  
                                         localStorage.setItem("logou", false);    
-                                        this.props.history.push('../')
-                                    } else {this.props.history.push('../'+id)
+                                        this.props.history.push('/')
+                                    } else {this.props.history.push('/'+id)
                                 }
                                 }}>       
                                     <Nav id='home'>

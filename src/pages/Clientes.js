@@ -15,7 +15,7 @@ import {ic_assignment} from 'react-icons-kit/md/ic_assignment'
 import {ListGroup, ListGroupItem, Button, Modal, OverlayTrigger, Tooltip, Popover} from 'react-bootstrap'
 import {LinkContainer} from 'react-router-bootstrap'
 import PouchDB from "pouchdb"
-import { readData, deleteData } from "./Utils";
+import { readTable, deleteData } from "./Utils";
 import {ic_restore_page} from 'react-icons-kit/md/ic_restore_page'
 
 
@@ -50,7 +50,7 @@ class Example extends React.Component {
     }
 
     componentDidMount(){
-        readData(Data => {this.setState({clientes: Data.data.clientes, filtered: Data.data.clientes})})      
+        readTable(Data => {this.setState({clientes: Data.data.clientes, filtered: Data.data.clientes})})      
     }
   
     createItems(item, id){
@@ -67,11 +67,12 @@ class Example extends React.Component {
     handleExcluir(e) {
         e.preventDefault()
         let table = this.state.clientes
+        // console.log(this.state.clientes[e.target.id])
         let result = window.confirm('Confirma a exclusão de "'+table[e.target.id].RAZAO_SOCIAL.trim()+'"?')
         if (result) {
-            table.splice(e.target.id, 1)
+            let removed = table.splice(e.target.id, 1)
             this.setState({clientes: table})
-            deleteData('clientes', e.target.id)
+            deleteData('clientes',removed, e.target.id)
         }
     }
 
@@ -129,8 +130,8 @@ class Example extends React.Component {
                          onItemSelection={ (id, parent) => {
                             if (id==='exit'){  
                                 localStorage.setItem("logou", false);    
-                                this.props.history.push('../')
-                            } else {this.props.history.push('../'+id)
+                                this.props.history.push('/')
+                            } else {this.props.history.push('/'+id)
                         }
                         }}>       
                             <Nav id='home'>

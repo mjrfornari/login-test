@@ -7,6 +7,16 @@
 
 
 
+.Loading {
+  position: relative;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%); 
+}
+
+
+
 
 @media screen and (min-width: 601px) {
   .App__Aside {

@@ -10,10 +10,14 @@ import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_sync} from 'react-icons-kit/md/ic_sync'
 import {ic_assignment} from 'react-icons-kit/md/ic_assignment'
- import { syncData } from "./Utils";
+import { syncData, createToFirebird, updateToFirebird } from "./Utils";
+import {promisify} from 'util';
 import Clock from 'react-live-clock';
 import PouchDB from "pouchdb"
-
+import { utils } from "mocha";
+import { func } from "prop-types";
+import Loading from "react-loading-animation"
+import ReactLoading from 'react-loading';
 
 const db = new PouchDB('macropecas')
 
@@ -26,18 +30,40 @@ class Example extends React.Component {
     this.state = {
       data: [],
       pages: null,
-      loading: true
+      loading: true,
+      sync: false
     };
 
     this.handleSync = this.handleSync.bind(this);
+    this.handleTeste = this.handleTeste.bind(this);
+    
   }
 
+    sincronizando(ok) {
+        if (ok === false){
+            return (<input type="submit" className="FormField__Button mr-20" value="Sincronizar" onClick={this.handleSync}/>)
+        } else {
+            return (<ReactLoading type='spokes' color='green' height={'5%'} width={'5%'} className='Loading'/>)
+        }
+    }
+
+
     handleSync (e) {
-        e.preventDefault();
-        syncData(localStorage.getItem("macropecas"));
-        alert('Sincronizado!')
+        
+       e.preventDefault(); 
+       this.setState({sync: true}) 
+       createToFirebird('PK_CLI', () => {      
+            updateToFirebird('PK_CLI', () => { 
+                syncData(localStorage.getItem('macropecas'), ()=> {this.setState({sync: false})})}
+            )}
+        )
         
         
+    }
+
+    handleTeste(e){
+      e.preventDefault();  
+      syncData(localStorage.getItem('macropecas'))
     }
 
   render() {
@@ -52,8 +78,8 @@ class Example extends React.Component {
                         onItemSelection={ (id, parent) => {
                             if (id==='exit'){  
                                 localStorage.setItem("logou", false);    
-                                this.props.history.push('../')
-                            } else this.props.history.push('../'+id)
+                                this.props.history.push('/')
+                            } else this.props.history.push('/'+id)
                         }}>       
                             <Nav id='home'>
                                 <NavIcon><SvgIcon size={30} icon={ic_home}/></NavIcon>    
@@ -95,8 +121,9 @@ class Example extends React.Component {
                             <h1 className="FormTitle__Link--Active">Sincronização</h1>
                         </div>
                         <div className="FormField">
-                            <input type="submit" className="FormField__Button mr-20" value="Sincronizar" onClick={this.handleSync}/>
+                            {this.sincronizando(this.state.sync)}
                         </div>
+
                         </form>
                     </div>
                 </div>

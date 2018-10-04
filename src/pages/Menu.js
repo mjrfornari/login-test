@@ -118,8 +118,8 @@ class Example extends React.Component {
                         onItemSelection={ (id, parent) => {
                             if (id==='exit'){  
                                 localStorage.setItem("logou", false);    
-                                this.props.history.push('../')
-                            } else this.props.history.push('../'+id)
+                                this.props.history.push('/')
+                            } else this.props.history.push('/'+id)
                         }}>       
                             <Nav id='home'>
                                 <NavIcon><SvgIcon size={30} icon={ic_home}/></NavIcon>    
