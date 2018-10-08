@@ -11,12 +11,8 @@ import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_sync} from 'react-icons-kit/md/ic_sync'
 import {ic_assignment} from 'react-icons-kit/md/ic_assignment'
 import { syncData, createToFirebird, updateToFirebird } from "./Utils";
-import {promisify} from 'util';
 import Clock from 'react-live-clock';
 import PouchDB from "pouchdb"
-import { utils } from "mocha";
-import { func } from "prop-types";
-import Loading from "react-loading-animation"
 import ReactLoading from 'react-loading';
 import { Offline, Online } from "react-detect-offline";
 
