@@ -18,6 +18,7 @@ import { utils } from "mocha";
 import { func } from "prop-types";
 import Loading from "react-loading-animation"
 import ReactLoading from 'react-loading';
+import { Offline, Online } from "react-detect-offline";
 
 const db = new PouchDB('macropecas')
 
@@ -121,7 +122,8 @@ class Example extends React.Component {
                             <h1 className="FormTitle__Link--Active">Sincronização</h1>
                         </div>
                         <div className="FormField">
-                            {this.sincronizando(this.state.sync)}
+                            <Offline>Você está sem internet. Cheque sua conexão.</Offline>
+                            <Online>{this.sincronizando(this.state.sync)}</Online>
                         </div>
 
                         </form>

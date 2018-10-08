@@ -167,9 +167,9 @@ class Example extends React.Component {
                                     name="CNPJ" value={this.state.now.CNPJ} onChange={this.handleChange}/>
                                 </div>
                                 <div className="FormField">
-                                    <label className="FormField__Label" htmlFor="password">Código</label>
-                                    <input type="text" id="PK_CLI" className="FormField__Input" 
-                                    name="PK_CLI" value={this.state.now.PK_CLI} onChange={this.handleChange}/>
+                                    <label className="FormField__Label" htmlFor="password">Telefone 1</label>
+                                    <input type="text" id="FONE1" className="FormField__Input" 
+                                    name="FONE1" value={this.state.now.FONE1} onChange={this.handleChange}/>
                                 </div>
                                 
                                 {this.saveBtn(this.state.ok)}

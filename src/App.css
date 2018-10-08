@@ -23,6 +23,11 @@
     width: 30%;
     font-size: 1vw;
     background-color: #306639c0;
+    display: block;
+  }
+
+  .App__Aside__Hide {
+    display: none;
   }
 }
 
@@ -32,12 +37,14 @@
     width: 30%;
     font-size: 2.5vw;
     background-color: #306639c0;
+    display: block;
+  }
+
+  .App__Aside__Hide {
+    display: none;
   }
 }
 
-.App__Aside__Hidden {
-  display: hidden;
-}
 
 .MenuBar {
   background-color: #306639c0;
@@ -197,12 +204,14 @@
 }
 .FormField__Input {
   width: 80%;
-  background-color: transparent;
+  border-radius: 25px;
+  background-color: #649764;
   border: none;
   color: white;
   outline: none;
-  border-bottom: 1px solid #878e96;
+  /* border: 2px solid #506b55; */
   font-size: 1em;
+  padding: 10px;
   font-weight: 300;
   padding-bottom: 10px;
   margin-top: 10px;
@@ -217,11 +226,13 @@
 }
 .FormFilter__Input {
   width: 50%;
-  background-color: transparent;
+  padding: 10px;
+  border-radius: 25px;
+  background-color: #649764;
   border: none;
   color: white;
   outline: none;
-  border-bottom: 1px solid #878e96;
+  /* border: 2px solid #506b55; */
   font-size: 1em;
   font-weight: 300;
   padding-bottom: 10px;
@@ -246,6 +257,78 @@
   font-weight: 400;
 }
 
+.FormField__Button__Fix {
+  background-color: #506b55;
+  color: white;
+  border: none;
+  position: absolute;
+  z-index: 999;
+  outline: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 40px;
+  border-color: white;
+  padding: 8px 10px;
+  top: calc(3% + 50px);
+  right:5%;
+  font-size: 0.9em;
+  text-align: center;
+  font-weight: 400;
+}
+
+.FormField__Button__HideShow {
+  background-color: #506b55;
+  color: white;
+  border: none;
+  position: absolute;
+  z-index: 1000;
+  outline: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 40px;
+  border-color: white;
+  padding: 8px 10px;
+  top: 3%;
+  right:5%;
+  font-size: 0.9em;
+  text-align: center;
+  font-weight: 400;
+}
+
+
+.FormField__Icon__ShowHide {
+  color: white;
+  border: none;
+  position: relative;
+  z-index: 1000;
+  outline: none;
+  font-size: 0.6em;
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 50%;
+  transform: translate(-50%, -50%);
+  display: block;
+}
+
+.FormField__Icon__Fix {
+  color: white;
+  border: none;
+  position: relative;
+  z-index: 1000;
+  outline: none;
+  font-size: 0.6em;
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 50%;
+  transform: translate(-50%, -50%);
+  display: block;
+}
+
+
 .FormField__ButtonDisabled {
   background-color: rgb(68, 87, 94);
   color: white;
@@ -262,6 +345,7 @@
   background-color: transparent;
   color: white;
   border: 2px;
+  margin-top: 9px;
   border-style: solid;
   border-color: white;
   /* outline: 10px; */
@@ -298,6 +382,7 @@
   bottom: 5%; 
   right: 5%;
 }
+
 
 
 
