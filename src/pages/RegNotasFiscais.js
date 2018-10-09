@@ -57,11 +57,12 @@ class Example extends React.Component {
     }
 
     appBar(mostra){
+        console.log(mostra)
         if (mostra){
             return(
                 <div className='App__Aside'>
                         <div>   
-                            <SideNav highlightColor='white' highlightBgColor='#506b55' defaultSelected='clientes'
+                            <SideNav highlightColor='white' highlightBgColor='#506b55' defaultSelected='notas'
                                         onItemSelection={ (id, parent) => {
                                             if (id==='exit'){  
                                                 localStorage.setItem("logou", false);    
@@ -111,6 +112,7 @@ class Example extends React.Component {
     handleBar(e){
         e.preventDefault()
         let showBar = this.state.show
+        console.log('a - '+showBar)
         this.setState({show: !(showBar)})
     }
     
@@ -126,10 +128,10 @@ class Example extends React.Component {
 
     componentDidMount(){
         let pathname = this.props.location.pathname
-        if (pathname.includes('clientes')) {           
+        if (pathname.includes('notas')) {           
             if (this.state.isLoading == true) {
-                if (this.props.location.pathname !== '/clientes/registro') {
-                    let ID = this.props.location.pathname.replace('/clientes/registro/','');
+                if (this.props.location.pathname !== '/notas/registro') {
+                    let ID = this.props.location.pathname.replace('/notas/registro/','');
                     readTable(Data => { this.setState({clientes: Data.data.clientes, isLoading: true})
                         this.setState({now: Data.data.clientes[ID], id: ID, isLoading: false})  
                     // Data.data.clientes.forEach(element => {
@@ -180,9 +182,11 @@ class Example extends React.Component {
 
  render() {
     let bar = this.appBar(this.state.show);
+    console.log(this.state.show)
     let logou = localStorage.getItem("logou");
     if (logou === "true") {
         return (     
+                    
                     <div className="App">
                         {bar} 
                         <div className="App__Form">
@@ -190,7 +194,7 @@ class Example extends React.Component {
                                 <div className="FormTitle">
                                     <Clock format={'DD/MM/YYYY - HH:mm'} ticking={true}/> 
                                     <br/>
-                                    <h1 className="FormTitle__Link--Active">Registro de Clientes</h1>
+                                    <h1 className="FormTitle__Link--Active">Registro de Notas Fiscais</h1>
                                 </div>
                                 <form className="FormFields" onSubmit={this.handleSubmit}>
                                 <div className="FormField">
@@ -208,9 +212,10 @@ class Example extends React.Component {
                                     <input type="text" id="FONE1" className="FormField__Input" 
                                     name="FONE1" value={this.state.now.FONE1} onChange={this.handleChange}/>
                                 </div>
-                                {this.hideShow()}
+                                
                                 {this.saveBtn(this.state.ok)}
-                                <LinkContainer to="/clientes"><button className="FormField__Button mr-20">Voltar</button></LinkContainer>
+                                <LinkContainer to="/notas"><button className="FormField__Button mr-20">Voltar</button></LinkContainer>
+                                {this.hideShow()}
                             </form>
                             </div>
                         </div>

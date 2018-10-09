@@ -69,7 +69,7 @@ class Example extends React.Component {
                 CNPJ: {item.CNPJ}<br/>
                 Fone 1: {item.FONE1}<br/>
                 Código: {item.PK_CLI}<br/>
-                <LinkContainer to={"/clientes/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer><button id={id} className="Grid__Button" onClick={this.handleExcluir}>Excluir</button>
+                <LinkContainer to={"/clientes/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
                 </ListGroupItem>
             
             )
@@ -232,9 +232,9 @@ class Example extends React.Component {
                             </div>
                             <div>
                                 
-                            <br/>
-                            {this.hideShow()}
-                            <LinkContainer to={"/clientes/registro"}><button className="FormField__Button__Fix" onClick={this.handleShow}><SvgIcon className='FormField__Icon__Fix' size={24} icon={plus}/></button></LinkContainer>                       
+                                <br/>
+                                {this.hideShow()}
+                                <LinkContainer to={"/clientes/registro"}><button className="FormField__Button__Fix" onClick={this.handleShow}><SvgIcon className='FormField__Icon__Fix' size={24} icon={plus}/></button></LinkContainer>                       
                             </div>
                             <div>                    
                                 <ListGroup>

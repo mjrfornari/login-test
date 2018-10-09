@@ -1,15 +1,30 @@
 {
   "short_name": "Delphus",
-  "name": "Inicizaliando aplicativo...",
+  "name": "Inicializando aplicativo...",
   "icons": [
     {
       "src": "delphus.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
-    } 
+    },
+    {
+      "src": "delphus.ico",
+      "type": "image/x-icon",
+      "sizes": "96x96"
+    },
+    {
+      "src": "delphusfoto.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "delphusfoto.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
   ],
-  "start_url": "./index.html",
-  "display": "standalone",
+  "start_url": "/",
+  "display": "fullscreen",
   "theme_color": "#000000",
   "background_color": "#ffffff"
 }

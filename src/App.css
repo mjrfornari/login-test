@@ -240,7 +240,7 @@
 }
 
 .FormField__Input::placeholder {
-  color: #616E7F;
+  color: rgb(166, 174, 184);
 }
 
 .FormField__Button {
@@ -368,6 +368,12 @@
   background-color: #506b55;
   color: white;
 }
+
+.FormField__GridDetailed {
+  background-color: #506b55;
+  color: white;
+}
+
 
 
 .FormField__Button__Bar {

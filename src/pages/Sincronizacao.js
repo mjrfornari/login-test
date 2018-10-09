@@ -10,7 +10,7 @@ import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_sync} from 'react-icons-kit/md/ic_sync'
 import {ic_assignment} from 'react-icons-kit/md/ic_assignment'
-import { syncData, createToFirebird, updateToFirebird } from "./Utils";
+import { syncData, createToFirebird, updateToFirebird, test } from "./Utils";
 import Clock from 'react-live-clock';
 import PouchDB from "pouchdb"
 import ReactLoading from 'react-loading';
@@ -60,7 +60,7 @@ class Example extends React.Component {
 
     handleTeste(e){
       e.preventDefault();  
-      syncData(localStorage.getItem('macropecas'))
+      test(localStorage.getItem('macropecas'))
     }
 
   render() {

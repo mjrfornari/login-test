@@ -31,7 +31,6 @@ class Example extends React.Component {
     super(props, context);
     this.state = {
         clientes  : [],
-        show: false,
         now : {PK_CLI: 0, RAZAO_SOCIAL: '', CNPJ: '', FONE1: '', CODIGO_REPRESENTADA:''},
         append: false,
         isLoading: true,
@@ -61,7 +60,7 @@ class Example extends React.Component {
             return(
                 <div className='App__Aside'>
                         <div>   
-                            <SideNav highlightColor='white' highlightBgColor='#506b55' defaultSelected='clientes'
+                            <SideNav highlightColor='white' highlightBgColor='#506b55' defaultSelected='pedidos'
                                         onItemSelection={ (id, parent) => {
                                             if (id==='exit'){  
                                                 localStorage.setItem("logou", false);    
@@ -126,10 +125,10 @@ class Example extends React.Component {
 
     componentDidMount(){
         let pathname = this.props.location.pathname
-        if (pathname.includes('clientes')) {           
+        if (pathname.includes('pedidos')) {           
             if (this.state.isLoading == true) {
-                if (this.props.location.pathname !== '/clientes/registro') {
-                    let ID = this.props.location.pathname.replace('/clientes/registro/','');
+                if (this.props.location.pathname !== '/pedidos/registro') {
+                    let ID = this.props.location.pathname.replace('/pedidos/registro/','');
                     readTable(Data => { this.setState({clientes: Data.data.clientes, isLoading: true})
                         this.setState({now: Data.data.clientes[ID], id: ID, isLoading: false})  
                     // Data.data.clientes.forEach(element => {
@@ -190,7 +189,7 @@ class Example extends React.Component {
                                 <div className="FormTitle">
                                     <Clock format={'DD/MM/YYYY - HH:mm'} ticking={true}/> 
                                     <br/>
-                                    <h1 className="FormTitle__Link--Active">Registro de Clientes</h1>
+                                    <h1 className="FormTitle__Link--Active">Registro de Pedidos</h1>
                                 </div>
                                 <form className="FormFields" onSubmit={this.handleSubmit}>
                                 <div className="FormField">
@@ -210,7 +209,7 @@ class Example extends React.Component {
                                 </div>
                                 {this.hideShow()}
                                 {this.saveBtn(this.state.ok)}
-                                <LinkContainer to="/clientes"><button className="FormField__Button mr-20">Voltar</button></LinkContainer>
+                                <LinkContainer to="/pedidos"><button className="FormField__Button mr-20">Voltar</button></LinkContainer>
                             </form>
                             </div>
                         </div>

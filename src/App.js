@@ -9,6 +9,8 @@ import Sync from './pages/Sincronizacao';
 import Produtos from './pages/Produtos';
 import EntrarForm from './pages/EntrarForm';
 import RegClientes from './pages/RegClientes'
+import RegPedidos from './pages/RegPedidos'
+import RegNotasFiscais from './pages/RegNotasFiscais'
 import './App.css';
 
 
@@ -29,11 +31,15 @@ class App extends Component {
                     </Route>
                     <Route exact path="/clientes" component={Clientes}>
                     </Route>
-                    <Route path="/pedidos" component={Pedidos}>
+                    <Route path="/pedidos/registro" component={RegPedidos}>
+                    </Route>
+                    <Route exact path="/pedidos" component={Pedidos}>
                     </Route>
                     <Route path="/produtos" component={Produtos}>
                     </Route>
-                    <Route path="/notas" component={NotasFiscais}>
+                    <Route path="/notas/registro" component={RegNotasFiscais}>
+                    </Route>
+                    <Route exact path="/notas" component={NotasFiscais}>
                     </Route>
                     <Route path="/sync" component={Sync}>
                     </Route>

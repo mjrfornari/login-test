@@ -7,6 +7,7 @@ import { ic_restore_page } from "react-icons-kit/md/ic_restore_page";
 
 const db = new PouchDB('macropecas');
 
+
 export function editData(tabela, item, id) {
 
   //console.log(item)
@@ -474,80 +475,91 @@ export function updateToFirebird(nomepk, callback) {
 
 }
 
+export function test(user){
+  fetch('http://192.168.0.251:3001/pedidos/'+user).then(ped => ped.json()).then(ped => {
+    console.log(ped)
+  })
+}
+
 
 export function syncData(user, callback){
     
     setTimeout(function() {
 
-    
-    fetch('http://192.168.0.251:3001/clientes/'+user).then(r => r.json()).then(r => {
-      let result = {
-        _id: 'base',
-        data: {
-          clientes: r
-        }
-      }
-      console.log(r)
-
-      db.get('base').then(function(doc) {
-        let newResult = {
+    fetch('http://192.168.0.251:3001/pedidos/'+user).then(ped => ped.json()).then(ped => {
+      fetch('http://192.168.0.251:3001/clientes/'+user).then(r => r.json()).then(r => {
+        let result = {
           _id: 'base',
-          data:  result.data,
-          _rev: doc._rev
-        }     
-        return db.put(newResult);
-      }).then(function(response) {
-        console.log('Base updated!')
-      }).catch(function (err) {
-        if (err.name === 'not_found') {
-          db.put(result).then(function (response) {
-              console.log('Base created!')
-          }).catch(function (err) {
-            console.log(err);
-          });
+          data: {
+            clientes: r,
+            pedidos: ped
+          }
         }
-      });
+        console.log(r)
 
-      let read = {
-        _id: 'read',
-        data: {
-          clientes: r
-        }        
-      }
+        db.get('base').then(function(doc) {
+          let newResult = {
+            _id: 'base',
+            data:  result.data,
+            _rev: doc._rev
+          }     
+          return db.put(newResult);
+        }).then(function(response) {
+          console.log('Base updated!')
+        }).catch(function (err) {
+          if (err.name === 'not_found') {
+            db.put(result).then(function (response) {
+                console.log('Base created!')
+            }).catch(function (err) {
+              console.log(err);
+            });
+          }
+        });
 
-      db.get('read').then(function(doc) {
-        let newRead = {
+        let read = {
           _id: 'read',
-          data:  result.data,
-          _rev: doc._rev
-        }     
-        return db.put(newRead);
-      }).then(function(response) {
-        console.log('Read updated!')
-      }).catch(function (err) {
-        if (err.name === 'not_found') {
-          db.put(read).then(function (response) {
-              console.log('Read created!')
-          }).catch(function (err) {
-            console.log(err);
-          });
+          data: {
+            clientes: r,
+            pedidos: ped
+          }        
         }
-      });
 
+        db.get('read').then(function(doc) {
+          let newRead = {
+            _id: 'read',
+            data:  result.data,
+            _rev: doc._rev
+          }     
+          return db.put(newRead);
+        }).then(function(response) {
+          console.log('Read updated!')
+        }).catch(function (err) {
+          if (err.name === 'not_found') {
+            db.put(read).then(function (response) {
+                console.log('Read created!')
+            }).catch(function (err) {
+              console.log(err);
+            });
+          }
+        });
+
+      })
     })
 
 
     let create = {
         _id: 'create',
         data:  {
-          clientes:[]
+          clientes:[],
+          pedidos:[]
         }       
       }
     db.get('create').then(function(doc) {
       let newCreate = {
         _id: 'create',
         data:  {
-          clientes:[]
+          clientes:[],
+          pedidos:[]
         },
         _rev: doc._rev
       } 
@@ -568,14 +580,16 @@ export function syncData(user, callback){
     let update = {
         _id: 'update',
         data:  {
-          clientes:[]
+          clientes:[],
+          pedidos:[]
         }       
       }
     db.get('update').then(function(doc) {
       let newUpdate = {
         _id: 'update',
         data:  {
-          clientes:[]
+          clientes:[],
+          pedidos:[]
         },
         _rev: doc._rev
       } 
@@ -597,14 +611,16 @@ export function syncData(user, callback){
     let deleted = {
         _id: 'delete',
         data:  {
-          clientes:[]
+          clientes:[],
+          pedidos:[]
         }       
       }
     db.get('delete').then(function(doc) {
       let newDeleted = {
         _id: 'delete',
         data:  {
-          clientes:[]
+          clientes:[],
+          pedidos:[]
         },
         _rev: doc._rev
       } 
