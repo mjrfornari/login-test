@@ -72,9 +72,21 @@ class Example extends React.Component {
         }
     }
 
+    createSons(item, id){
+        return(
+            <ListGroupItem href="#" className="FormField__Grid">
+            Código: {item.CODIGOPRO}<br/>
+            Quantidade: {item.QUANTIDADE}<br/>
+            Valor: {'R$ '+item.VALOR}<br/>
+            Valor ICMS: {'R$ '+(item.VALOR_STICMS||'0.00')}<br/>
+            </ListGroupItem>
+        )
+    }
+
     createItems(item, id){
         if (this.state.detailed == true){
             if (this.state.iddetailed == id){
+                let listItens = item.itens.map(this.createSons)
                 return   (
                     <ListGroupItem header={item.NUMPED} href="#" className="FormField__GridDetailed" onClick={() => {this.masterDetail(id)}}>
                     Data: {item.DATA}<br/>
@@ -84,6 +96,14 @@ class Example extends React.Component {
                     Valor Informado: {'R$ '+item.VALOR_CALCULADO}<br/>
                     Data de Envio: {item.DATA_ENVIO}<br/>
                     Código: {item.PK_PED}<br/>
+                    <div>
+                        Itens:
+                        <LinkContainer to={"/pedidos/registro/"+id}>
+                            <ListGroup>
+                                {listItens}
+                            </ListGroup>
+                        </LinkContainer>  
+                    </div>
                     <LinkContainer to={"/pedidos/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
                     </ListGroupItem>
                 )

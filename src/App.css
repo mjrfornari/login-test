@@ -5,7 +5,19 @@
 }
 
 
+table {
+    border-collapse: collapse;
+    background: #649764;
+    width: 100%;
+}
 
+th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+tr:hover {background-color:#506b55;}
 
 .Loading {
   position: relative;
@@ -239,6 +251,51 @@
   margin-top: 10px;
 }
 
+.FormField__List {
+  border-radius: 25px;
+  background-color: #649764;
+  border: none;
+  color: white;
+  outline: none;
+  /* border: 2px solid #506b55; */
+  font-size: 1em;
+  font-weight: 300;
+
+}
+
+.FormField__Complete {
+  width: 80%;
+  border-radius: 25px;
+  background-color: #649764;
+  border: none;
+  color: white;
+  outline: none;
+  /* border: 2px solid #506b55; */
+  font-size: 1em;
+  padding: 10px;
+  font-weight: 300;
+  margin-top: 10px;
+}
+
+
+.FormField__List {
+  border-radius: 25px;
+  background-color: #649764;
+  border: none;
+  color: white;
+  outline: none;
+  list-style-type: none; 
+  padding: 1px;
+  height: 2em;
+  margin-top: 1px;
+}
+
+.FormField__List__Text {
+  margin-left: 7px;
+}
+
+
+
 .FormField__Input::placeholder {
   color: rgb(166, 174, 184);
 }
@@ -365,6 +422,10 @@
 }
 
 .FormField__Grid:hover {
+  background-color: #506b55;
+  color: white;
+}
+.FormField__GridDetailed:hover {
   background-color: #506b55;
   color: white;
 }

@@ -485,64 +485,76 @@ export function test(user){
 export function syncData(user, callback){
     
     setTimeout(function() {
-
+    let pegaPedidos = []
     fetch('http://192.168.0.251:3001/pedidos/'+user).then(ped => ped.json()).then(ped => {
+      ped.forEach(function(pedido, idpedido){
+        ped[idpedido].itens=[];
+        fetch('http://192.168.0.251:3001/itepedidos/'+pedido.PK_PED).then(r => r.json()).then(r => {            
+          ped[idpedido].itens=r
+        })
+      })
+      pegaPedidos = ped
+    }).then(ped => {
       fetch('http://192.168.0.251:3001/clientes/'+user).then(r => r.json()).then(r => {
-        let result = {
-          _id: 'base',
-          data: {
-            clientes: r,
-            pedidos: ped
-          }
-        }
-        console.log(r)
-
-        db.get('base').then(function(doc) {
-          let newResult = {
+        fetch('http://192.168.0.251:3001/cpg').then(rcpg => rcpg.json()).then(rcpg => {
+          let result = {
             _id: 'base',
-            data:  result.data,
-            _rev: doc._rev
-          }     
-          return db.put(newResult);
-        }).then(function(response) {
-          console.log('Base updated!')
-        }).catch(function (err) {
-          if (err.name === 'not_found') {
-            db.put(result).then(function (response) {
-                console.log('Base created!')
-            }).catch(function (err) {
-              console.log(err);
-            });
+            data: {
+              clientes: r,
+              pedidos: pegaPedidos,
+              cond_pag: rcpg
+            }
           }
-        });
+          console.log(r)
 
-        let read = {
-          _id: 'read',
-          data: {
-            clientes: r,
-            pedidos: ped
-          }        
-        }
+          db.get('base').then(function(doc) {
+            let newResult = {
+              _id: 'base',
+              data:  result.data,
+              _rev: doc._rev
+            }     
+            return db.put(newResult);
+          }).then(function(response) {
+            console.log('Base updated!')
+            alert('Sincronizado!')
+          }).catch(function (err) {
+            if (err.name === 'not_found') {
+              db.put(result).then(function (response) {
+                  console.log('Base created!')
+              }).catch(function (err) {
+                console.log(err);
+              });
+            }
+          });
 
-        db.get('read').then(function(doc) {
-          let newRead = {
+          let read = {
             _id: 'read',
-            data:  result.data,
-            _rev: doc._rev
-          }     
-          return db.put(newRead);
-        }).then(function(response) {
-          console.log('Read updated!')
-        }).catch(function (err) {
-          if (err.name === 'not_found') {
-            db.put(read).then(function (response) {
-                console.log('Read created!')
-            }).catch(function (err) {
-              console.log(err);
-            });
+            data: {
+              clientes: r,
+              pedidos: ped
+            }        
           }
-        });
 
+          db.get('read').then(function(doc) {
+            let newRead = {
+              _id: 'read',
+              data:  result.data,
+              _rev: doc._rev
+            }     
+            return db.put(newRead);
+          }).then(function(response) {
+            console.log('Read updated!')
+          }).catch(function (err) {
+            if (err.name === 'not_found') {
+              db.put(read).then(function (response) {
+                  console.log('Read created!')
+              }).catch(function (err) {
+                console.log(err);
+              });
+            }
+          });
+          
+        })
       })
     })
 
@@ -637,7 +649,7 @@ export function syncData(user, callback){
         });
       }
     }); 
-    alert('Sincronizado!')
+    
     callback()
    }, 2000)
    
