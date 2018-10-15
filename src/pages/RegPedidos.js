@@ -38,22 +38,29 @@ class Example extends React.Component {
         cond_pag: [],
         cond_pags: [],
         now : {NUMPED: 0, RAZAO_SOCIAL: '', CNPJ: '', FONE1: '', CODIGO_REPRESENTADA:''},
+        editIte: {CODIGOPRO: '', VALOR: '', id:''},
         append: false,
         isLoading: true,
         id: 0,
-        ok: false
+        ok: false,
+        mostraModal: false
     };
     this.show = false
     this.componentDidMount = this.componentDidMount.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.handleChangeItem = this.handleChangeItem.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this)
     this.saveBtn = this.saveBtn.bind(this)
     this.showModal = this.showModal.bind(this)
+    this.saveModal = this.saveModal.bind(this)
+    this.closeModal = this.closeModal.bind(this)
+    this.mostraItem = this.mostraItem.bind(this)
     this.hideShow = this.hideShow.bind(this);
     this.handleBar = this.handleBar.bind(this);
     this.appBar = this.appBar.bind(this);
     this.itens = this.itens.bind(this);
     this.createSons = this.createSons.bind(this)
+    this.willShow = this.willShow.bind(this)
   }
   
     saveBtn(ok) {
@@ -66,11 +73,18 @@ class Example extends React.Component {
 
     createSons(item, id){
         return(
-            <ListGroupItem href="#" className="FormField__Grid" onClick={this.showModal}>
-            Código: {item.CODIGOPRO}<br/>
-            Quantidade: {item.QUANTIDADE}<br/>
-            Valor: {'R$ '+item.VALOR}<br/>
-            Valor ICMS: {'R$ '+(item.VALOR_STICMS||'0.00')}<br/>
+            <ListGroupItem href="#" id={id} className="FormField__Grid" onClick={this.willShow}>
+            <div id={id} class="row">
+                <div id={id} class="column_left">
+                    Nº {id+1}
+                </div>
+                <div id={id} class="column">
+                    Código: {item.CODIGOPRO}<br/>
+                    Quantidade: {item.QUANTIDADE}<br/>
+                    Valor: {'R$ '+item.VALOR}<br/>
+                    Valor ICMS: {'R$ '+(item.VALOR_STICMS||'0.00')}<br/>
+                </div>
+            </div>
             </ListGroupItem>
         )
     }
@@ -220,6 +234,16 @@ class Example extends React.Component {
             }
     }
 
+    handleChangeItem(e, id){
+            let target = e.target
+            let value = target.type === 'checkbox' ? target.checked : target.value
+            let name = target.name
+            let reg = this.state.editIte
+ 
+            reg[name] = value
+            this.setState({editIte: reg})
+    }
+
     itens(a,b){
         if (a===b){
             return '✓ '+a.value
@@ -281,24 +305,44 @@ class Example extends React.Component {
         )
     }
 
-    showModal(e){
-        e.preventDefault;
-        return (
-            <div className="static-modal">
-                <Modal.Dialog>
-                    <Modal.Header>
-                    <Modal.Title>Modal title</Modal.Title>
-                    </Modal.Header>
+    showModal(){
+        // alert(this.state.mostraModal)
+        if (this.state.mostraModal == true) {
+            return 'ModalShow'
+        } else {
+            return 'ModalHide'
+        }
+    }
 
-                    <Modal.Body>One fine body...</Modal.Body>
 
-                    <Modal.Footer>
-                    <Button>Close</Button>
-                    <Button bsStyle="primary">Save changes</Button>
-                    </Modal.Footer>
-                </Modal.Dialog>
-            </div>
-        )
+    closeModal(e){
+        e.preventDefault();
+        this.setState({mostraModal: false})
+    }
+
+    saveModal(e, id){
+        e.preventDefault();
+        let item = Object.assign({},this.state.now)
+        item.itens[id] = this.state.editIte;
+        this.setState({mostraModal: false, now: item})
+    }
+
+    willShow(e){
+        e.preventDefault(); 
+        if (this.state.ok) {
+            alert('Edição bloqueada: Pedido já foi salvo. Aperte em "Voltar" e, após, "Editar" novamente.')
+        } else {
+        let item = {...this.state.now.itens[e.target.id]}
+        item.id = e.target.id
+        this.setState({mostraModal: true, editIte: item, teste: item})}
+    }
+
+    mostraItem(campo){
+        if (typeof this.state.editIte != 'undefined'){
+            return(this.state.editIte[campo])
+        } else {
+            console.log('n rolou')
+        }
     }
     
 
@@ -320,8 +364,40 @@ class Example extends React.Component {
         if (logou === "true") {
             return (     
                         <div className="App">
-                            {bar} 
+                           {bar}  
                             <div className="App__Form">
+                             <div className={this.showModal()} tabindex="-1" onHide={this.closeModal}>
+                                    <Modal.Dialog className="Modal">
+                                        <Modal.Header className="ModalBg">
+                                            <Modal.Title>Nº {parseInt(this.state.editIte.id)+1}</Modal.Title>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" onClick={this.closeModal}>
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </Modal.Header>
+                                        <Modal.Body className="ModalBg">
+                                            <div className="FormField">
+                                                <label className="FormField__Label" htmlFor="CODIGOPRO">PRODUTO</label>
+                                                <input type="text" id="CODIGOPRO" className="FormField__Input" 
+                                                name="CODIGOPRO" value={this.state.editIte.CODIGOPRO} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
+                                            </div>
+                                            <div className="FormField">
+                                                <label className="FormField__Label" htmlFor="QUANTIDADE">QUANTIDADE</label>
+                                                <input type="text" id="QUANTIDADE" className="FormField__Input" 
+                                                name="QUANTIDADE" value={this.state.editIte.QUANTIDADE} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
+                                            </div>
+                                            <div className="FormField">
+                                                <label className="FormField__Label" htmlFor="VALOR">VALOR</label>
+                                                <input type="text" id="VALOR" className="FormField__Input" 
+                                                name="VALOR" value={this.state.editIte.VALOR} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
+                                            </div>
+
+                                        </Modal.Body>
+                                        <Modal.Footer className="ModalBg">
+                                            <Button className="FormField__Button mr-20" onClick={this.closeModal}>Fechar</Button>
+                                            <Button className="FormField__Button mr-20" onClick={event => this.saveModal(event, this.state.editIte.id)}>Salvar</Button>
+                                        </Modal.Footer>
+                                    </Modal.Dialog>
+                            </div>
                                 <div className="FormCenter">
                                     <div className="FormTitle">
                                         <Clock format={'DD/MM/YYYY - HH:mm'} ticking={true}/> 
@@ -383,11 +459,12 @@ class Example extends React.Component {
                                         </Downshift>
                                     </div>    
                                     <div>
-                                        Itens:
+                                        ITENS:
                                         <ListGroup>
                                             {listItens}
                                         </ListGroup>
                                     </div>
+                                    {this.hideShow()}
                                     {this.saveBtn(this.state.ok)}
                                     <LinkContainer to="/pedidos"><button className="FormField__Button mr-20">Voltar</button></LinkContainer>
                                 </form>

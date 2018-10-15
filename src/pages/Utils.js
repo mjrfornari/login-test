@@ -491,6 +491,9 @@ export function syncData(user, callback){
         ped[idpedido].itens=[];
         fetch('http://192.168.0.251:3001/itepedidos/'+pedido.PK_PED).then(r => r.json()).then(r => {            
           ped[idpedido].itens=r
+          ped[idpedido].itens.forEach(function (element, index)  {
+              ped[idpedido].itens[index].mostraModal = false
+          })
         })
       })
       pegaPedidos = ped

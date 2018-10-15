@@ -19,6 +19,44 @@ th, td {
 
 tr:hover {background-color:#506b55;}
 
+
+.ModalHide {
+  display: none;
+    
+}
+
+
+
+
+.column_left {
+    float: left;
+    width: 60px;
+    text-align: center;
+    transform: translate(0, 40%); 
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.ModalShow {
+  display: block;  
+}
+
+.Modal{
+  background-color:rgba(0, 0, 0, 0.5);
+}
+
+.ModalBg{ 
+  background: rgb(48, 76, 85);
+  color: white;
+
+}
+
+
 .Loading {
   position: relative;
   top: 50%;
