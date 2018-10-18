@@ -20,6 +20,25 @@ th, td {
 tr:hover {background-color:#506b55;}
 
 
+
+.box {
+    border: 1px solid rgb(48, 76, 85);
+    padding: 15px 15px 15px 15px;
+    margin-top:10px;
+    margin-bottom: 10px;
+}
+
+
+.box_inverted {
+    border: 1px solid #649764;
+
+    padding: 15px 15px 15px 15px;
+    margin-top:10px;
+}
+
+
+
+
 .ModalHide {
   display: none;
     
@@ -352,6 +371,129 @@ tr:hover {background-color:#506b55;}
   font-weight: 400;
 }
 
+.FormField__Pagination {
+  background-color: #649764;
+  color: white;
+  border: none;
+  outline: none;
+  width: 9%;
+  height: 40px;
+  /* padding: 15px 20px; */
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 0.9em;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.FormField__Pagination__Page {
+  background-color: #506b55;
+  color: white;
+  text-align: center;
+  border: none;
+  height: 40px;
+  outline: none;
+  width: 9%;
+  /* padding: 15px 20px; */
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 0.9em;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.FormField__Pagination:hover {
+  background-color: #506b55;
+  color: white;
+  border: none;
+  outline: none;
+  text-align: center;
+  height: 40px;
+  width: 9%;
+  /* padding: 15px 20px; */
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 0.9em;
+  text-decoration-color: white;
+  font-weight: 400;
+}
+
+.FormField__Pagination__First {
+  background-color: #649764;
+  color: white;
+  border: none;
+  height: 40px;
+  text-align: center;
+  outline: none;
+  width: 9%;
+  /* padding: 15px 20px; */
+  border-top-left-radius: 60px;
+  border-bottom-left-radius: 60px;
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 0.9em;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.FormField__Pagination__First:hover {
+  background-color: #506b55;
+  color: white;
+  border: none;
+  height: 40px;
+  outline: none;
+  width: 9%;
+  text-align: center;
+  /* padding: 15px 20px; */
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-top-left-radius: 60px;
+  border-bottom-left-radius: 60px;
+  font-size: 0.9em;
+  text-decoration-color: white;
+  font-weight: 400;
+}
+
+.FormField__Pagination__Last {
+  background-color: #649764;
+  color: white;
+  border: none;
+  height: 40px;
+  outline: none;
+  text-align: center;
+  width: 9%;
+  /* padding: 15px 20px; */
+  margin-top: 10px;
+  border-top-right-radius: 60px;
+  border-bottom-right-radius: 60px;
+  margin-bottom: 10px;
+  font-size: 0.9em;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.FormField__Pagination__Last:hover {
+  background-color: #506b55;
+  color: white;
+  border: none;
+  outline: none;
+  height: 40px;
+  text-align: center;
+  width: 9%;
+  /* padding: 15px 20px; */
+  border-top-right-radius: 60px;
+  border-bottom-right-radius: 60px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 0.9em;
+  text-decoration-color: white;
+  font-weight: 400;
+}
+
+
+
 .FormField__Button__Fix {
   background-color: #506b55;
   color: white;
@@ -457,6 +599,7 @@ tr:hover {background-color:#506b55;}
 .FormField__Grid {
   background-color: #649764;
   color: white;
+
 }
 
 .FormField__Grid:hover {
@@ -471,6 +614,7 @@ tr:hover {background-color:#506b55;}
 .FormField__GridDetailed {
   background-color: #506b55;
   color: white;
+
 }
 
 

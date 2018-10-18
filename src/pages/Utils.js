@@ -3,9 +3,35 @@
 // import { render } from "react-dom";
 import "../App.css";
 import PouchDB from 'pouchdb';
-import { ic_restore_page } from "react-icons-kit/md/ic_restore_page";
 
+const server = 'http://192.168.0.251:3001';
 const db = new PouchDB('macropecas');
+
+export function mascaraCNPJ(texto){
+    let cnpj = ''
+    if (texto != null){
+      cnpj=texto.substr(0,2)+'.'+texto.substr(2,3)+'.'+texto.substr(5,3)+'/'+texto.substr(8,4)+'-'+texto.substr(12,2)
+    }
+    return cnpj;  
+}
+
+export function garanteDate(texto){
+    let data = ''
+    if (texto != null){
+      data=texto.substr(8,2)+'/'+texto.substr(5,2)+'/'+texto.substr(0,4)
+    }
+    return data;
+}
+
+export function zeraNull(texto){
+    let valor = 0
+    if (texto === null) {
+      valor = 0
+    } else {
+      valor = texto
+    }
+    return valor
+}
 
 
 export function editData(tabela, item, id) {
@@ -150,7 +176,7 @@ export function includeDelete(tabela,item, id){
             }
             let table = newCreate
             table.data[tabela].forEach(function (element, index)  {
-              if (element.read == id) {
+              if (element.read === id) {
                   newCreate.data[tabela].splice(index,1)
               } 
             });
@@ -185,7 +211,7 @@ export function includeDelete(tabela,item, id){
             }
             let table = newUpdate
             table.data[tabela].forEach(function (element, index)  {
-              if (element.read == id) {
+              if (element.read === id) {
                   newUpdate.data[tabela].splice(index,1)
               } 
             });
@@ -334,7 +360,7 @@ export function updateTable(callback){
 
 
 // function geraPk(nomepk, callback) {
-//   return fetch('http://192.168.0.251:3001/gerapk/'+nomepk).then(r => r.json()).then(r => {callback(r)})
+//   return fetch(server+'/gerapk/'+nomepk).then(r => r.json()).then(r => {callback(r)})
 // }
 
 
@@ -365,20 +391,20 @@ export function updateTable(callback){
 // }
 
 function geraPk(nomepk,callback) {
-  return fetch('http://192.168.0.251:3001/gerapk/'+nomepk).then(r => r.json())
+  return fetch(server+'/gerapk/'+nomepk).then(r => r.json())
 }
 
 function criaItem(table, fields, values,callback) {
-  return fetch('http://192.168.0.251:3001/criaitem/'+table+'/'+fields+'/'+values).then(r => console.log(r))
+  return fetch(server+'/criaitem/'+table+'/'+fields+'/'+values).then(r => console.log(r))
 }
 
 function atualizaItem(table, fieldsnvalues, where,callback) {
-  return fetch('http://192.168.0.251:3001/atualizaitem/'+table+'/'+fieldsnvalues+'/'+where).then(r => console.log(r))
+  return fetch(server+'/atualizaitem/'+table+'/'+fieldsnvalues+'/'+where).then(r => console.log(r))
 }
 
 
 
-export function createToFirebird(nomepk, callback) {
+export function createToFirebird(nomepk, tablename,callback) {
     let newCreate = {
         _id: 'create',
         data:  [],
@@ -403,7 +429,7 @@ export function createToFirebird(nomepk, callback) {
             fields = fields+", FK_VEN"
             let usuario = localStorage.getItem("macropecas")
             values = values+", "+usuario
-            criaItem('clientes',fields, values)
+            criaItem(tablename,fields, values)
             db.get('update').then(function(doc) {
               let newUpdate = {
                 _id: 'update',
@@ -411,8 +437,8 @@ export function createToFirebird(nomepk, callback) {
                 _rev: doc._rev
               }
               newUpdate.data.clientes.forEach(function (iupdated, idupdated) {
-                  if (icreated.read == iupdated.read){
-                    newUpdate.data.clientes[idupdated].PK_CLI=icreated.PK_CLI
+                  if (icreated.read === iupdated.read){
+                    newUpdate.data.clientes[idupdated][nomepk]=icreated[nomepk]
                   }
               })
               return db.put(newUpdate)
@@ -433,7 +459,7 @@ export function createToFirebird(nomepk, callback) {
 }
 
 
-export function updateToFirebird(nomepk, callback) {
+export function updateToFirebird(nomepk, tablename, callback) {
     let newUpdate = {
         _id: 'update',
         data:  [],  
@@ -443,24 +469,62 @@ export function updateToFirebird(nomepk, callback) {
     db.get('update').then(function(doc) { 
         newUpdate.data = doc.data
         newUpdate._rev = doc._rev
-        newUpdate.data.clientes.forEach(function (iupdated, idupdated)  {
-            let propsupdated = JSON.stringify(Object.getOwnPropertyNames(iupdated))
-            let valuesupdated = JSON.stringify(Object.values(iupdated))
-            let fields = propsupdated.split('"').join("").split('[').join("").split(']').join("")
-            let values = valuesupdated.split('"').join("'").split('[').join("").split(']').join("")
-            const xSplited = fields.split(',')
-            const ySplited = values.split(',')
-            let where = ''
-            console.log(xSplited)
-            let fieldsnvalues = []
-            fieldsnvalues = xSplited.map((x, i) => {
-              if (x==nomepk){
-                where = x+'='+ySplited[i]
-              } else {return fieldsnvalues[i]=x+'='+ySplited[i]}
+        if (tablename === 'pedidos'){
+          // let pai = newUpdate.data[tablename]
+          
+          newUpdate.data[tablename].forEach(function (iupdated, idupdated)  {
+              let propsupdated = JSON.stringify(Object.getOwnPropertyNames(iupdated))
+              let valuesupdated = JSON.stringify(Object.values(iupdated))
+              let fields = propsupdated.split('"').join("").split('[').join("").split(']').join("")
+              let values = valuesupdated.split('"').join("'").split('[').join("").split(']').join("")
+              console.log(fields)
+              console.log(values)
+              const xSplited = fields.split(',')
+              const ySplited = values.split(',')
+              let where = ''
+              console.log(xSplited)
+              let fieldsnvalues = []
+              fieldsnvalues = xSplited.map((x, i) => {
+                if (x===nomepk){
+                  where = x+'='+ySplited[i]
+                } else if (x ==='itens') {
+                  console.log('itens')
+                } else if (ySplited[i] === 'null') {
+                    console.log('erro - '+x+'='+ySplited[i]) 
+                } else return fieldsnvalues[i]=x+'='+ySplited[i]
+                return ''
+              })
+              fieldsnvalues = JSON.stringify(fieldsnvalues).split('"').join("").split('[').join("").split(']').join("").split('null,').join("")
+              atualizaItem(tablename,fieldsnvalues, where)
             })
-            fieldsnvalues = JSON.stringify(fieldsnvalues).split('"').join("").split('[').join("").split(']').join("").split('null,').join("")
-            atualizaItem('clientes',fieldsnvalues, where)
-        })
+
+        } else {
+          newUpdate.data[tablename].forEach(function (iupdated, idupdated)  {
+              let propsupdated = JSON.stringify(Object.getOwnPropertyNames(iupdated))
+              let valuesupdated = JSON.stringify(Object.values(iupdated))
+              let fields = propsupdated.split('"').join("").split('[').join("").split(']').join("")
+              let values = valuesupdated.split('"').join("'").split('[').join("").split(']').join("")
+              console.log(fields)
+              console.log(values)
+              const xSplited = fields.split(',')
+              const ySplited = values.split(',')
+              let where = ''
+              console.log(xSplited)
+              let fieldsnvalues = []
+              fieldsnvalues = xSplited.map((x, i) => {
+                if (x===nomepk){
+                  where = x+'='+ySplited[i]
+                } else if (x ==='itens') {
+                  console.log('itens')
+                } else if (ySplited[i] === 'null') {
+                    console.log('erro - '+x+'='+ySplited[i]) 
+                } else return fieldsnvalues[i]=x+'='+ySplited[i]
+                return ''
+              })
+              fieldsnvalues = JSON.stringify(fieldsnvalues).split('"').join("").split('[').join("").split(']').join("").split('null,').join("")
+              atualizaItem(tablename,fieldsnvalues, where)
+          })
+        }
 
     }).then(function(response) {
 
@@ -476,7 +540,7 @@ export function updateToFirebird(nomepk, callback) {
 }
 
 export function test(user){
-  fetch('http://192.168.0.251:3001/pedidos/'+user).then(ped => ped.json()).then(ped => {
+  fetch(server+'/pedidos/'+user).then(ped => ped.json()).then(ped => {
     console.log(ped)
   })
 }
@@ -486,10 +550,10 @@ export function syncData(user, callback){
     
     setTimeout(function() {
     let pegaPedidos = []
-    fetch('http://192.168.0.251:3001/pedidos/'+user).then(ped => ped.json()).then(ped => {
+    fetch(server+'/pedidos/'+user).then(ped => ped.json()).then(ped => {
       ped.forEach(function(pedido, idpedido){
         ped[idpedido].itens=[];
-        fetch('http://192.168.0.251:3001/itepedidos/'+pedido.PK_PED).then(r => r.json()).then(r => {            
+        fetch(server+'/itepedidos/'+pedido.PK_PED).then(r => r.json()).then(r => {            
           ped[idpedido].itens=r
           ped[idpedido].itens.forEach(function (element, index)  {
               ped[idpedido].itens[index].mostraModal = false
@@ -498,65 +562,75 @@ export function syncData(user, callback){
       })
       pegaPedidos = ped
     }).then(ped => {
-      fetch('http://192.168.0.251:3001/clientes/'+user).then(r => r.json()).then(r => {
-        fetch('http://192.168.0.251:3001/cpg').then(rcpg => rcpg.json()).then(rcpg => {
-          let result = {
-            _id: 'base',
-            data: {
-              clientes: r,
-              pedidos: pegaPedidos,
-              cond_pag: rcpg
-            }
-          }
-          console.log(r)
+      fetch(server+'/sticms').then(st => st.json()).then(st => {
+        fetch(server+'/produtos').then(pro => pro.json()).then(pro => {
+          fetch(server+'/clientes/'+user).then(r => r.json()).then(r => {
+            fetch(server+'/cpg').then(rcpg => rcpg.json()).then(rcpg => {
+              let result = {
+                _id: 'base',
+                data: {
+                  clientes: r,
+                  pedidos: pegaPedidos,
+                  produtos: pro,
+                  st_icms: st,
+                  cond_pag: rcpg
+                }
+              }
+              console.log(st)
 
-          db.get('base').then(function(doc) {
-            let newResult = {
-              _id: 'base',
-              data:  result.data,
-              _rev: doc._rev
-            }     
-            return db.put(newResult);
-          }).then(function(response) {
-            console.log('Base updated!')
-            alert('Sincronizado!')
-          }).catch(function (err) {
-            if (err.name === 'not_found') {
-              db.put(result).then(function (response) {
-                  console.log('Base created!')
+              db.get('base').then(function(doc) {
+                let newResult = {
+                  _id: 'base',
+                  data:  result.data,
+                  _rev: doc._rev
+                }     
+                return db.put(newResult);
+              }).then(function(response) {
+                console.log('Base updated!')
+                
               }).catch(function (err) {
-                console.log(err);
+                if (err.name === 'not_found') {
+                  db.put(result).then(function (response) {
+                      console.log('Base created!')
+                  }).catch(function (err) {
+                    console.log(err);
+                  });
+                }
               });
-            }
-          });
 
-          let read = {
-            _id: 'read',
-            data: {
-              clientes: r,
-              pedidos: ped
-            }        
-          }
+              let read = {
+                _id: 'read',
+                data: {
+                  clientes: r,
+                  pedidos: ped
+                }        
+              }
 
-          db.get('read').then(function(doc) {
-            let newRead = {
-              _id: 'read',
-              data:  result.data,
-              _rev: doc._rev
-            }     
-            return db.put(newRead);
-          }).then(function(response) {
-            console.log('Read updated!')
-          }).catch(function (err) {
-            if (err.name === 'not_found') {
-              db.put(read).then(function (response) {
-                  console.log('Read created!')
+              db.get('read').then(function(doc) {
+                let newRead = {
+                  _id: 'read',
+                  data:  result.data,
+                  _rev: doc._rev
+                }     
+                return db.put(newRead);
+              }).then(function(response) {
+                console.log('Read updated!')
+                alert('Sincronizado!')
+                callback()
               }).catch(function (err) {
-                console.log(err);
+                if (err.name === 'not_found') {
+                  db.put(read).then(function (response) {
+                      console.log('Read created!')
+                      alert('Sincronizado!')
+                      callback()
+                  }).catch(function (err) {
+                    console.log(err);
+                  });
+                }
               });
-            }
-          });
-          
+              
+            })
+          })
         })
       })
     })
@@ -653,7 +727,7 @@ export function syncData(user, callback){
       }
     }); 
     
-    callback()
+    // callback()
    }, 2000)
    
 }

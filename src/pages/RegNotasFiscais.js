@@ -1,10 +1,8 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import Clock from 'react-live-clock';
-import { Redirect, withRouter } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import SideNav, { Nav, NavIcon, NavText } from 'react-sidenav';
 import SvgIcon from 'react-icons-kit';
-import _ from "lodash";
 import {LinkContainer} from 'react-router-bootstrap'
 import { ic_account_box } from 'react-icons-kit/md/ic_account_box';
 import { ic_home } from 'react-icons-kit/md/ic_home'
@@ -13,7 +11,7 @@ import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_sync} from 'react-icons-kit/md/ic_sync'
 import {ic_assignment} from 'react-icons-kit/md/ic_assignment'
-import PouchDB from "pouchdb"
+// import PouchDB from "pouchdb"
 import { readTable, editData, appendData } from "./Utils";
 import {ic_keyboard_arrow_left} from 'react-icons-kit/md/ic_keyboard_arrow_left'
 import {ic_keyboard_arrow_right} from 'react-icons-kit/md/ic_keyboard_arrow_right'
@@ -22,7 +20,7 @@ import {ic_keyboard_arrow_right} from 'react-icons-kit/md/ic_keyboard_arrow_righ
 
 
 
-const db = new PouchDB('macropecas')
+// const db = new PouchDB('macropecas')
 
 
 
@@ -129,7 +127,7 @@ class Example extends React.Component {
     componentDidMount(){
         let pathname = this.props.location.pathname
         if (pathname.includes('notas')) {           
-            if (this.state.isLoading == true) {
+            if (this.state.isLoading === true) {
                 if (this.props.location.pathname !== '/notas/registro') {
                     let ID = this.props.location.pathname.replace('/notas/registro/','');
                     readTable(Data => { this.setState({clientes: Data.data.clientes, isLoading: true})
@@ -153,7 +151,7 @@ class Example extends React.Component {
         e.preventDefault();
         // console.log('a')
         if (this.state.ok ===false){
-            if (this.state.append == true) {
+            if (this.state.append === true) {
                 appendData('clientes', this.state.now)     
                 alert('Registro incluído com sucesso!') 
                 this.setState({ok: true})    
@@ -170,7 +168,7 @@ class Example extends React.Component {
         let target = e.target
         let value = target.type === 'checkbox' ? target.checked : target.value
         let name = target.name
-        if (name != 'PK_CLI'){
+        if (name !== 'PK_CLI'){
             let reg = this.state.now
             reg[name] = value
                 this.setState({

@@ -3,6 +3,7 @@ import React from "react";
 import { Redirect } from 'react-router-dom';
 import SideNav, { Nav, NavIcon, NavText } from 'react-sidenav';
 import SvgIcon from 'react-icons-kit';
+import _ from "lodash";
 import { ic_account_box } from 'react-icons-kit/md/ic_account_box';
 import { ic_home } from 'react-icons-kit/md/ic_home'
 import { ic_add_shopping_cart } from 'react-icons-kit/md/ic_add_shopping_cart';
@@ -10,12 +11,12 @@ import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_sync} from 'react-icons-kit/md/ic_sync'
 import {ic_assignment} from 'react-icons-kit/md/ic_assignment'
-import { syncData, createToFirebird, updateToFirebird, test } from "./Utils";
-import Clock from 'react-live-clock';
-import ReactLoading from 'react-loading';
-import { Offline, Online } from "react-detect-offline";
+import { makeData } from "./Utils";
+// Import React Table
+import ReactTable from "react-table";
+import "react-table/react-table.css";
 
-// const db = new PouchDB('macropecas')
+
 
 
 
@@ -26,62 +27,24 @@ class Example extends React.Component {
     this.state = {
       data: [],
       pages: null,
-      loading: true,
-      sync: false
+      loading: true
     };
 
-    this.handleSync = this.handleSync.bind(this);
-    this.handleTeste = this.handleTeste.bind(this);
-    
   }
 
-    sincronizando(ok) {
-        if (ok === false){
-            return (<input type="submit" className="FormField__Button mr-20" value="Sincronizar" onClick={this.handleSync}/>)
-        } else {
-            return (<ReactLoading type='spokes' color='green' height={'5%'} width={'5%'} className='Loading'/>)
-        }
-    }
 
-
-    handleSync (e) {
-        
-        e.preventDefault(); 
-        this.setState({sync: true}) 
-        createToFirebird('PK_CLI', 'clientes',() => {      
-            updateToFirebird('PK_CLI', 'clientes', () => { 
-                // createToFirebird('PK_PED', 'pedidos',() => {      
-                    updateToFirebird('PK_PED', 'pedidos', () => { 
-                        syncData(localStorage.getItem('macropecas'), ()=> {this.setState({sync: false})})
-                    })
-                // })
-            })
-        })
-        
-        
-        
-    }
-
-    handleTeste(e){
-      e.preventDefault();  
-      test(localStorage.getItem('macropecas'))
-    }
-
-    hideBar(){
-        if (this.state.sync === true){
-            return 'App__Aside__Hide'
-        } else return 'App__Aside'
-    }
 
   render() {
+    const { data, pages, loading } = this.state;
     let logou = localStorage.getItem("logou");
+    console.log('a '+logou)
     if (logou === "true") {
     return (
               <div className="App">
-                <div className={this.hideBar()}>
+                <div className="App__Aside">
                     {/* <div className="App__Aside__BG"></div> */}
                     <div> 
-                        <SideNav highlightColor='white' highlightBgColor='#506b55' defaultSelected='sync' 
+                        <SideNav highlightColor='white' highlightBgColor='#506b55' defaultSelected='produtos' 
                         onItemSelection={ (id, parent) => {
                             if (id==='exit'){  
                                 localStorage.setItem("logou", false);    
@@ -122,16 +85,9 @@ class Example extends React.Component {
                 <div className="App__Form">
                     <div className="FormCenter">
                         <form className="FormFields">
-                        <div className="FormTitle"> 
-                            <Clock format={'DD/MM/YYYY - HH:mm'} ticking={true}/> 
-                            <br/>
-                            <h1 className="FormTitle__Link--Active">Sincronização</h1>
-                        </div>
-                        <div className="FormField">
-                            <Offline>Você está sem internet. Cheque sua conexão.</Offline>
-                            <Online>{this.sincronizando(this.state.sync)}</Online>
-                        </div>
-
+                         <br/>
+                          
+                          <br />
                         </form>
                     </div>
                 </div>

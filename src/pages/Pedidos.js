@@ -1,10 +1,8 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import Clock from 'react-live-clock';
 import { Redirect } from 'react-router-dom';
 import SideNav, { Nav, NavIcon, NavText } from 'react-sidenav';
 import SvgIcon from 'react-icons-kit';
-import _ from "lodash";
 import { ic_account_box } from 'react-icons-kit/md/ic_account_box';
 import { ic_home } from 'react-icons-kit/md/ic_home'
 import { ic_add_shopping_cart } from 'react-icons-kit/md/ic_add_shopping_cart';
@@ -14,7 +12,6 @@ import {ic_sync} from 'react-icons-kit/md/ic_sync'
 import {ic_assignment} from 'react-icons-kit/md/ic_assignment'
 import {ListGroup, ListGroupItem} from 'react-bootstrap'
 import {LinkContainer} from 'react-router-bootstrap'
-import PouchDB from "pouchdb"
 import { readTable, deleteData } from "./Utils";
 import {plus} from 'react-icons-kit/fa/plus'
 import {ic_keyboard_arrow_left} from 'react-icons-kit/md/ic_keyboard_arrow_left'
@@ -27,7 +24,6 @@ import {ic_keyboard_arrow_right} from 'react-icons-kit/md/ic_keyboard_arrow_righ
 
 
 
-const db = new PouchDB('macropecas')
 
 
 
@@ -65,7 +61,7 @@ class Example extends React.Component {
     
 
     masterDetail(id){
-        if (id == this.state.iddetailed){
+        if (id === this.state.iddetailed){
             this.setState({detailed: !(this.state.detailed)})
         } else {
             this.setState({detailed: true, iddetailed: id})
@@ -84,9 +80,12 @@ class Example extends React.Component {
     }
 
     createItems(item, id){
-        if (this.state.detailed == true){
-            if (this.state.iddetailed == id){
-                let listItens = item.itens.map(this.createSons)
+        if (this.state.detailed === true){
+            if (this.state.iddetailed === id){
+                let listItens = []
+                if (typeof item.itens !== 'undefined'){
+                    listItens = item.itens.map(this.createSons)}
+                else listItens = (<ListGroupItem className="FormField__Grid">Nenhum item.</ListGroupItem>)
                 return   (
                     <ListGroupItem header={item.NUMPED} href="#" className="FormField__GridDetailed" onClick={() => {this.masterDetail(id)}}>
                     Data: {item.DATA}<br/>

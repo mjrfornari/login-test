@@ -1,23 +1,19 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import Clock from 'react-live-clock';
 import { Redirect } from 'react-router-dom';
 import SideNav, { Nav, NavIcon, NavText } from 'react-sidenav';
 import SvgIcon from 'react-icons-kit';
-import _ from "lodash";
 import { ic_account_box } from 'react-icons-kit/md/ic_account_box';
 import { ic_home } from 'react-icons-kit/md/ic_home'
 import { ic_add_shopping_cart } from 'react-icons-kit/md/ic_add_shopping_cart';
 import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
-import {ic_add_circle} from 'react-icons-kit/md/ic_add_circle'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_sync} from 'react-icons-kit/md/ic_sync'
 import {ic_assignment} from 'react-icons-kit/md/ic_assignment'
 import {ListGroup, ListGroupItem} from 'react-bootstrap'
 import {LinkContainer} from 'react-router-bootstrap'
-import PouchDB from "pouchdb"
-import { readTable, deleteData } from "./Utils";
-import {plusCircle} from 'react-icons-kit/fa/plusCircle'
+// import PouchDB from "pouchdb"
+import { readTable, deleteData, mascaraCNPJ } from "./Utils";
 import {plus} from 'react-icons-kit/fa/plus'
 import {ic_keyboard_arrow_left} from 'react-icons-kit/md/ic_keyboard_arrow_left'
 import {ic_keyboard_arrow_right} from 'react-icons-kit/md/ic_keyboard_arrow_right'
@@ -29,7 +25,7 @@ import {ic_keyboard_arrow_right} from 'react-icons-kit/md/ic_keyboard_arrow_righ
 
 
 
-const db = new PouchDB('macropecas')
+
 
 
 
@@ -66,7 +62,7 @@ class Example extends React.Component {
     createItems(item, id){
             return (
                 <ListGroupItem header={item.RAZAO_SOCIAL} href="#" className="FormField__Grid">
-                CNPJ: {item.CNPJ}<br/>
+                CNPJ: {mascaraCNPJ(item.CNPJ)}<br/>
                 Fone 1: {item.FONE1}<br/>
                 Código: {item.PK_CLI}<br/>
                 <LinkContainer to={"/clientes/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
