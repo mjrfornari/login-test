@@ -11,7 +11,7 @@ import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_sync} from 'react-icons-kit/md/ic_sync'
 import {ic_assignment} from 'react-icons-kit/md/ic_assignment'
-import { readTable, editData, appendData, geraInput, buscaEndereco } from "./Utils";
+import { readTable, editData, appendData, geraInput, removeAcento } from "./Utils";
 import {ic_keyboard_arrow_left} from 'react-icons-kit/md/ic_keyboard_arrow_left'
 import {ic_keyboard_arrow_right} from 'react-icons-kit/md/ic_keyboard_arrow_right'
 import {ic_search} from 'react-icons-kit/md/ic_search'
@@ -29,7 +29,7 @@ class Example extends React.Component {
     this.state = {
         clientes  : [],
         show: false,
-        now : {PK_CLI: 0, RAZAO_SOCIAL: '', NOME_FANTASIA: '', CNPJ: '', FONE1: '', CODIGO_REPRESENTADA:'', CIDADE:'', BAIRRO:'', ENDEREÇO: '', CEP: '', NUMERO:''},
+        now : {PK_CLI: 0, RAZAO_SOCIAL: '', NOME_FANTASIA: '', CNPJ: '', FONE1: '', CODIGO_REPRESENTADA:'', CIDADE:'', BAIRRO:'', ENDEREÇO: '', CEP: '', NUMERO:'', FONE2:'', DDD1:'', DDD2:'', INSCRICAO_ESTADUAL:'', INSCRICAO_MUNICIPAL:'', SUFRAMA:'', EMAIL:'', EMAIL_FINANCEIRO:''},
         append: false,
         isLoading: true,
         id: 0,
@@ -43,6 +43,7 @@ class Example extends React.Component {
     this.hideShow = this.hideShow.bind(this);
     this.handleBar = this.handleBar.bind(this);
     this.appBar = this.appBar.bind(this);
+    this.enviaCEP = this.enviaCEP.bind(this);
   }
   
     saveBtn(ok) {
@@ -150,11 +151,9 @@ class Example extends React.Component {
         if (this.state.ok ===false){
             if (this.state.append === true) {
                 appendData('clientes', this.state.now)     
-                alert('Registro incluído com sucesso!') 
                 this.setState({ok: true})    
             } else {
                 editData('clientes', this.state.now, this.state.id)
-                alert('Registro alterado com sucesso!')  
                 this.setState({ok: true})  
             }
         }
@@ -167,13 +166,31 @@ class Example extends React.Component {
         let name = target.name
         if (name !== 'PK_CLI'){
             let reg = this.state.now
-            reg[name] = value
+            reg[name] = value.toUpperCase()
                 this.setState({
                     now : reg
                 })
         }
   }
 
+    enviaCEP(e){
+        e.preventDefault()
+        if (this.state.now.CEP.length >= 8){
+            let cep = this.state.now.CEP
+            fetch('https://viacep.com.br/ws/'+cep.replace(/[^\d]/, '')+'/json/').then(r => r.json()).then(r => {
+                console.log(r)
+                let bairro = removeAcento(r.bairro).toUpperCase()
+                let logradouro = removeAcento(r.logradouro).toUpperCase()
+                let localidade = removeAcento(r.localidade).toUpperCase()
+                let registro = this.state.now
+                registro.CIDADE = localidade
+                registro.BAIRRO = bairro
+                registro.ENDERECO = logradouro
+                registro.NUMERO = ''
+                this.setState({now: registro})
+            })
+        }
+    }
 
  render() {
     let bar = this.appBar(this.state.show);
@@ -189,6 +206,7 @@ class Example extends React.Component {
                                     <br/>
                                     <h1 className="FormTitle__Link--Active">Registro de Clientes</h1>
                                 </div>
+                                {geraInput('PK_CLI','CÓDIGO',this.state.now.PK_CLI, ()=>{})}
                                 <form className="FormFields" onSubmit={this.handleSubmit}>
                                 <div className="FormField">
                                     <label className="FormField__Label" htmlFor="RAZAO_SOCIAL">Razão Social</label>
@@ -205,24 +223,43 @@ class Example extends React.Component {
                                     <input type="text" id="CPNJ" className="FormField__Input" 
                                     name="CNPJ" value={this.state.now.CNPJ} onChange={this.handleChange}/>
                                 </div>
+                                {geraInput('INSCRICAO_ESTADUAL','INSCRIÇÃO ESTADUAL',this.state.now.INSCRICAO_ESTADUAL, this.handleChange)}
+                                {geraInput('INSCRICAO_MUNICIPAL','INSCRIÇÃO MUNICIPAL',this.state.now.INSCRICAO_MUNICIPAL, this.handleChange)}
+                                {geraInput('SUFRAMA','SUFRAMA',this.state.now.SUFRAMA, this.handleChange)}
+                                ENDEREÇO
                                 <div className='box_inverted'>
-                                    {geraInput('ENDERECO','ENDEREÇO',this.state.now.ENDERECO, this.handleChange)}
-                                    {geraInput('NUMERO','Nº',this.state.now.NUMERO, this.handleChange, 100)}
-                                    {geraInput('BAIRRO','BAIRRO',this.state.now.BAIRRO, this.handleChange)}
-                                    {geraInput('CIDADE','CIDADE',this.state.now.CIDADE, this.handleChange)}
                                     <div className="FormField">
                                         <label className="FormField__Label" htmlFor="CEP">CEP</label>
                                         <input type="text" id="CEP" className="FormField__Input" style={{width: '100px'}}
                                         name="CEP" value={this.state.now.CEP} onChange={this.handleChange}/>
-                                        <button id='buscaCEP' className="ButtonIcon" onClick={(e) => {e.preventDefault(); buscaEndereco(this.state.now.CEP);}}><SvgIcon size={20} style={{margin: 'center'}} icon={ic_search}/>Buscar Endereço</button>
+                                        <button id='buscaCEP' className='ButtonIcon' onClick={this.enviaCEP}><SvgIcon style={{transform: 'translate(0%, 30%)'}} size={26} icon={ic_search}/></button>
                                     </div>
+                                    {geraInput('ENDERECO','LOGRADOURO',this.state.now.ENDERECO, this.handleChange)}
+                                    {geraInput('NUMERO','Nº',this.state.now.NUMERO, this.handleChange, '100px')}
+                                    {geraInput('BAIRRO','BAIRRO',this.state.now.BAIRRO, this.handleChange)}
+                                    {geraInput('CIDADE','CIDADE',this.state.now.CIDADE, this.handleChange)}
+                                </div>
+                                CONTATO
+                                <div className='box_inverted'>
+                                    <div className="FormField">
+                                        <label className="FormField__Label" htmlFor="FONE1">FONE 1</label>
+                                        <input type="text" id="DDD1" className="FormField__Input" style={{width: '60px', margin: '0px 5px 0px 0px'}}
+                                        name="DDD1" value={this.state.now.DDD1} onChange={this.handleChange}/>
+                                        <input type="text" id="FONE1" className="FormField__InputTelefone"
+                                        name="FONE1" value={this.state.now.FONE1} onChange={this.handleChange}/>
+                                    </div>
+                                    <div className="FormField">
+                                        <label className="FormField__Label" htmlFor="FONE2">FONE 2</label>
+                                        <input type="text" id="DDD2" className="FormField__Input" style={{width: '60px', margin: '0px 5px 0px 0px'}}
+                                        name="DDD2" value={this.state.now.DDD2} onChange={this.handleChange}/>
+                                        <input type="text" id="FONE2" className="FormField__InputTelefone"
+                                        name="FONE2" value={this.state.now.FONE1} onChange={this.handleChange}/>
+                                    </div>
+                                    {geraInput('EMAIL','EMAIL NFE',this.state.now.EMAIL, this.handleChange)}
+                                    {geraInput('EMAIL_FINANCEIRO','EMAIL FINANCEIRO',this.state.now.EMAIL_FINANCEIRO, this.handleChange)}
                                 </div>
 
-                                <div className="FormField">
-                                    <label className="FormField__Label" htmlFor="password">Telefone 1</label>
-                                    <input type="text" id="FONE1" className="FormField__Input" 
-                                    name="FONE1" value={this.state.now.FONE1} onChange={this.handleChange}/>
-                                </div>
+
                                 {this.hideShow()}
                                 {this.saveBtn(this.state.ok)}
                                 <LinkContainer to="/clientes"><button className="FormField__Button mr-20">Voltar</button></LinkContainer>

@@ -211,19 +211,28 @@ class Example extends React.Component {
                             <h1 className="FormTitle__Link--Active">Notas Fiscais</h1>
                         </div>
                         {/* <form className="FormFields">   */}
-                            <div className="FormField">
-                                <label className="FormFilter__Label" htmlFor="RAZAO_SOCIAL">Razão Social:</label>
-                                <input type="text" id="RAZAO_SOCIAL" className="FormFilter__Input" 
-                                name="RAZAO_SOCIAL" value={this.state.filter.RAZAO_SOCIAL} onChange={this.handleChange}/>
-                                <br/>
-                                <label className="FormFilter__Label" htmlFor="CNPJ">CNPJ:</label>
-                                <input type="text" id="CNPJ" className="FormFilter__Input" 
-                                name="CNPJ" value={this.state.filter.CNPJ} onChange={this.handleChange}/>
                                 <div>
-                                    <button className="FormField__Button" onClick={this.handleRefresh}>Filtrar</button>  
-                                    <button className="FormField__Button" onClick={this.handleClean}>Limpar</button> 
+                                    Filtro:
+                                    <div className='box_inverted'> 
+                                        <div className="FormField">
+                                            <label className="FormFilter__Label" htmlFor="RAZAO_SOCIAL">Razão Social</label>
+                                            <input type="text" id="RAZAO_SOCIAL" className="FormFilter__Input" 
+                                            name="RAZAO_SOCIAL" value={this.state.filter.RAZAO_SOCIAL} onChange={this.handleChange}/>
+                                            <br/>
+                                            <label className="FormFilter__Label" htmlFor="NOME_FANTASIA">Nome Fantasia</label>
+                                            <input type="text" id="NOME_FANTASIA" className="FormFilter__Input" 
+                                            name="NOME_FANTASIA" value={this.state.filter.NOME_FANTASIA} onChange={this.handleChange}/>
+                                            <br/>
+                                            <label className="FormFilter__Label" htmlFor="CNPJ">CNPJ</label>
+                                            <input type="text" id="CNPJ" className="FormFilter__Input" 
+                                            name="CNPJ" value={this.state.filter.CNPJ} onChange={this.handleChange}/>
+                                            <div>
+                                                <button className="FormField__Button" onClick={this.handleRefresh}>Filtrar</button>  
+                                                <button className="FormField__Button" onClick={this.handleClean}>Limpar</button> 
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
                             <div>
                                 
                                 <br/>

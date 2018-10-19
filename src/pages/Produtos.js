@@ -88,17 +88,17 @@ class Example extends React.Component {
                                     IPI: {zeraNull(item.IPI)+'%'}<br/>
 
                                     Preço Lista:<br/>   
-                                    <div className='box'>
+                                    <li className='box'>
                                         PR: {'R$ '+zeraNull(item.PRECO_VENDA_LISTA)}<br/>
                                         R1: {'R$ '+zeraNull(item.PRECO_REGIAO_1)}<br/>
                                         R2: {'R$ '+zeraNull(item.PRECO_REGIAO_2)}<br/>
                                         R3: {'R$ '+zeraNull(item.PRECO_REGIAO_3)}<br/>
                                         R4: {'R$ '+zeraNull(item.PRECO_REGIAO_4)}<br/>
-                                    </div>
+                                    </li>
 
 
                                     Preço Promocional:<br/>
-                                    <div className='box'>
+                                    <li className='box'>
                                         PR: {'R$ '+zeraNull(item.PRECO_VENDA_PROMO)}<br/>
                                         R1: {'R$ '+zeraNull(item.PRECO_PROM_REGIAO_1)}<br/>
                                         R2: {'R$ '+zeraNull(item.PRECO_PROM_REGIAO_2)}<br/>
@@ -107,11 +107,11 @@ class Example extends React.Component {
                                         Desconto: {zeraNull(item.PERC_DESC_PROMO)+'%'}<br/>
                                         Validade: {garanteDate(item.DATA_VALID_PROMO)}<br/>
                                         Obs Promocional: {item.OBS_PROMOCIONAL}
-                                    </div>
+                                    </li>
 
-                                    <div className='box'>
+                                    <li className='box'>
                                         Última atualização de preço: {garanteDate(item.DATA_ATUALIZACAO_PRECOS)}<br/>                                         
-                                    </div>
+                                    </li>
                                 </ListGroupItem>
                             )
                         } else {
@@ -308,17 +308,23 @@ class Example extends React.Component {
                             <h1 className="FormTitle__Link--Active">Produtos</h1>
                         </div>
                         {/* <form className="FormFields">   */}
-                            <div className="FormField">
-                                <label className="FormFilter__Label" htmlFor="CODIGO_REPRESENTADA">Código do Produto:</label>
-                                <input type="text" id="CODIGO_REPRESENTADA" className="FormFilter__Input" 
-                                name="CODIGO_REPRESENTADA" value={this.state.filter.CODIGO_REPRESENTADA} onChange={this.handleChange}/>
-                                <br/>
-                                <label className="FormFilter__Label" htmlFor="NOME_REPRESENTADA">Descrição do Produto:</label>
-                                <input type="text" id="NOME_REPRESENTADA" className="FormFilter__Input" 
-                                name="NOME_REPRESENTADA" value={this.state.filter.NOME_REPRESENTADA} onChange={this.handleChange}/>
-                                <div>
-                                    <button className="FormField__Button" onClick={this.handleRefresh}>Filtrar</button>  
-                                    <button className="FormField__Button" onClick={this.handleClean}>Limpar</button> 
+                            <div>
+                                Filtro:
+                                    <div className='box_inverted'> 
+                                        <div className="FormField">
+                                            <label className="FormFilter__Label" htmlFor="CODIGO_REPRESENTADA">Código do Produto</label>
+                                            <input type="text" id="CODIGO_REPRESENTADA" className="FormFilter__Input" 
+                                            name="CODIGO_REPRESENTADA" value={this.state.filter.CODIGO_REPRESENTADA} onChange={this.handleChange}/>
+                                            <br/>
+                                            <label className="FormFilter__Label" htmlFor="NOME_REPRESENTADA">Descrição do Produto</label>
+                                            <input type="text" id="NOME_REPRESENTADA" className="FormFilter__Input" 
+                                            name="NOME_REPRESENTADA" value={this.state.filter.NOME_REPRESENTADA} onChange={this.handleChange}/>
+                                            <div>
+                                                <button className="FormField__Button" onClick={this.handleRefresh}>Filtrar</button>  
+                                                <button className="FormField__Button" onClick={this.handleClean}>Limpar</button> 
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className='box_inverted'>
                                     R1 = SP, SC, RS, MG e RJ<br/>
@@ -326,7 +332,6 @@ class Example extends React.Component {
                                     R3 = PE<br/>
                                     R4 = AL, BA, CE, MA, PI, PB, RN e SE<br/>
                                 </div>
-                            </div>
                             <div>
                                 
                                 <br/>

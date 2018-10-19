@@ -91,20 +91,20 @@ class Example extends React.Component {
                             <ListGroupItem header={item.RAZAO_SOCIAL} href="#" className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
                             Nome Fantasia: {item.NOME_FANTASIA}<br/>
                             CNPJ: {mascaraCNPJ(item.CNPJ)}<br/>
-                            Código: {item.PK_CLI}<br/>
-                            <div className='box'>
+                            Inscrição Estadual: {item.INSCRICAO_ESTADUAL}
+                            <li className='box'>
                                 Endereço: {item.ENDERECO}<br/>
                                 Nº: {item.NUMERO}<br/>
                                 Bairro: {item.BAIRRO}<br/>
                                 Cidade: {item.FK_CID}<br/>
                                 CEP: {item.CEP}
-                            </div>
-                            <div className='box'>
+                            </li>
+                            <li className='box'>
                                 DDD: {item.DDD1} Fone 1: {item.FONE1}<br/>
                                 DDD: {item.DDD2} Fone 2: {item.FONE2}<br/> 
                                 Email NFe: {item.EMAIL}<br/>
                                 Email Financeiro: {item.EMAIL_FINANCEIRO}                            
-                            </div>
+                            </li>
                             
                             <LinkContainer to={"/clientes/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
                             </ListGroupItem>
@@ -114,7 +114,6 @@ class Example extends React.Component {
                                 <ListGroupItem header={item.RAZAO_SOCIAL} href="#" className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
                                 Nome Fantasia: {item.NOME_FANTASIA}<br/>
                                 CNPJ: {mascaraCNPJ(item.CNPJ)}<br/>
-                                Código: {item.PK_CLI}<br/>
                                 <LinkContainer to={"/clientes/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
                                 </ListGroupItem>
                             )
@@ -124,7 +123,6 @@ class Example extends React.Component {
                             <ListGroupItem header={item.RAZAO_SOCIAL} href="#" className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
                             Nome Fantasia: {item.NOME_FANTASIA}<br/>
                             CNPJ: {mascaraCNPJ(item.CNPJ)}<br/>
-                            Código: {item.PK_CLI}<br/>
                             <LinkContainer to={"/clientes/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
                             </ListGroupItem>
                         )
@@ -253,6 +251,7 @@ class Example extends React.Component {
 
 
         });
+        console.log(Object.keys(filtrados).length)
         this.calcPages(Object.keys(filtrados).length)
         this.setState({filtered: filtrados}) 
     }
@@ -280,7 +279,7 @@ class Example extends React.Component {
     }
 
     calcPages(registros){
-        let x = Math.round(registros/20)
+        let x = Math.ceil(registros/20)
         this.setState({maxPages: x})
     }
 
@@ -301,23 +300,29 @@ class Example extends React.Component {
                                 <h1 className="FormTitle__Link--Active">Clientes</h1>
                             </div>
                             {/* <form className="FormFields">   */}
-                                <div className="FormField">
-                                    <label className="FormFilter__Label" htmlFor="RAZAO_SOCIAL">Razão Social:</label>
-                                    <input type="text" id="RAZAO_SOCIAL" className="FormFilter__Input" 
-                                    name="RAZAO_SOCIAL" value={this.state.filter.RAZAO_SOCIAL} onChange={this.handleChange}/>
-                                    <br/>
-                                    <label className="FormFilter__Label" htmlFor="NOME_FANTASIA">Nome Fantasia:</label>
-                                    <input type="text" id="NOME_FANTASIA" className="FormFilter__Input" 
-                                    name="NOME_FANTASIA" value={this.state.filter.NOME_FANTASIA} onChange={this.handleChange}/>
-                                    <br/>
-                                    <label className="FormFilter__Label" htmlFor="CNPJ">CNPJ:</label>
-                                    <input type="text" id="CNPJ" className="FormFilter__Input" 
-                                    name="CNPJ" value={this.state.filter.CNPJ} onChange={this.handleChange}/>
-                                    <div>
-                                        <button className="FormField__Button" onClick={this.handleRefresh}>Filtrar</button>  
-                                        <button className="FormField__Button" onClick={this.handleClean}>Limpar</button> 
+                                <div>
+                                    Filtro:
+                                    <div className='box_inverted'> 
+                                        <div className="FormField">
+                                            <label className="FormFilter__Label" htmlFor="RAZAO_SOCIAL">Razão Social</label>
+                                            <input type="text" id="RAZAO_SOCIAL" className="FormFilter__Input" 
+                                            name="RAZAO_SOCIAL" value={this.state.filter.RAZAO_SOCIAL} onChange={this.handleChange}/>
+                                            <br/>
+                                            <label className="FormFilter__Label" htmlFor="NOME_FANTASIA">Nome Fantasia</label>
+                                            <input type="text" id="NOME_FANTASIA" className="FormFilter__Input" 
+                                            name="NOME_FANTASIA" value={this.state.filter.NOME_FANTASIA} onChange={this.handleChange}/>
+                                            <br/>
+                                            <label className="FormFilter__Label" htmlFor="CNPJ">CNPJ</label>
+                                            <input type="text" id="CNPJ" className="FormFilter__Input" 
+                                            name="CNPJ" value={this.state.filter.CNPJ} onChange={this.handleChange}/>
+                                            <div>
+                                                <button className="FormField__Button" onClick={this.handleRefresh}>Filtrar</button>  
+                                                <button className="FormField__Button" onClick={this.handleClean}>Limpar</button> 
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+
                                 <div>
                                     
                                     <br/>

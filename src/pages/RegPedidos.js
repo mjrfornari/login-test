@@ -350,7 +350,7 @@ class Example extends React.Component {
 
     closeModal(e){
         e.preventDefault();
-        this.setState({mostraModal: false, editIte: {CODIGOPRO: '', VALOR: '', TOTAL: '', DESCONTO1: '', id:0}})
+        this.setState({mostraModal: false, editIte: {CODIGOPRO: '', QUANTIDADE: '',VALOR: '', TOTAL: '', DESCONTO1: '', id:0}})
     }
 
     saveModal(e, id){
@@ -358,7 +358,7 @@ class Example extends React.Component {
         if (this.state.appendItem === false) {
             let item = Object.assign({},this.state.now)
             item.itens[id] = this.state.editIte;
-            this.setState({mostraModal: false, now: item, editIte: {CODIGOPRO: '', VALOR: '', TOTAL: '', DESCONTO1: '', id:0}})
+            this.setState({mostraModal: false, now: item, editIte: {CODIGOPRO: '', QUANTIDADE: '',VALOR: '', TOTAL: '', DESCONTO1: '', id:0}})
         } else {
             let item = Object.assign({},this.state.now)
             if (typeof item.itens === 'undefined') {
@@ -368,7 +368,7 @@ class Example extends React.Component {
             } else {
                 item.itens.push(this.state.editIte);
             }          
-            this.setState({mostraModal: false, now: item, editIte: {CODIGOPRO: '', VALOR: '', TOTAL: '', DESCONTO1: '', id:0}})
+            this.setState({mostraModal: true, now: item, editIte: {CODIGOPRO: '', VALOR: '', QUANTIDADE: '', TOTAL: '', DESCONTO1: '', id:0}})
         }
     }
 

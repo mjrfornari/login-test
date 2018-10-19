@@ -237,7 +237,7 @@ class Example extends React.Component {
             // if (JSON.stringify(element.RAZAO_SOCIAL).toUpperCase().includes(filtro.RAZAO_SOCIAL.toUpperCase())){
             //     filtrados.push(element)
             // }
-            if (JSON.stringify(element.RAZAO_SOCIAL).toUpperCase().includes(filtro.RAZAO_SOCIAL.toUpperCase()) && JSON.stringify(element.CNPJ).toUpperCase().includes(filtro.CNPJ.toUpperCase())){
+            if (JSON.stringify(element.RAZAO_SOCIAL).toUpperCase().includes(filtro.RAZAO_SOCIAL.toUpperCase())){
                 filtrados.push(element)
             }
 
@@ -272,19 +272,20 @@ class Example extends React.Component {
                             <h1 className="FormTitle__Link--Active">Pedidos</h1>
                         </div>
                         {/* <form className="FormFields">   */}
-                            <div className="FormField">
-                                <label className="FormFilter__Label" htmlFor="RAZAO_SOCIAL">Razão Social:</label>
-                                <input type="text" id="RAZAO_SOCIAL" className="FormFilter__Input" 
-                                name="RAZAO_SOCIAL" value={this.state.filter.RAZAO_SOCIAL} onChange={this.handleChange}/>
-                                <br/>
-                                {/* <label className="FormFilter__Label" htmlFor="CNPJ">CNPJ:</label>
-                                <input type="text" id="CNPJ" className="FormFilter__Input" 
-                                name="CNPJ" value={this.state.filter.CNPJ} onChange={this.handleChange}/>*/}
                                 <div>
-                                    <button className="FormField__Button" onClick={this.handleRefresh}>Filtrar</button>  
-                                    <button className="FormField__Button" onClick={this.handleClean}>Limpar</button> 
+                                    Filtro:
+                                    <div className='box_inverted'> 
+                                        <div className="FormField">
+                                            <label className="FormFilter__Label" htmlFor="RAZAO_SOCIAL">Razão Social</label>
+                                            <input type="text" id="RAZAO_SOCIAL" className="FormFilter__Input" 
+                                            name="RAZAO_SOCIAL" value={this.state.filter.RAZAO_SOCIAL} onChange={this.handleChange}/>
+                                            <div>
+                                                <button className="FormField__Button" onClick={this.handleRefresh}>Filtrar</button>  
+                                                <button className="FormField__Button" onClick={this.handleClean}>Limpar</button> 
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
                             <div>
                                 
                                 <br/>

@@ -7,20 +7,25 @@ import PouchDB from 'pouchdb';
 const server = 'http://192.168.0.251:3001';
 const db = new PouchDB('macropecas');
 
-
-export function buscaEndereco(cep){
-  return fetch('https://viacep.com.br/ws/'+cep.replace(/[^\d]/, '')+'/json/').then(r => r.json()).then(r => console.log(r))
-  // fetch('https://viacep.com.br/ws/92500000/json/').then(r => r.JSON()).then(r => console.log(r))
+export function removeAcento (text)
+{       
+    text = text.toLowerCase();                                                         
+    text = text.replace(new RegExp('[ÁÀÂÃ]','gi'), 'a');
+    text = text.replace(new RegExp('[ÉÈÊ]','gi'), 'e');
+    text = text.replace(new RegExp('[ÍÌÎ]','gi'), 'i');
+    text = text.replace(new RegExp('[ÓÒÔÕ]','gi'), 'o');
+    text = text.replace(new RegExp('[ÚÙÛ]','gi'), 'u');
+    text = text.replace(new RegExp('[Ç]','gi'), 'c');
+    return text;                 
 }
 
 
-
 export function geraInput(fieldname, displayname, value, funcao, tamanho){
-  if (tamanho > 0) {
+  if (tamanho !== null) {
     return (
       <div className="FormField">
         <label className="FormField__Label" htmlFor={fieldname}>{displayname}</label>
-        <input type="text" id={fieldname} className="FormField__Input" style={{width : tamanho+'px'}}
+        <input type="text" id={fieldname} className="FormField__Input" style={{width : tamanho}}
         name={fieldname} value={value} onChange={(event) => funcao(event)}/>
       </div>
     )
@@ -100,10 +105,12 @@ export function editData(tabela, item, id) {
             return db.put(newUpdate)
         }).then(function(response) {
           console.log('Update updated!')
+          alert('Registro alterado com sucesso!') 
         }).catch(function (err) {
           if (err.name === 'not_found') {
             db.put(update).then(function (response) {
                 console.log('Update Created!')
+                alert('Registro alterado com sucesso!') 
             }).catch(function (err) {
               console.log(err);
             });
@@ -155,10 +162,12 @@ export function appendData(tabela, item) {
             return db.put(newCreate)
         }).then(function(response) {
           console.log('Create updated!')
+          alert('Registro incluído com sucesso!') 
         }).catch(function (err) {
           if (err.name === 'not_found') {
             db.put(create).then(function (response) {
                 console.log('Create Created!')
+                alert('Registro incluído com sucesso!') 
             }).catch(function (err) {
               console.log(err);
             });
@@ -524,7 +533,7 @@ export function updateToFirebird(nomepk, tablename, callback) {
                 } else return fieldsnvalues[i]=x+'='+ySplited[i]
                 return ''
               })
-              fieldsnvalues = JSON.stringify(fieldsnvalues).split('"').join("").split('[').join("").split(']').join("").split('null,').join("")
+              fieldsnvalues = JSON.stringify(fieldsnvalues).split('"').join("").split('[').join("").split(']').join("").split("=null,").join("*").split("null,").join("").split("*").join("=null,");
               atualizaItem(tablename,fieldsnvalues, where)
             })
 
@@ -542,16 +551,21 @@ export function updateToFirebird(nomepk, tablename, callback) {
               console.log(xSplited)
               let fieldsnvalues = []
               fieldsnvalues = xSplited.map((x, i) => {
+                // if (x===nomepk){
+                //   where = x+'='+ySplited[i]
+                // } else if (x ==='itens') {
+                //   console.log('itens')
+                // } else if (ySplited[i] === 'null') {
+                //     console.log('erro - '+x+'='+ySplited[i]) 
+                // } else return fieldsnvalues[i]=x+'='+ySplited[i]
+                // return ''
                 if (x===nomepk){
                   where = x+'='+ySplited[i]
                 } else if (x ==='itens') {
                   console.log('itens')
-                } else if (ySplited[i] === 'null') {
-                    console.log('erro - '+x+'='+ySplited[i]) 
                 } else return fieldsnvalues[i]=x+'='+ySplited[i]
-                return ''
               })
-              fieldsnvalues = JSON.stringify(fieldsnvalues).split('"').join("").split('[').join("").split(']').join("").split('null,').join("")
+              fieldsnvalues = JSON.stringify(fieldsnvalues).split('"').join("").split('[').join("").split(']').join("").split("=null,").join("*").split("null,").join("").split("*").join("=null,");
               atualizaItem(tablename,fieldsnvalues, where)
           })
         }
