@@ -1,4 +1,4 @@
-// import React from "react";
+import React from "react";
 // import namor from "namor";
 // import { render } from "react-dom";
 import "../App.css";
@@ -6,6 +6,36 @@ import PouchDB from 'pouchdb';
 
 const server = 'http://192.168.0.251:3001';
 const db = new PouchDB('macropecas');
+
+
+export function buscaEndereco(cep){
+  return fetch('https://viacep.com.br/ws/'+cep.replace(/[^\d]/, '')+'/json/').then(r => r.json()).then(r => console.log(r))
+  // fetch('https://viacep.com.br/ws/92500000/json/').then(r => r.JSON()).then(r => console.log(r))
+}
+
+
+
+export function geraInput(fieldname, displayname, value, funcao, tamanho){
+  if (tamanho > 0) {
+    return (
+      <div className="FormField">
+        <label className="FormField__Label" htmlFor={fieldname}>{displayname}</label>
+        <input type="text" id={fieldname} className="FormField__Input" style={{width : tamanho+'px'}}
+        name={fieldname} value={value} onChange={(event) => funcao(event)}/>
+      </div>
+    )
+  } else {
+    return (
+      <div className="FormField">
+        <label className="FormField__Label" htmlFor={fieldname}>{displayname}</label>
+        <input type="text" id={fieldname} className="FormField__Input" 
+        name={fieldname} value={value} onChange={(event) => funcao(event)}/>
+      </div>
+    )
+  }
+  
+  
+}
 
 export function mascaraCNPJ(texto){
     let cnpj = ''

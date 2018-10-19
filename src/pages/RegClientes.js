@@ -11,9 +11,10 @@ import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_sync} from 'react-icons-kit/md/ic_sync'
 import {ic_assignment} from 'react-icons-kit/md/ic_assignment'
-import { readTable, editData, appendData } from "./Utils";
+import { readTable, editData, appendData, geraInput, buscaEndereco } from "./Utils";
 import {ic_keyboard_arrow_left} from 'react-icons-kit/md/ic_keyboard_arrow_left'
 import {ic_keyboard_arrow_right} from 'react-icons-kit/md/ic_keyboard_arrow_right'
+import {ic_search} from 'react-icons-kit/md/ic_search'
 
 
 
@@ -28,7 +29,7 @@ class Example extends React.Component {
     this.state = {
         clientes  : [],
         show: false,
-        now : {PK_CLI: 0, RAZAO_SOCIAL: '', CNPJ: '', FONE1: '', CODIGO_REPRESENTADA:''},
+        now : {PK_CLI: 0, RAZAO_SOCIAL: '', NOME_FANTASIA: '', CNPJ: '', FONE1: '', CODIGO_REPRESENTADA:'', CIDADE:'', BAIRRO:'', ENDEREÇO: '', CEP: '', NUMERO:''},
         append: false,
         isLoading: true,
         id: 0,
@@ -195,10 +196,28 @@ class Example extends React.Component {
                                     name="RAZAO_SOCIAL" value={this.state.now.RAZAO_SOCIAL} onChange={this.handleChange}/>
                                 </div>
                                 <div className="FormField">
+                                    <label className="FormField__Label" htmlFor="NOME_FANTASIA">NOME FANTASIA</label>
+                                    <input type="text" id="NOME_FANTASIA" className="FormField__Input" 
+                                    name="NOME_FANTASIA" value={this.state.now.NOME_FANTASIA} onChange={this.handleChange}/>
+                                </div>
+                                <div className="FormField">
                                     <label className="FormField__Label" htmlFor="CNPJ">CNPJ</label>
                                     <input type="text" id="CPNJ" className="FormField__Input" 
                                     name="CNPJ" value={this.state.now.CNPJ} onChange={this.handleChange}/>
                                 </div>
+                                <div className='box_inverted'>
+                                    {geraInput('ENDERECO','ENDEREÇO',this.state.now.ENDERECO, this.handleChange)}
+                                    {geraInput('NUMERO','Nº',this.state.now.NUMERO, this.handleChange, 100)}
+                                    {geraInput('BAIRRO','BAIRRO',this.state.now.BAIRRO, this.handleChange)}
+                                    {geraInput('CIDADE','CIDADE',this.state.now.CIDADE, this.handleChange)}
+                                    <div className="FormField">
+                                        <label className="FormField__Label" htmlFor="CEP">CEP</label>
+                                        <input type="text" id="CEP" className="FormField__Input" style={{width: '100px'}}
+                                        name="CEP" value={this.state.now.CEP} onChange={this.handleChange}/>
+                                        <button id='buscaCEP' className="ButtonIcon" onClick={(e) => {e.preventDefault(); buscaEndereco(this.state.now.CEP);}}><SvgIcon size={20} style={{margin: 'center'}} icon={ic_search}/>Buscar Endereço</button>
+                                    </div>
+                                </div>
+
                                 <div className="FormField">
                                     <label className="FormField__Label" htmlFor="password">Telefone 1</label>
                                     <input type="text" id="FONE1" className="FormField__Input" 

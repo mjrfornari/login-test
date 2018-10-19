@@ -10,7 +10,7 @@ import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_sync} from 'react-icons-kit/md/ic_sync'
 import {ic_assignment} from 'react-icons-kit/md/ic_assignment'
-import {ListGroup, ListGroupItem} from 'react-bootstrap'
+import {ListGroup, ListGroupItem, Pagination} from 'react-bootstrap'
 import {LinkContainer} from 'react-router-bootstrap'
 // import PouchDB from "pouchdb"
 import { readTable, deleteData, mascaraCNPJ } from "./Utils";
@@ -39,10 +39,15 @@ class Example extends React.Component {
             show: true,
             filter:  {
                 RAZAO_SOCIAL: '',
-                CNPJ: ''
+                CNPJ: '', 
+                NOME_FANTASIA: ''
             },
             filtered: [],
+            detailed: false,
+            iddetailed: 0,
             op: 'r',
+            page: 1,
+            maxPages: 1
         };
         this.handleRefresh = this.handleRefresh.bind(this);
         this.createItems = this.createItems.bind(this);
@@ -52,23 +57,87 @@ class Example extends React.Component {
         this.hideShow = this.hideShow.bind(this);
         this.handleBar = this.handleBar.bind(this);
         this.appBar = this.appBar.bind(this);
-
+        this.setPage = this.setPage.bind(this);
+        this.calcPages = this.calcPages.bind(this);
+        this.masterDetail = this.masterDetail.bind(this)
     }
 
     componentDidMount(){
-        readTable(Data => {this.setState({clientes: Data.data.clientes, filtered: Data.data.clientes})})      
+        readTable(Data => {this.setState({clientes: Data.data.clientes, filtered: []})})      
     }
   
+
+    nextPage(){
+            if(this.state.page===this.state.maxPages){
+                return ''
+            } else {
+                return this.state.page+1
+            }
+    }
+
+    prevPage(){
+            if(this.state.page===1){
+                return ''
+            } else {
+                return this.state.page-1
+            }
+    }
+
     createItems(item, id){
-            return (
-                <ListGroupItem header={item.RAZAO_SOCIAL} href="#" className="FormField__Grid">
-                CNPJ: {mascaraCNPJ(item.CNPJ)}<br/>
-                Fone 1: {item.FONE1}<br/>
-                Código: {item.PK_CLI}<br/>
-                <LinkContainer to={"/clientes/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
-                </ListGroupItem>
-            
-            )
+        if ((id <= (this.state.page*20)-1) && (id >= (this.state.page*20)-20)){
+            if (this.state.detailed === true){
+                        if (this.state.iddetailed === id){
+                            return   (
+                            <ListGroupItem header={item.RAZAO_SOCIAL} href="#" className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
+                            Nome Fantasia: {item.NOME_FANTASIA}<br/>
+                            CNPJ: {mascaraCNPJ(item.CNPJ)}<br/>
+                            Código: {item.PK_CLI}<br/>
+                            <div className='box'>
+                                Endereço: {item.ENDERECO}<br/>
+                                Nº: {item.NUMERO}<br/>
+                                Bairro: {item.BAIRRO}<br/>
+                                Cidade: {item.FK_CID}<br/>
+                                CEP: {item.CEP}
+                            </div>
+                            <div className='box'>
+                                DDD: {item.DDD1} Fone 1: {item.FONE1}<br/>
+                                DDD: {item.DDD2} Fone 2: {item.FONE2}<br/> 
+                                Email NFe: {item.EMAIL}<br/>
+                                Email Financeiro: {item.EMAIL_FINANCEIRO}                            
+                            </div>
+                            
+                            <LinkContainer to={"/clientes/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
+                            </ListGroupItem>
+                            )
+                        } else {
+                            return (
+                                <ListGroupItem header={item.RAZAO_SOCIAL} href="#" className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
+                                Nome Fantasia: {item.NOME_FANTASIA}<br/>
+                                CNPJ: {mascaraCNPJ(item.CNPJ)}<br/>
+                                Código: {item.PK_CLI}<br/>
+                                <LinkContainer to={"/clientes/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
+                                </ListGroupItem>
+                            )
+                        }
+                    } else {
+                        return (
+                            <ListGroupItem header={item.RAZAO_SOCIAL} href="#" className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
+                            Nome Fantasia: {item.NOME_FANTASIA}<br/>
+                            CNPJ: {mascaraCNPJ(item.CNPJ)}<br/>
+                            Código: {item.PK_CLI}<br/>
+                            <LinkContainer to={"/clientes/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
+                            </ListGroupItem>
+                        )
+                    }
+        }
+    }
+
+    masterDetail(id){
+        if (id === this.state.iddetailed){
+            this.setState({detailed: !(this.state.detailed)})
+        } else {
+            this.setState({detailed: true, iddetailed: id})
+        }
     }
 
 
@@ -178,72 +247,112 @@ class Example extends React.Component {
             // if (JSON.stringify(element.RAZAO_SOCIAL).toUpperCase().includes(filtro.RAZAO_SOCIAL.toUpperCase())){
             //     filtrados.push(element)
             // }
-            if (JSON.stringify(element.RAZAO_SOCIAL).toUpperCase().includes(filtro.RAZAO_SOCIAL.toUpperCase()) && JSON.stringify(element.CNPJ).toUpperCase().includes(filtro.CNPJ.toUpperCase())){
+            if (JSON.stringify(element.RAZAO_SOCIAL).toUpperCase().includes(filtro.RAZAO_SOCIAL.toUpperCase()) && JSON.stringify(element.CNPJ).toUpperCase().includes(filtro.CNPJ.toUpperCase()) && JSON.stringify(element.NOME_FANTASIA).toUpperCase().includes(filtro.NOME_FANTASIA.toUpperCase())){
                 filtrados.push(element)
             }
 
 
         });
+        this.calcPages(Object.keys(filtrados).length)
         this.setState({filtered: filtrados}) 
     }
 
     handleClean(e){
-        let dados = this.state.clientes
+        // let dados = this.state.clientes
         let filtro = []
         filtro.RAZAO_SOCIAL = ''
         filtro.CNPJ = ''
-        let filtrados = dados
-        this.setState({filtered: filtrados, filter: filtro}) 
+        filtro.NOME_FANTASIA = ''
+        let filtrados = []
+        this.setState({filtered: filtrados, filter: filtro, page:1, maxPages: 1}) 
     }
 
- render() {
-    let Data = this.state.filtered
-    let listData = Data.map(this.createItems)
-    let logou = localStorage.getItem("logou");
-    let bar = this.appBar(this.state.show);
-    if (logou === "true") {
-    return (     
-              <div className="App">
-                {bar}
-                <div className="App__Form">
-                    <div className="FormCenter">
-                        <div className="FormTitle">
-                            <Clock format={'DD/MM/YYYY - HH:mm'} ticking={true}/> 
-                            <br/>
-                            <h1 className="FormTitle__Link--Active">Clientes</h1>
-                        </div>
-                        {/* <form className="FormFields">   */}
-                            <div className="FormField">
-                                <label className="FormFilter__Label" htmlFor="RAZAO_SOCIAL">Razão Social:</label>
-                                <input type="text" id="RAZAO_SOCIAL" className="FormFilter__Input" 
-                                name="RAZAO_SOCIAL" value={this.state.filter.RAZAO_SOCIAL} onChange={this.handleChange}/>
+
+    setPage(e,setar, add){
+        e.preventDefault();
+        let gotoPage = (setar+add)
+        if (gotoPage > this.state.maxPages){
+            gotoPage = this.state.maxPages
+        } else if (gotoPage < 1) {
+            gotoPage = 1
+        }
+        this.setState({page: gotoPage})
+    }
+
+    calcPages(registros){
+        let x = Math.round(registros/20)
+        this.setState({maxPages: x})
+    }
+
+    render() {
+        let Data = this.state.filtered
+        let listData = Data.map(this.createItems)
+        let logou = localStorage.getItem("logou");
+        let bar = this.appBar(this.state.show);
+        if (logou === "true") {
+        return (     
+                <div className="App">
+                    {bar}
+                    <div className="App__Form">
+                        <div className="FormCenter">
+                            <div className="FormTitle">
+                                <Clock format={'DD/MM/YYYY - HH:mm'} ticking={true}/> 
                                 <br/>
-                                <label className="FormFilter__Label" htmlFor="CNPJ">CNPJ:</label>
-                                <input type="text" id="CNPJ" className="FormFilter__Input" 
-                                name="CNPJ" value={this.state.filter.CNPJ} onChange={this.handleChange}/>
-                                <div>
-                                    <button className="FormField__Button" onClick={this.handleRefresh}>Filtrar</button>  
-                                    <button className="FormField__Button" onClick={this.handleClean}>Limpar</button> 
+                                <h1 className="FormTitle__Link--Active">Clientes</h1>
+                            </div>
+                            {/* <form className="FormFields">   */}
+                                <div className="FormField">
+                                    <label className="FormFilter__Label" htmlFor="RAZAO_SOCIAL">Razão Social:</label>
+                                    <input type="text" id="RAZAO_SOCIAL" className="FormFilter__Input" 
+                                    name="RAZAO_SOCIAL" value={this.state.filter.RAZAO_SOCIAL} onChange={this.handleChange}/>
+                                    <br/>
+                                    <label className="FormFilter__Label" htmlFor="NOME_FANTASIA">Nome Fantasia:</label>
+                                    <input type="text" id="NOME_FANTASIA" className="FormFilter__Input" 
+                                    name="NOME_FANTASIA" value={this.state.filter.NOME_FANTASIA} onChange={this.handleChange}/>
+                                    <br/>
+                                    <label className="FormFilter__Label" htmlFor="CNPJ">CNPJ:</label>
+                                    <input type="text" id="CNPJ" className="FormFilter__Input" 
+                                    name="CNPJ" value={this.state.filter.CNPJ} onChange={this.handleChange}/>
+                                    <div>
+                                        <button className="FormField__Button" onClick={this.handleRefresh}>Filtrar</button>  
+                                        <button className="FormField__Button" onClick={this.handleClean}>Limpar</button> 
+                                    </div>
                                 </div>
-                            </div>
-                            <div>
-                                
-                                <br/>
-                                {this.hideShow()}
-                                <LinkContainer to={"/clientes/registro"}><button className="FormField__Button__Fix" onClick={this.handleShow}><SvgIcon className='FormField__Icon__Fix' size={24} icon={plus}/></button></LinkContainer>                       
-                            </div>
-                            <div>                    
-                                <ListGroup>
-                                    {listData}
-                                </ListGroup>
-                            </div>  
-                        {/* </form>  */}
+                                <div>
+                                    
+                                    <br/>
+                                    {this.hideShow()}
+                                    <LinkContainer to={"/clientes/registro"}><button className="FormField__Button__Fix" onClick={this.handleShow}><SvgIcon className='FormField__Icon__Fix' size={24} icon={plus}/></button></LinkContainer>                       
+                                </div>
+                                <div>                    
+                                    <ListGroup>
+                                        {listData}
+                                    </ListGroup>
+                                </div> 
+                                <div> 
+                                    <Pagination>
+                                        <button className="FormField__Pagination__First" onClick={ event => this.setPage(event,1,0)}>{'<<'}</button>
+                                        <button className="FormField__Pagination" onClick={event => this.setPage(event,this.state.page,-1)}>{'<'}</button>
+                                        <button className="FormField__Pagination" onClick={event => this.setPage(event,1,0)}>1</button>
+                                        <button className="FormField__Pagination">...</button>
+
+                                        <button className="FormField__Pagination" onClick={event => this.setPage(event,this.state.page,-1)}>{this.prevPage()}</button>
+                                        <button className="FormField__Pagination__Page">{this.state.page}</button>
+                                        <button className="FormField__Pagination" onClick={event => this.setPage(event,this.state.page,1)}>{this.nextPage()}</button>
+
+                                        <button className="FormField__Pagination">...</button>
+                                        <button className="FormField__Pagination" onClick={event => this.setPage(event,this.state.maxPages,0)}>{this.state.maxPages}</button>
+                                        <button className="FormField__Pagination" onClick={event => this.setPage(event,this.state.page,1)}>{'>'}</button>
+                                        <button className="FormField__Pagination__Last" onClick={event => this.setPage(event,this.state.maxPages,0)}>{'>>'}</button>
+                                    </Pagination>
+                                </div>  
+                            {/* </form>  */}
+                        </div>
                     </div>
                 </div>
-            </div>
 
-    );} else { return <Redirect exact to="/"/>}
-  }
+        );} else { return <Redirect exact to="/"/>}
+    }
 }
 
 
