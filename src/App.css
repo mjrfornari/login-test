@@ -17,9 +17,52 @@ th, td {
     border-bottom: 1px solid #ddd;
 }
 
+.ItemAdded{
+  background-color: rgb(48, 76, 85);
+  z-index: 1500;
+  position: absolute;
+  border-radius: 25px;
+  border-color: #649764;
+  border-style: solid;
+  width: 80%;
+  height: 150px;
+  text-align: center;
+  -webkit-animation-name: added; /* Safari 4.0 - 8.0 */
+  -webkit-animation-duration: 2s; /* Safari 4.0 - 8.0 */
+  animation-name: added;
+  animation-duration: 2s;
+  visibility: hidden;
+}
+
+.ItemAdded-hide{
+  background-color: rgb(48, 76, 85);
+  z-index: 1500;
+  position: absolute;
+  border-radius: 25px;
+  border-color: #649764;
+  border-style: solid;
+  width: 80%;
+  height: 150px;
+  visibility: hidden;
+}
+
+@-webkit-keyframes added {
+    0%   {background-color:rgb(48, 76, 85); left:100%; top:30%; visibility: visible;}
+    100% {background-color:rgb(48, 76, 85); left:10%; top:30%; visibility: visible;}
+}
+
+/* Standard syntax */
+@keyframes added {
+    0%   {background-color:rgb(48, 76, 85); left:100%; top:30%; visibility: visible;}
+    100% {background-color:rgb(48, 76, 85); left:10%; top:30%; visibility: visible;}
+}
+
 tr:hover {background-color:#506b55;}
 
-
+.ItemMsg{
+  display: block;
+  text-align: center;
+}
 
 .box {
     border: 1px solid rgb(48, 76, 85);
@@ -68,8 +111,12 @@ tr:hover {background-color:#506b55;}
   display: block;  
 }
 
+
+
+
 .Modal{
   background-color:rgba(0, 0, 0, 0.5);
+  overflow-y: scroll;
 }
 
 .ModalBg{ 
@@ -303,6 +350,75 @@ tr:hover {background-color:#506b55;}
 
 }
 
+
+
+
+
+
+
+
+.ui.checkbox input,
+.ui.toggle.checkbox label,  .ui.toggle.checkbox label:focus{   
+  color:rgba(129, 123, 123, 0.61) !important;
+}
+
+.ui.toggle.checkbox input:checked ~ label, .ui.toggle.checkbox input:focus:checked ~ label{
+  color:white !important;
+}
+
+.ui.toggle.checkbox input:checked ~ .box:before, .ui.toggle.checkbox input:checked ~ label:before {
+    background-color:  #649764 !important;
+    color:white !important;
+}
+
+.ui.toggle.checkbox input:checked ~ .box:before, .ui.toggle.checkbox input:checked ~ label:before {
+    background-color: #649764 !important;
+    color:white !important;
+}
+
+.ui.toggle.checkbox input:focus:checked ~ .box:before, .ui.toggle.checkbox input:focus:checked ~ label:before {
+    background-color: #649764 !important;
+    color:white !important;
+}
+
+
+.FormField__Radio {
+  width: 80%;
+  border-radius: 25px;
+  background-color: #649764;
+  border: none;
+  color: white;
+  outline: none;
+  /* border: 2px solid #506b55; */
+  font-size: 1em;
+  padding: 10px;
+  font-weight: 300;
+  /* padding-bottom: 10px; */
+  margin-top: 5px;
+}
+
+
+.FormField__Input__OBS {
+  width: 80%;
+  border-radius: 25px;
+  background-color: #649764;
+  border: none;
+  color: white;
+  height: 150px;
+  outline: none;
+  word-break: break-word;
+  text-align: top;
+  vertical-align: top;
+  /* border: 2px solid #506b55; */
+  font-size: 1em;
+  padding: 10px;
+  font-weight: 300;
+  /* padding-bottom: 10px; */
+  margin-top: 5px;
+
+}
+
+
 .FormField__InputTelefone {
   width: 80%;
   border-radius: 25px;
@@ -342,50 +458,102 @@ tr:hover {background-color:#506b55;}
   /* margin-top: 10px; */
 }
 
-.FormField__List {
-  border-radius: 25px;
-  background-color: #649764;
-  border: none;
-  color: white;
-  outline: none;
-  /* border: 2px solid #506b55; */
-  font-size: 1em;
-  font-weight: 300;
 
+
+@media screen and (min-width: 601px) {
+
+
+  .FormField__List {
+    border-radius: 25px;
+    background-color: #649764;
+    border: none;
+    color: white;
+    outline: none;
+    list-style-type: none; 
+    padding: 1px;
+    margin-top: 1px;
+    font-size: 1em;
+    font-weight: 300;
+    height: auto;
+    z-index: 1100;
+    
+  }
+
+  .FormField__Complete {
+    width: 80%;
+    border-radius: 25px;
+    background-color: #649764;
+    border: none;
+    color: white;
+    height: 300px;
+    outline: none;
+    /* border: 2px solid #506b55; */
+    font-size: 1em;
+    padding: 10px;
+    font-weight: 300;
+    margin-top: 10px;
+    z-index: 1100;
+    overflow-y: scroll;
+    
+  }
 }
 
-.FormField__Complete {
-  width: 80%;
-  border-radius: 25px;
-  background-color: #649764;
-  border: none;
-  color: white;
-  outline: none;
-  /* border: 2px solid #506b55; */
-  font-size: 1em;
-  padding: 10px;
-  font-weight: 300;
-  margin-top: 10px;
+/* If the screen size is 600px wide or less, set the font-size of <div> to 30px */
+@media screen and (max-width: 600px) {
+
+
+
+  .FormField__List {
+    border-radius: 25px;
+    background-color: #649764;
+    border: none;
+    color: white;
+    outline: none;
+    list-style-type: none; 
+    padding: 1px;
+    height: auto;
+    margin-top: 1px;
+    font-size: 1em;
+    font-weight: 300;
+    z-index: 1100;
+    
+  }
+
+  .FormField__Complete {
+    width: 80%;
+    border-radius: 25px;
+    background-color: #649764;
+    border: none;
+    height: 200px;
+    color: white;
+    outline: none;
+    /* border: 2px solid #506b55; */
+    font-size: 1em;
+    padding: 10px;
+    font-weight: 300;
+    margin-top: 10px;
+    z-index: 1100;
+    overflow-y: scroll;
+  }
 }
 
 
-.FormField__List {
-  border-radius: 25px;
-  background-color: #649764;
-  border: none;
-  color: white;
-  outline: none;
-  list-style-type: none; 
-  padding: 1px;
-  height: 2em;
-  margin-top: 1px;
-}
+
+
 
 .FormField__List__Text {
   margin-left: 7px;
+  margin-top: 7px;
+  word-break: break-word;
+  text-justify: distribute;
+  vertical-align: middle;
 }
 
-
+.FormField__Label__Desconto {
+  text-transform: uppercase;
+  font-size: .9em;
+  color: white;
+}
 
 .FormField__Input::placeholder {
   color: rgb(166, 174, 184);

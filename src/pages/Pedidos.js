@@ -10,9 +10,9 @@ import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_sync} from 'react-icons-kit/md/ic_sync'
 import {ic_assignment} from 'react-icons-kit/md/ic_assignment'
-import {ListGroup, ListGroupItem} from 'react-bootstrap'
+import {ListGroup, ListGroupItem, Pagination} from 'react-bootstrap'
 import {LinkContainer} from 'react-router-bootstrap'
-import { readTable, deleteData } from "./Utils";
+import { readTable, deleteData, garanteDate } from "./Utils";
 import {plus} from 'react-icons-kit/fa/plus'
 import {ic_keyboard_arrow_left} from 'react-icons-kit/md/ic_keyboard_arrow_left'
 import {ic_keyboard_arrow_right} from 'react-icons-kit/md/ic_keyboard_arrow_right'
@@ -42,6 +42,8 @@ class Example extends React.Component {
             detailed: false,
             iddetailed: 0,
             op: 'r',
+            page: 1,
+            maxPages: 1
         };
         this.handleRefresh = this.handleRefresh.bind(this);
         this.createItems = this.createItems.bind(this);
@@ -51,12 +53,14 @@ class Example extends React.Component {
         this.hideShow = this.hideShow.bind(this);
         this.handleBar = this.handleBar.bind(this);
         this.appBar = this.appBar.bind(this);
+            this.setPage = this.setPage.bind(this);
+        this.calcPages = this.calcPages.bind(this);
         this.masterDetail = this.masterDetail.bind(this)
 
     }
 
     componentDidMount(){
-        readTable(Data => {this.setState({pedidos: Data.data.pedidos, filtered: Data.data.pedidos})})      
+        readTable(Data => {this.setState({pedidos: Data.data.pedidos, filtered: []})})      
     }
     
 
@@ -79,37 +83,66 @@ class Example extends React.Component {
         )
     }
 
+
+    nextPage(){
+            if(this.state.page===this.state.maxPages){
+                return ''
+            } else {
+                return this.state.page+1
+            }
+    }
+
+    prevPage(){
+            if(this.state.page===1){
+                return ''
+            } else {
+                return this.state.page-1
+            }
+    }
+
     createItems(item, id){
-        if (this.state.detailed === true){
-            if (this.state.iddetailed === id){
-                let listItens = []
-                if (typeof item.itens !== 'undefined'){
-                    listItens = item.itens.map(this.createSons)}
-                else listItens = (<ListGroupItem className="FormField__Grid">Nenhum item.</ListGroupItem>)
-                return   (
-                    <ListGroupItem header={item.NUMPED} href="#" className="FormField__GridDetailed" onClick={() => {this.masterDetail(id)}}>
-                    Data: {item.DATA}<br/>
-                    Cliente: {item.RAZAO_SOCIAL}<br/>
-                    Condição de Pagamento: {item.NOMECPG}<br/>
-                    Valor: {'R$ '+item.VALOR_CALCULADO}<br/>
-                    Valor Informado: {'R$ '+item.VALOR_CALCULADO}<br/>
-                    Data de Envio: {item.DATA_ENVIO}<br/>
-                    Código: {item.PK_PED}<br/>
-                    <div>
-                        Itens:
-                        <LinkContainer to={"/pedidos/registro/"+id}>
-                            <ListGroup>
-                                {listItens}
-                            </ListGroup>
-                        </LinkContainer>  
-                    </div>
-                    <LinkContainer to={"/pedidos/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
-                    </ListGroupItem>
-                )
+        if ((id <= (this.state.page*20)-1) && (id >= (this.state.page*20)-20)){
+            if (this.state.detailed === true){
+                if (this.state.iddetailed === id){
+                    let listItens = []
+                    if (typeof item.itens !== 'undefined'){
+                        listItens = item.itens.map(this.createSons)}
+                    else listItens = (<ListGroupItem className="FormField__Grid">Nenhum item.</ListGroupItem>)
+                    return   (
+                        <ListGroupItem header={item.NUMPED} href="#" className="FormField__GridDetailed" onClick={() => {this.masterDetail(id)}}>
+                        Data: {garanteDate(item.DATA)}<br/>
+                        Cliente: {item.RAZAO_SOCIAL}<br/>
+                        Condição de Pagamento: {item.NOMECPG}<br/>
+                        Valor: {'R$ '+item.VALOR_CALCULADO}<br/>
+                        Valor Informado: {'R$ '+item.VALOR_CALCULADO}<br/>
+                        Data de Envio: {garanteDate(item.DATA_ENVIO)}<br/>
+                        Código: {item.PK_PED}<br/>
+                        <div>
+                            Itens:
+                            <LinkContainer to={"/pedidos/registro/"+id}>
+                                <ListGroup>
+                                    {listItens}
+                                </ListGroup>
+                            </LinkContainer>  
+                        </div>
+                        <LinkContainer to={"/pedidos/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
+                        </ListGroupItem>
+                    )
+                } else {
+                    return (
+                        <ListGroupItem header={item.NUMPED} href="#" className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
+                        Data: {garanteDate(item.DATA)}<br/>
+                        Cliente: {item.RAZAO_SOCIAL}<br/>
+                        Condição de Pagamento: {item.NOMECPG}<br/>
+                        Valor: {'R$ '+item.VALOR_CALCULADO}<br/>
+                        <LinkContainer to={"/pedidos/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
+                        </ListGroupItem>
+                    )
+                }
             } else {
                 return (
                     <ListGroupItem header={item.NUMPED} href="#" className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
-                    Data: {item.DATA}<br/>
+                    Data: {garanteDate(item.DATA)}<br/>
                     Cliente: {item.RAZAO_SOCIAL}<br/>
                     Condição de Pagamento: {item.NOMECPG}<br/>
                     Valor: {'R$ '+item.VALOR_CALCULADO}<br/>
@@ -117,16 +150,6 @@ class Example extends React.Component {
                     </ListGroupItem>
                 )
             }
-        } else {
-            return (
-                <ListGroupItem header={item.NUMPED} href="#" className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
-                Data: {item.DATA}<br/>
-                Cliente: {item.RAZAO_SOCIAL}<br/>
-                Condição de Pagamento: {item.NOMECPG}<br/>
-                Valor: {'R$ '+item.VALOR_CALCULADO}<br/>
-                <LinkContainer to={"/pedidos/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
-                </ListGroupItem>
-            )
         }
     }
 
@@ -247,63 +270,96 @@ class Example extends React.Component {
     }
 
     handleClean(e){
-        let dados = this.state.pedidos
+        // let dados = this.state.pedidos
         let filtro = []
         filtro.RAZAO_SOCIAL = ''
         filtro.CNPJ = ''
-        let filtrados = dados
-        this.setState({filtered: filtrados, filter: filtro}) 
+        let filtrados = []
+        this.setState({filtered: filtrados, filter: filtro, page:1, maxPages: 1}) 
     }
 
- render() {
-    let Data = this.state.filtered
-    let listData = Data.map(this.createItems)
-    let logou = localStorage.getItem("logou");
-    let bar = this.appBar(this.state.show);
-    if (logou === "true") {
-    return (     
-              <div className="App">
-                {bar}
-                <div className="App__Form">
-                    <div className="FormCenter">
-                        <div className="FormTitle">
-                            <Clock format={'DD/MM/YYYY - HH:mm'} ticking={true}/> 
-                            <br/>
-                            <h1 className="FormTitle__Link--Active">Pedidos</h1>
-                        </div>
-                        {/* <form className="FormFields">   */}
-                                <div>
-                                    Filtro:
-                                    <div className='box_inverted'> 
-                                        <div className="FormField">
-                                            <label className="FormFilter__Label" htmlFor="RAZAO_SOCIAL">Razão Social</label>
-                                            <input type="text" id="RAZAO_SOCIAL" className="FormFilter__Input" 
-                                            name="RAZAO_SOCIAL" value={this.state.filter.RAZAO_SOCIAL} onChange={this.handleChange}/>
-                                            <div>
-                                                <button className="FormField__Button" onClick={this.handleRefresh}>Filtrar</button>  
-                                                <button className="FormField__Button" onClick={this.handleClean}>Limpar</button> 
+    setPage(e,setar, add){
+        e.preventDefault();
+        let gotoPage = (setar+add)
+        if (gotoPage > this.state.maxPages){
+            gotoPage = this.state.maxPages
+        } else if (gotoPage < 1) {
+            gotoPage = 1
+        }
+        this.setState({page: gotoPage})
+    }
+
+    calcPages(registros){
+        let x = Math.ceil(registros/20)
+        this.setState({maxPages: x})
+    }
+
+    render() {
+        let Data = this.state.filtered
+        let listData = Data.map(this.createItems)
+        let logou = localStorage.getItem("logou");
+        let bar = this.appBar(this.state.show);
+        if (logou === "true") {
+        return (     
+                <div className="App">
+                    {bar}
+                    <div className="App__Form">
+                        <div className="FormCenter">
+                            <div className="FormTitle">
+                                <Clock format={'DD/MM/YYYY - HH:mm'} ticking={true}/> 
+                                <br/>
+                                <h1 className="FormTitle__Link--Active">Pedidos</h1>
+                            </div>
+                            {/* <form className="FormFields">   */}
+                                    <div>
+                                        Filtro:
+                                        <div className='box_inverted'> 
+                                            <div className="FormField">
+                                                <label className="FormFilter__Label" htmlFor="RAZAO_SOCIAL">Razão Social</label>
+                                                <input type="text" id="RAZAO_SOCIAL" className="FormFilter__Input" 
+                                                name="RAZAO_SOCIAL" value={this.state.filter.RAZAO_SOCIAL} onChange={this.handleChange}/>
+                                                <div>
+                                                    <button className="FormField__Button" onClick={this.handleRefresh}>Filtrar</button>  
+                                                    <button className="FormField__Button" onClick={this.handleClean}>Limpar</button> 
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
+                                <div>
+                                    
+                                    <br/>
+                                    {this.hideShow()}
+                                    <LinkContainer to={"/pedidos/registro"}><button className="FormField__Button__Fix" onClick={this.handleShow}><SvgIcon className='FormField__Icon__Fix' size={24} icon={plus}/></button></LinkContainer>                       
                                 </div>
-                            <div>
-                                
-                                <br/>
-                                {this.hideShow()}
-                                <LinkContainer to={"/pedidos/registro"}><button className="FormField__Button__Fix" onClick={this.handleShow}><SvgIcon className='FormField__Icon__Fix' size={24} icon={plus}/></button></LinkContainer>                       
-                            </div>
-                            <div>                    
-                                <ListGroup>
-                                    {listData}
-                                </ListGroup>
-                            </div>  
-                        {/* </form>  */}
+                                <div>                    
+                                    <ListGroup>
+                                        {listData}
+                                    </ListGroup>
+                                </div>  
+                                <div> 
+                                    <Pagination>
+                                        <button className="FormField__Pagination__First" onClick={ event => this.setPage(event,1,0)}>{'<<'}</button>
+                                        <button className="FormField__Pagination" onClick={event => this.setPage(event,this.state.page,-1)}>{'<'}</button>
+                                        <button className="FormField__Pagination" onClick={event => this.setPage(event,1,0)}>1</button>
+                                        <button className="FormField__Pagination">...</button>
+
+                                        <button className="FormField__Pagination" onClick={event => this.setPage(event,this.state.page,-1)}>{this.prevPage()}</button>
+                                        <button className="FormField__Pagination__Page">{this.state.page}</button>
+                                        <button className="FormField__Pagination" onClick={event => this.setPage(event,this.state.page,1)}>{this.nextPage()}</button>
+
+                                        <button className="FormField__Pagination">...</button>
+                                        <button className="FormField__Pagination" onClick={event => this.setPage(event,this.state.maxPages,0)}>{this.state.maxPages}</button>
+                                        <button className="FormField__Pagination" onClick={event => this.setPage(event,this.state.page,1)}>{'>'}</button>
+                                        <button className="FormField__Pagination__Last" onClick={event => this.setPage(event,this.state.maxPages,0)}>{'>>'}</button>
+                                    </Pagination>
+                                </div>  
+                            {/* </form>  */}
+                        </div>
                     </div>
                 </div>
-            </div>
 
-    );} else { return <Redirect exact to="/"/>}
-  }
+        );} else { return <Redirect exact to="/"/>}
+    }
 }
 
 

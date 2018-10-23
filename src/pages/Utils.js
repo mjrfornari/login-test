@@ -106,11 +106,13 @@ export function editData(tabela, item, id) {
         }).then(function(response) {
           console.log('Update updated!')
           alert('Registro alterado com sucesso!') 
+          return true
         }).catch(function (err) {
           if (err.name === 'not_found') {
             db.put(update).then(function (response) {
                 console.log('Update Created!')
                 alert('Registro alterado com sucesso!') 
+                return true
             }).catch(function (err) {
               console.log(err);
             });
@@ -163,11 +165,13 @@ export function appendData(tabela, item) {
         }).then(function(response) {
           console.log('Create updated!')
           alert('Registro incluído com sucesso!') 
+          return true
         }).catch(function (err) {
           if (err.name === 'not_found') {
             db.put(create).then(function (response) {
                 console.log('Create Created!')
                 alert('Registro incluído com sucesso!') 
+                return true
             }).catch(function (err) {
               console.log(err);
             });
@@ -561,8 +565,10 @@ export function updateToFirebird(nomepk, tablename, callback) {
                 // return ''
                 if (x===nomepk){
                   where = x+'='+ySplited[i]
+                  return ''
                 } else if (x ==='itens') {
                   console.log('itens')
+                  return ''
                 } else return fieldsnvalues[i]=x+'='+ySplited[i]
               })
               fieldsnvalues = JSON.stringify(fieldsnvalues).split('"').join("").split('[').join("").split(']').join("").split("=null,").join("*").split("null,").join("").split("*").join("=null,");

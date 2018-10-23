@@ -261,8 +261,8 @@ class Example extends React.Component {
 
 
                                 {this.hideShow()}
-                                {this.saveBtn(this.state.ok)}
                                 <LinkContainer to="/clientes"><button className="FormField__Button mr-20">Voltar</button></LinkContainer>
+                                {this.saveBtn(this.state.ok)}
                             </form>
                             </div>
                         </div>
