@@ -31,7 +31,7 @@ class EntrarForm extends Component {
                 if (Object.keys(r).length > 0){
                     if (r[0]["PK_VEN"] !== '') {
                         this.logado=true
-                        this.props.history.push('/home') 
+                        this.props.history.push('/macropecas/home') 
                         localStorage.setItem("macropecas", r[0]["PK_VEN"]);                  
                     }
 
@@ -77,12 +77,12 @@ class EntrarForm extends Component {
    
     render(){
         let logou = localStorage.getItem("logou");
-        if (logou === "true") {this.props.history.push('/home')}
+        if (logou === "true") {this.props.history.push('/macropecas/home')}
         return(
             <div className="App">
                 <div className="App__Aside">
                     {/* <div className="App__Aside__BG"></div> */}
-                        <img src='/logo.png' className='App__Aside__BG' alt='Delphus'/>
+                        <img src='logo.png' className='App__Aside__BG' alt='Delphus'/>
                 </div>
                 <div className="App__Form">         
                     <div className="FormCenter">

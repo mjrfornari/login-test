@@ -9,7 +9,6 @@ import { ic_add_shopping_cart } from 'react-icons-kit/md/ic_add_shopping_cart';
 import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_sync} from 'react-icons-kit/md/ic_sync'
-import {ic_assignment} from 'react-icons-kit/md/ic_assignment'
 import {ListGroup, ListGroupItem, Pagination} from 'react-bootstrap'
 import {LinkContainer} from 'react-router-bootstrap'
 // import PouchDB from "pouchdb"
@@ -88,7 +87,7 @@ class Example extends React.Component {
             if (this.state.detailed === true){
                         if (this.state.iddetailed === id){
                             return   (
-                            <ListGroupItem header={item.RAZAO_SOCIAL} href="#" className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
+                            <ListGroupItem header={item.RAZAO_SOCIAL} href="#" key={id} className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
                             Nome Fantasia: {item.NOME_FANTASIA}<br/>
                             CNPJ: {mascaraCNPJ(item.CNPJ)}<br/>
                             Inscrição Estadual: {item.INSCRICAO_ESTADUAL}
@@ -106,24 +105,24 @@ class Example extends React.Component {
                                 Email Financeiro: {item.EMAIL_FINANCEIRO}                            
                             </li>
                             
-                            <LinkContainer to={"/clientes/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
+                            <LinkContainer to={"/macropecas/clientes/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
                             </ListGroupItem>
                             )
                         } else {
                             return (
-                                <ListGroupItem header={item.RAZAO_SOCIAL} href="#" className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
+                                <ListGroupItem header={item.RAZAO_SOCIAL} href="#" key={id} className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
                                 Nome Fantasia: {item.NOME_FANTASIA}<br/>
                                 CNPJ: {mascaraCNPJ(item.CNPJ)}<br/>
-                                <LinkContainer to={"/clientes/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
+                                <LinkContainer to={"/macropecas/clientes/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
                                 </ListGroupItem>
                             )
                         }
                     } else {
                         return (
-                            <ListGroupItem header={item.RAZAO_SOCIAL} href="#" className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
+                            <ListGroupItem header={item.RAZAO_SOCIAL} href="#" key={id} className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
                             Nome Fantasia: {item.NOME_FANTASIA}<br/>
                             CNPJ: {mascaraCNPJ(item.CNPJ)}<br/>
-                            <LinkContainer to={"/clientes/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
+                            <LinkContainer to={"/macropecas/clientes/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
                             </ListGroupItem>
                         )
                     }
@@ -155,8 +154,8 @@ class Example extends React.Component {
                                         onItemSelection={ (id, parent) => {
                                             if (id==='exit'){  
                                                 localStorage.setItem("logou", false);    
-                                                this.props.history.push('/')
-                                            } else {this.props.history.push('/'+id)
+                                                this.props.history.push('/macropecas/')
+                                            } else {this.props.history.push('/macropecas/'+id)
                             }}}>                      
                                 <Nav id='home'>
                                     <NavIcon><SvgIcon size={30} icon={ic_home}/></NavIcon>    
@@ -166,17 +165,13 @@ class Example extends React.Component {
                                     <NavIcon><SvgIcon size={30} icon={ic_account_box}/></NavIcon>    
                                     <NavText> Clientes </NavText>
                                 </Nav>
-                                <Nav id='pedidos'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_add_shopping_cart}/></NavIcon>
-                                    <NavText> Pedidos </NavText>
-                                </Nav>
                                 <Nav id='produtos'>
                                     <NavIcon><SvgIcon size={30} icon={ic_build}/></NavIcon>
                                     <NavText> Produtos </NavText>
                                 </Nav>
-                                <Nav id='notas'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_assignment}/></NavIcon>
-                                    <NavText> Notas Fiscais </NavText>
+                                <Nav id='pedidos'>
+                                    <NavIcon><SvgIcon size={30} icon={ic_add_shopping_cart}/></NavIcon>
+                                    <NavText> Pedidos </NavText>
                                 </Nav>
                                 <Nav id='sync'>
                                     <NavIcon><SvgIcon size={30} icon={ic_sync}/></NavIcon>
@@ -306,15 +301,15 @@ class Example extends React.Component {
                                         <div className="FormField">
                                             <label className="FormFilter__Label" htmlFor="RAZAO_SOCIAL">Razão Social</label>
                                             <input type="text" id="RAZAO_SOCIAL" className="FormFilter__Input" 
-                                            name="RAZAO_SOCIAL" value={this.state.filter.RAZAO_SOCIAL} onChange={this.handleChange}/>
+                                            name="RAZAO_SOCIAL" value={this.state.filter.RAZAO_SOCIAL || ''} onChange={this.handleChange}/>
                                             <br/>
                                             <label className="FormFilter__Label" htmlFor="NOME_FANTASIA">Nome Fantasia</label>
                                             <input type="text" id="NOME_FANTASIA" className="FormFilter__Input" 
-                                            name="NOME_FANTASIA" value={this.state.filter.NOME_FANTASIA} onChange={this.handleChange}/>
+                                            name="NOME_FANTASIA" value={this.state.filter.NOME_FANTASIA || ''} onChange={this.handleChange}/>
                                             <br/>
                                             <label className="FormFilter__Label" htmlFor="CNPJ">CNPJ</label>
                                             <input type="text" id="CNPJ" className="FormFilter__Input" 
-                                            name="CNPJ" value={this.state.filter.CNPJ} onChange={this.handleChange}/>
+                                            name="CNPJ" value={this.state.filter.CNPJ || ''} onChange={this.handleChange}/>
                                             <div>
                                                 <button className="FormField__Button" onClick={this.handleRefresh}>Filtrar</button>  
                                                 <button className="FormField__Button" onClick={this.handleClean}>Limpar</button> 
@@ -327,7 +322,7 @@ class Example extends React.Component {
                                     
                                     <br/>
                                     {this.hideShow()}
-                                    <LinkContainer to={"/clientes/registro"}><button className="FormField__Button__Fix" onClick={this.handleShow}><SvgIcon className='FormField__Icon__Fix' size={24} icon={plus}/></button></LinkContainer>                       
+                                    <LinkContainer to={"/macropecas/clientes/registro"}><button className="FormField__Button__Fix" onClick={this.handleShow}><SvgIcon className='FormField__Icon__Fix' size={24} icon={plus}/></button></LinkContainer>                       
                                 </div>
                                 <div>                    
                                     <ListGroup>
@@ -356,7 +351,7 @@ class Example extends React.Component {
                     </div>
                 </div>
 
-        );} else { return <Redirect exact to="/"/>}
+        );} else { return <Redirect exact to="/macropecas/"/>}
     }
 }
 

@@ -35,7 +35,7 @@ th, td {
 }
 
 .ItemAdded-hide{
-  background-color: rgb(48, 76, 85);
+  background-color: #304c55;
   z-index: 1500;
   position: absolute;
   border-radius: 25px;
@@ -458,6 +458,59 @@ tr:hover {background-color:#506b55;}
   /* margin-top: 10px; */
 }
 
+.FormFilter__Date {
+  width: 50%;
+  border-radius: 25px;
+  background-color: #649764;
+  border: none;
+  color: white;
+  outline: none;
+  /* border: 2px solid #506b55; */
+  font-size: 1em;
+  font-weight: 300;
+  padding: 10px;
+  margin-bottom: 10px;
+  /* margin-top: 10px; */
+}
+
+.Dropdown-option, .Dropdown-menu, .Dropdown-title, .Dropdown-control {
+    border-color: transparent !important;
+    color: white !important;
+    background-color: #649764 !important;
+  }
+
+  .Dropdown-root {
+    left: 80%
+  }
+
+  .Dropdown-control {
+    border-radius: 25px !important;
+  }
+
+  .Dropdown-option, .Dropdown-menu {
+    border-radius: 15px !important;
+  }
+
+  
+
+  .Dropdown-menu, .Dropdown-title, .Dropdown-control{
+    width: 20% !important
+  }
+
+  .Dropdown-option.is-selected {
+    background-color: #506b55 !important;
+    border-radius: 15px !important;
+    width: 100% !important
+  }
+
+  .Dropdown-arrow {
+    border-color: white transparent transparent !important;
+  }
+
+  .is-open .Dropdown-arrow {
+    border-color:  transparent transparent white !important;
+  }
+
 
 
 @media screen and (min-width: 601px) {
@@ -479,13 +532,15 @@ tr:hover {background-color:#506b55;}
     
   }
 
+  
+
   .FormField__Complete {
     width: 80%;
     border-radius: 25px;
     background-color: #649764;
     border: none;
     color: white;
-    height: 300px;
+    height: 150px;
     outline: none;
     /* border: 2px solid #506b55; */
     font-size: 1em;

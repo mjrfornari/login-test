@@ -9,8 +9,7 @@ import { ic_add_shopping_cart } from 'react-icons-kit/md/ic_add_shopping_cart';
 import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_sync} from 'react-icons-kit/md/ic_sync'
-import {ic_assignment} from 'react-icons-kit/md/ic_assignment'
-import { syncData, createToFirebird, updateToFirebird, test } from "./Utils";
+import { syncData, createToFirebird, updateToFirebird } from "./Utils";
 import Clock from 'react-live-clock';
 import ReactLoading from 'react-loading';
 import { Offline, Online } from "react-detect-offline";
@@ -64,7 +63,7 @@ class Example extends React.Component {
 
     handleTeste(e){
       e.preventDefault();  
-      test(localStorage.getItem('macropecas'))
+      fetch('http://187.44.93.73:8080/login/12345678912345/555').then(r => r.json()).then(r => {console.log(r)})
     }
 
     hideBar(){
@@ -85,8 +84,8 @@ class Example extends React.Component {
                         onItemSelection={ (id, parent) => {
                             if (id==='exit'){  
                                 localStorage.setItem("logou", false);    
-                                this.props.history.push('/')
-                            } else this.props.history.push('/'+id)
+                                this.props.history.push('/macropecas/')
+                            } else this.props.history.push('/macropecas/'+id)
                         }}>       
                             <Nav id='home'>
                                 <NavIcon><SvgIcon size={30} icon={ic_home}/></NavIcon>    
@@ -96,17 +95,13 @@ class Example extends React.Component {
                                 <NavIcon><SvgIcon size={30} icon={ic_account_box}/></NavIcon>    
                                 <NavText> Clientes </NavText>
                             </Nav>
-                            <Nav id='pedidos'>
-                                <NavIcon><SvgIcon size={30} icon={ic_add_shopping_cart}/></NavIcon>
-                                <NavText> Pedidos </NavText>
-                            </Nav>
                             <Nav id='produtos'>
                                 <NavIcon><SvgIcon size={30} icon={ic_build}/></NavIcon>
                                 <NavText> Produtos </NavText>
                             </Nav>
-                            <Nav id='notas'>
-                                <NavIcon><SvgIcon size={30} icon={ic_assignment}/></NavIcon>
-                                <NavText> Notas Fiscais </NavText>
+                            <Nav id='pedidos'>
+                                <NavIcon><SvgIcon size={30} icon={ic_add_shopping_cart}/></NavIcon>
+                                <NavText> Pedidos </NavText>
                             </Nav>
                             <Nav id='sync'>
                                 <NavIcon><SvgIcon size={30} icon={ic_sync}/></NavIcon>
@@ -115,7 +110,7 @@ class Example extends React.Component {
                             <Nav id='exit'>
                                 <NavIcon><SvgIcon size={30} icon={ic_exit_to_app}/></NavIcon>
                                 <NavText> Sair </NavText>
-                            </Nav>
+                            </Nav>   
                         </SideNav>
                     </div>
                 </div>
@@ -137,7 +132,7 @@ class Example extends React.Component {
                 </div>
             </div>
 
-    );} else { return <Redirect exact to="/"/>}
+    );} else { return <Redirect exact to="/macropecas/"/>}
   }
 }
 

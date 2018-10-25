@@ -5,13 +5,11 @@ import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import Menu from './pages/Menu';
 import Clientes from './pages/Clientes';
 import Pedidos from './pages/Pedidos';
-import NotasFiscais from './pages/NotasFiscais';
 import Sync from './pages/Sincronizacao';
 import Produtos from './pages/Produtos';
 import EntrarForm from './pages/EntrarForm';
 import RegClientes from './pages/RegClientes'
 import RegPedidos from './pages/RegPedidos'
-import RegNotasFiscais from './pages/RegNotasFiscais'
 import './App.css';
 
 
@@ -22,31 +20,30 @@ class App extends Component {
         return (
         <Router>
             <Switch>  
-                <div>
+                
 
-                    <Route exact path="/" component={EntrarForm}>
+                    <Route exact path="/macropecas" component={EntrarForm}>
                     </Route>
-                    <Route path="/home" component={Menu}>
+                    <Route path="/macropecas/home" component={Menu}>
                     </Route>
-                    <Route path="/clientes/registro" component={RegClientes}>
+                    <Route path="/macropecas/clientes/registro" component={RegClientes}>
                     </Route>
-                    <Route exact path="/clientes" component={Clientes}>
+                    <Route exact path="/macropecas/clientes" component={Clientes}>
                     </Route>
-                    <Route path="/pedidos/registro" component={RegPedidos}>
+                    <Route path="/macropecas/pedidos/registro" component={RegPedidos}>
                     </Route>
-                    <Route exact path="/pedidos" component={Pedidos}>
+                    <Route exact path="/macropecas/pedidos" component={Pedidos}>
                     </Route>
-                    <Route path="/produtos" component={Produtos}>
+                    <Route path="/macropecas/produtos" component={Produtos}>
                     </Route>
-                    <Route path="/notas/registro" component={RegNotasFiscais}>
+                    <Route path="/macropecas/sync" component={Sync}>
                     </Route>
-                    <Route exact path="/notas" component={NotasFiscais}>
-                    </Route>
-                    <Route path="/sync" component={Sync}>
+                    <Route component={Menu}>
                     </Route>
 
 
-                </div>
+
+                
             </Switch>
         </Router>
         );

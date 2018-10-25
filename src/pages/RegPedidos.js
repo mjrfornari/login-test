@@ -10,7 +10,6 @@ import { ic_add_shopping_cart } from 'react-icons-kit/md/ic_add_shopping_cart';
 import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_sync} from 'react-icons-kit/md/ic_sync'
-import {ic_assignment} from 'react-icons-kit/md/ic_assignment'
 import {ListGroup, ListGroupItem, Modal, Button} from 'react-bootstrap'
 import {check} from 'react-icons-kit/metrize/check'
 import { Radio } from 'semantic-ui-react'
@@ -73,6 +72,7 @@ class Example extends React.Component {
     this.createSons = this.createSons.bind(this)
     this.willShow = this.willShow.bind(this)
     this.loading = this.loading.bind(this)
+    this.novoCliente = this.novoCliente.bind(this)
   }
   
     saveBtn(ok) {
@@ -85,12 +85,12 @@ class Example extends React.Component {
 
     createSons(item, id){
         return(
-            <ListGroupItem href="#" id={id} className="FormField__Grid" onClick={this.willShow}>
-            <div id={id} class="row">
-                <div id={id} class="column_left">
+            <ListGroupItem href="#" id={id} key={id} className="FormField__Grid" onClick={this.willShow}>
+            <div id={id} className="row">
+                <div id={id} className="column_left">
                     Nº {id+1}
                 </div>
-                <div id={id} class="column">
+                <div id={id} className="column">
                     Código: {item.CODIGOPRO}<br/>
                     Quantidade: {item.QUANTIDADE}<br/>
                     Valor: {'R$ '+item.VALOR}<br/>
@@ -119,8 +119,8 @@ class Example extends React.Component {
                                         onItemSelection={ (id, parent) => {
                                             if (id==='exit'){  
                                                 localStorage.setItem("logou", false);    
-                                                this.props.history.push('/')
-                                            } else {this.props.history.push('/'+id)
+                                                this.props.history.push('/macropecas/')
+                                            } else {this.props.history.push('/macropecas/'+id)
                             }}}>                      
                                 <Nav id='home'>
                                     <NavIcon><SvgIcon size={30} icon={ic_home}/></NavIcon>    
@@ -130,17 +130,13 @@ class Example extends React.Component {
                                     <NavIcon><SvgIcon size={30} icon={ic_account_box}/></NavIcon>    
                                     <NavText> Clientes </NavText>
                                 </Nav>
-                                <Nav id='pedidos'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_add_shopping_cart}/></NavIcon>
-                                    <NavText> Pedidos </NavText>
-                                </Nav>
                                 <Nav id='produtos'>
                                     <NavIcon><SvgIcon size={30} icon={ic_build}/></NavIcon>
                                     <NavText> Produtos </NavText>
                                 </Nav>
-                                <Nav id='notas'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_assignment}/></NavIcon>
-                                    <NavText> Notas Fiscais </NavText>
+                                <Nav id='pedidos'>
+                                    <NavIcon><SvgIcon size={30} icon={ic_add_shopping_cart}/></NavIcon>
+                                    <NavText> Pedidos </NavText>
                                 </Nav>
                                 <Nav id='sync'>
                                     <NavIcon><SvgIcon size={30} icon={ic_sync}/></NavIcon>
@@ -183,8 +179,8 @@ class Example extends React.Component {
         let pathname = this.props.location.pathname
         if (pathname.includes('pedidos')) {           
             if (this.state.isLoading === true) {
-                if (this.props.location.pathname !== '/pedidos/registro') {
-                    let ID = this.props.location.pathname.replace('/pedidos/registro/','');
+                if (this.props.location.pathname !== '/macropecas/pedidos/registro') {
+                    let ID = this.props.location.pathname.replace('/macropecas/pedidos/registro/','');
                     readTable(Data => { this.setState({pedidos: Data.data.pedidos, isLoading: true})
                         this.setState({now: Data.data.pedidos[ID], id: ID, isLoading: false}) 
                         let listClientes = []
@@ -210,7 +206,7 @@ class Example extends React.Component {
                         }); 
 
                         Data.data.produtos.forEach((element, elementid) => {
-                            listProdutos.push({value: element.CODIGO_REPRESENTADA+' - '+element.NOME_REPRESENTADA, ST_ICMS: 0,IPI : element.IPI,display: element.CODIGO_REPRESENTADA, codigo : element.PK_PRO})
+                            listProdutos.push({value: element.CODIGO_REPRESENTADA+' - '+element.NOME_REPRESENTADA, ST_ICMS: 0,IPI : element.IPI,display: element.CODIGO_REPRESENTADA+' - '+element.NOME_REPRESENTADA, codigo : element.PK_PRO})
                         }); 
 
                         Data.data.cond_pag.forEach((element, elementid) => {
@@ -243,11 +239,11 @@ class Example extends React.Component {
                         }); 
 
                         Data.data.produtos.forEach((element, elementid) => {
-                            listProdutos.push({value: element.CODIGO_REPRESENTADA+' - '+element.NOME_REPRESENTADA, display: element.CODIGO_REPRESENTADA, codigo : element.PK_PRO})
+                            listProdutos.push({value: element.CODIGO_REPRESENTADA+' - '+element.NOME_REPRESENTADA, display: element.CODIGO_REPRESENTADA+' - '+element.NOME_REPRESENTADA, codigo : element.PK_PRO})
                         }); 
 
                         Data.data.cond_pag.forEach((element, elementid) => {
-                            listCondPags.push({value: '('+element.CODIGO_REPRESENTADA+') '+element.NOME, display: element.NOME, codigo : element.PK_CPG})
+                            listCondPags.push({value: element.NOME, display: element.NOME, codigo : element.PK_CPG})
                         }); 
                         this.setState({cond_pags: listCondPags, clientes: listClientes, produtos: listProdutos, st_icms: listSt_icms})
                 
@@ -383,7 +379,7 @@ class Example extends React.Component {
             }
             selecionado.ST_ICMS = percSt
             reg.ST_ICMS = (percSt * ((reg.QUANTIDADE*reg.VALOR)/100)).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
-            reg.TOTAL = (((reg['VALOR'] * reg['QUANTIDADE'] * ((100-reg['DESCONTO1'])/100)) * ((100-reg['DESCONTO2'])/100)) + reg.IPI + reg.ST_ICMS).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+            reg.TOTAL = (((reg['VALOR'] * reg['QUANTIDADE'] * ((100-reg['DESCONTO1'])/100)) * ((100-reg['DESCONTO2'])/100)) + (selecionado.IPI * ((reg.QUANTIDADE*reg.VALOR)/100)) + (percSt * ((reg.QUANTIDADE*reg.VALOR)/100))).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
             this.setState({editIte: reg, [tablename]: selecionado})
         }
         
@@ -417,7 +413,8 @@ class Example extends React.Component {
                                             {isOpen
                                                 ? table
                                                     .filter(item => !inputValue.toUpperCase() || item.value.includes(inputValue.toUpperCase()))
-                                                    .map((item, index) => {if (index<10) { return(
+                                                    .slice(0,10)
+                                                    .map((item, index) => {return(
                                                     <li className="FormField__List"
                                                         {...getItemProps({
                                                         key: item.value,
@@ -432,7 +429,7 @@ class Example extends React.Component {
                                                     >
                                                         <p className='FormField__List__Text'>{this.itens(item,selectedItem)}</p>
                                                     </li>
-                                                    )}})
+                                                    )})
                                                 : null}
                                             </ul>
                                         </div>
@@ -451,6 +448,15 @@ class Example extends React.Component {
     }
 
     showTotal(){
+        // alert(this.state.mostraModal)
+        if (this.state.mostraTotal === true) {
+            return 'ModalShow_Total'
+        } else {
+            return 'ModalHide'
+        }
+    }
+
+    novoCliente(){
         // alert(this.state.mostraModal)
         if (this.state.mostraTotal === true) {
             return 'ModalShow_Total'
@@ -546,7 +552,18 @@ class Example extends React.Component {
                         <div className="App">
                            {bar}  
                             <div className="App__Form">
-                                <div className={this.showTotal()} tabindex="-1" onHide={this.closeModal}>
+                                <div className={this.showTotal()} tabIndex="-1">
+                                    <Modal.Dialog className="Modal" >
+                                        <Modal.Body className="ModalBg">    
+                                            Total do Pedido: R$ {this.state.now.TOTAL}
+                                        </Modal.Body>
+                                        <Modal.Footer className="ModalBg">
+                                            <Button className="FormField__Button mr-20" onClick={this.closeModal}>Cancelar</Button>
+                                            <Button className="FormField__Button mr-20" onClick={this.handleSave}>Salvar</Button>
+                                        </Modal.Footer>
+                                    </Modal.Dialog>
+                                </div>
+                                <div className={this.novoCliente()} tabIndex="-1">
                                     <Modal.Dialog className="Modal">
                                         <Modal.Body className="ModalBg">    
                                             Total do Pedido: R$ {this.state.now.TOTAL}
@@ -557,11 +574,11 @@ class Example extends React.Component {
                                         </Modal.Footer>
                                     </Modal.Dialog>
                                 </div>
-                                <div className={this.showModal()} tabindex="-1" onHide={this.closeModal}>
+                                <div className={this.showModal()} tabIndex="-1" >
                                     <Modal.Dialog className="Modal">
                                         <Modal.Header className="ModalBg">
                                             <Modal.Title>Nº {parseInt(this.state.editIte.id, 10)+1}</Modal.Title>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" onClick={this.closeModal}>
+                                            <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={this.closeModal}>
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </Modal.Header>
@@ -584,11 +601,11 @@ class Example extends React.Component {
                                                         <div style={{width: '45%', display:'inline'}}>
                                                         
                                                            <input type="number" min="1" step="1" id="QUANTIDADE" className="FormField__Input" 
-                                                            name="QUANTIDADE" value={this.state.editIte.QUANTIDADE} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
+                                                            name="QUANTIDADE" value={this.state.editIte.QUANTIDADE || ''} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
                                                         </div>
                                                         <div style={{width: '45%', display:'inline'}}>
                                                             <input type="number" min="0.00" step="0.01" id="VALOR" className="FormField__Input"
-                                                            name="VALOR" value={this.state.editIte.VALOR} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
+                                                            name="VALOR" value={this.state.editIte.VALOR || ''} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
                                                         </div>
                                                     </div>
                                             </div>
@@ -607,11 +624,11 @@ class Example extends React.Component {
                                                     <div style={{display:'flex'}}>
                                                         <div style={{width: '45%', display:'inline'}}>
                                                             <input type="number" min="0.00" step="0.01" id="DESCONTO1" className="FormField__Input"  style={{margin: '0px 5px 0px 0px', display:'inline-block'}} 
-                                                            name="DESCONTO1" value={this.state.editIte.DESCONTO1} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
+                                                            name="DESCONTO1" value={this.state.editIte.DESCONTO1 || ''} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
                                                         </div>
                                                         <div style={{width: '45%', display:'inline'}}>
                                                             <input type="number" min="0.00" step="0.01" id="DESCONTO2" className="FormField__Input"  style={{margin: '0px 5px 0px 0px'}}
-                                                            name="DESCONTO2" value={this.state.editIte.DESCONTO2} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
+                                                            name="DESCONTO2" value={this.state.editIte.DESCONTO2 || ''} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
                                                         </div>
                                                     </div>
                                             </div>
@@ -627,11 +644,11 @@ class Example extends React.Component {
                                                     <div style={{display:'flex'}}>
                                                         <div style={{width: '30%', display:'inline'}}>
                                                             <input type="text" id="PROIPI" className="FormField__Input" 
-                                                            name="PROIPI" value={this.state.produto.IPI}/>
+                                                            name="PROIPI" value={this.state.produto.IPI || ''} readOnly/>
                                                         </div>
                                                         <div style={{width: '65%', display:'inline'}}>
                                                             <input type="text" id="IPI" className="FormField__Input"
-                                                            name="IPI" value={this.state.editIte.IPI}/>
+                                                            name="IPI" value={this.state.editIte.IPI || ''} readOnly/>
                                                         </div>
                                                     </div>
                                             </div>
@@ -647,18 +664,18 @@ class Example extends React.Component {
                                                     <div style={{display:'flex'}}>
                                                         <div style={{width: '30%', display:'inline'}}>
                                                             <input type="text" id="PROIPI" className="FormField__Input" 
-                                                            name="PROST_ICMS" value={this.state.produto.ST_ICMS}/>
+                                                            name="PROST_ICMS" value={this.state.produto.ST_ICMS || ''} readOnly/>
                                                         </div>
                                                         <div style={{width: '65%', display:'inline'}}>
                                                             <input type="text" id="ST_ICMS" className="FormField__Input"
-                                                            name="ST_ICMS" value={this.state.editIte.ST_ICMS}/>
+                                                            name="ST_ICMS" value={this.state.editIte.ST_ICMS || ''} readOnly/>
                                                         </div>
                                                     </div>
                                             </div>
                                             <div className="FormField">
                                                 <label className="FormField__Label" htmlFor="TOTAL">VALOR TOTAL</label>
                                                 <input type="text" id="TOTAL" className="FormField__Input" 
-                                                name="TOTAL" value={this.state.editIte.TOTAL}/>
+                                                name="TOTAL" value={this.state.editIte.TOTAL || ''} readOnly/>
                                             </div>
 
                                         </Modal.Body>
@@ -688,7 +705,7 @@ class Example extends React.Component {
                                     <div className="FormField">
                                         <label className="FormField__Label" htmlFor="OBSERVACAO">OBSERVAÇÃO</label>
                                         <textarea id="OBSERVACAO" className="FormField__Input__OBS" 
-                                        name="OBSERVACAO" value={this.state.now.OBSERVACAO} onChange={this.handleChange}/>
+                                        name="OBSERVACAO" value={this.state.now.OBSERVACAO || ''} onChange={this.handleChange}/>
                                     </div>
                                     <div>
                                         ITENS:
@@ -697,7 +714,7 @@ class Example extends React.Component {
                                             {this.loading(this.state.isLoading, listItens)}
                                         </ListGroup>
                                     </div>
-                                    <LinkContainer to="/pedidos"><button className="FormField__Button mr-20">Voltar</button></LinkContainer>
+                                    <LinkContainer to="/macropecas/pedidos"><button className="FormField__Button mr-20">Voltar</button></LinkContainer>
                                     {this.saveBtn(this.state.ok)}
                                     {this.hideShow()}
                                     <button className="FormField__Button__Fix" onClick={this.willShow}><SvgIcon className='FormField__Icon__Fix' size={24} icon={plus}/></button>                                    
@@ -706,7 +723,7 @@ class Example extends React.Component {
                             </div>
                         </div>
                 )
-        } else { return <Redirect exact to="/"/>}
+        } else { return <Redirect exact to="/macropecas/"/>}
     }
 }
 

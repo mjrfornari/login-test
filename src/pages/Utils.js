@@ -4,6 +4,7 @@ import React from "react";
 import "../App.css";
 import PouchDB from 'pouchdb';
 
+// const server = 'http://187.44.93.73:8080';
 const server = 'http://192.168.0.251:3001';
 const db = new PouchDB('macropecas');
 
@@ -26,7 +27,7 @@ export function geraInput(fieldname, displayname, value, funcao, tamanho){
       <div className="FormField">
         <label className="FormField__Label" htmlFor={fieldname}>{displayname}</label>
         <input type="text" id={fieldname} className="FormField__Input" style={{width : tamanho}}
-        name={fieldname} value={value} onChange={(event) => funcao(event)}/>
+        name={fieldname} value={value || ''} onChange={(event) => funcao(event)}/>
       </div>
     )
   } else {
@@ -34,7 +35,7 @@ export function geraInput(fieldname, displayname, value, funcao, tamanho){
       <div className="FormField">
         <label className="FormField__Label" htmlFor={fieldname}>{displayname}</label>
         <input type="text" id={fieldname} className="FormField__Input" 
-        name={fieldname} value={value} onChange={(event) => funcao(event)}/>
+        name={fieldname} value={value || ''} onChange={(event) => funcao(event)}/>
       </div>
     )
   }

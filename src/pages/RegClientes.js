@@ -10,7 +10,6 @@ import { ic_add_shopping_cart } from 'react-icons-kit/md/ic_add_shopping_cart';
 import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_sync} from 'react-icons-kit/md/ic_sync'
-import {ic_assignment} from 'react-icons-kit/md/ic_assignment'
 import { readTable, editData, appendData, geraInput, removeAcento } from "./Utils";
 import {ic_keyboard_arrow_left} from 'react-icons-kit/md/ic_keyboard_arrow_left'
 import {ic_keyboard_arrow_right} from 'react-icons-kit/md/ic_keyboard_arrow_right'
@@ -63,8 +62,8 @@ class Example extends React.Component {
                                         onItemSelection={ (id, parent) => {
                                             if (id==='exit'){  
                                                 localStorage.setItem("logou", false);    
-                                                this.props.history.push('/')
-                                            } else {this.props.history.push('/'+id)
+                                                this.props.history.push('/macropecas/')
+                                            } else {this.props.history.push('/macropecas/'+id)
                             }}}>                      
                                 <Nav id='home'>
                                     <NavIcon><SvgIcon size={30} icon={ic_home}/></NavIcon>    
@@ -74,17 +73,13 @@ class Example extends React.Component {
                                     <NavIcon><SvgIcon size={30} icon={ic_account_box}/></NavIcon>    
                                     <NavText> Clientes </NavText>
                                 </Nav>
-                                <Nav id='pedidos'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_add_shopping_cart}/></NavIcon>
-                                    <NavText> Pedidos </NavText>
-                                </Nav>
                                 <Nav id='produtos'>
                                     <NavIcon><SvgIcon size={30} icon={ic_build}/></NavIcon>
                                     <NavText> Produtos </NavText>
                                 </Nav>
-                                <Nav id='notas'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_assignment}/></NavIcon>
-                                    <NavText> Notas Fiscais </NavText>
+                                <Nav id='pedidos'>
+                                    <NavIcon><SvgIcon size={30} icon={ic_add_shopping_cart}/></NavIcon>
+                                    <NavText> Pedidos </NavText>
                                 </Nav>
                                 <Nav id='sync'>
                                     <NavIcon><SvgIcon size={30} icon={ic_sync}/></NavIcon>
@@ -93,7 +88,7 @@ class Example extends React.Component {
                                 <Nav id='exit'>
                                     <NavIcon><SvgIcon size={30} icon={ic_exit_to_app}/></NavIcon>
                                     <NavText> Sair </NavText>
-                                </Nav>   
+                                </Nav>    
                             </SideNav>
                         </div>
                         </div>
@@ -126,8 +121,8 @@ class Example extends React.Component {
         let pathname = this.props.location.pathname
         if (pathname.includes('clientes')) {           
             if (this.state.isLoading === true) {
-                if (this.props.location.pathname !== '/clientes/registro') {
-                    let ID = this.props.location.pathname.replace('/clientes/registro/','');
+                if (this.props.location.pathname !== '/macropecas/clientes/registro') {
+                    let ID = this.props.location.pathname.replace('/macropecas/clientes/registro/','');
                     readTable(Data => { this.setState({clientes: Data.data.clientes, isLoading: true})
                         this.setState({now: Data.data.clientes[ID], id: ID, isLoading: false})  
                     // Data.data.clientes.forEach(element => {
@@ -206,26 +201,26 @@ class Example extends React.Component {
                                     <br/>
                                     <h1 className="FormTitle__Link--Active">Registro de Clientes</h1>
                                 </div>
-                                {geraInput('PK_CLI','CÓDIGO',this.state.now.PK_CLI, ()=>{})}
+                                {geraInput('PK_CLI','CÓDIGO',this.state.now.PK_CLI || '', ()=>{})}
                                 <form className="FormFields" onSubmit={this.handleSubmit}>
                                 <div className="FormField">
                                     <label className="FormField__Label" htmlFor="RAZAO_SOCIAL">Razão Social</label>
                                     <input type="text" id="RAZAO_SOCIAL" className="FormField__Input" 
-                                    name="RAZAO_SOCIAL" value={this.state.now.RAZAO_SOCIAL} onChange={this.handleChange}/>
+                                    name="RAZAO_SOCIAL" value={this.state.now.RAZAO_SOCIAL || ''} onChange={this.handleChange}/>
                                 </div>
                                 <div className="FormField">
                                     <label className="FormField__Label" htmlFor="NOME_FANTASIA">NOME FANTASIA</label>
                                     <input type="text" id="NOME_FANTASIA" className="FormField__Input" 
-                                    name="NOME_FANTASIA" value={this.state.now.NOME_FANTASIA} onChange={this.handleChange}/>
+                                    name="NOME_FANTASIA" value={this.state.now.NOME_FANTASIA || ''} onChange={this.handleChange}/>
                                 </div>
                                 <div className="FormField">
                                     <label className="FormField__Label" htmlFor="CNPJ">CNPJ</label>
                                     <input type="text" id="CPNJ" className="FormField__Input" 
-                                    name="CNPJ" value={this.state.now.CNPJ} onChange={this.handleChange}/>
+                                    name="CNPJ" value={this.state.now.CNPJ || ''} onChange={this.handleChange}/>
                                 </div>
-                                {geraInput('INSCRICAO_ESTADUAL','INSCRIÇÃO ESTADUAL',this.state.now.INSCRICAO_ESTADUAL, this.handleChange)}
-                                {geraInput('INSCRICAO_MUNICIPAL','INSCRIÇÃO MUNICIPAL',this.state.now.INSCRICAO_MUNICIPAL, this.handleChange)}
-                                {geraInput('SUFRAMA','SUFRAMA',this.state.now.SUFRAMA, this.handleChange)}
+                                {geraInput('INSCRICAO_ESTADUAL','INSCRIÇÃO ESTADUAL',this.state.now.INSCRICAO_ESTADUAL || '', this.handleChange)}
+                                {geraInput('INSCRICAO_MUNICIPAL','INSCRIÇÃO MUNICIPAL',this.state.now.INSCRICAO_MUNICIPAL || '', this.handleChange)}
+                                {geraInput('SUFRAMA','SUFRAMA',this.state.now.SUFRAMA || '', this.handleChange)}
                                 ENDEREÇO
                                 <div className='box_inverted'>
                                     <div className="FormField">
@@ -234,41 +229,41 @@ class Example extends React.Component {
                                         name="CEP" value={this.state.now.CEP} onChange={this.handleChange}/>
                                         <button id='buscaCEP' className='ButtonIcon' onClick={this.enviaCEP}><SvgIcon style={{transform: 'translate(0%, 30%)'}} size={26} icon={ic_search}/></button>
                                     </div>
-                                    {geraInput('ENDERECO','LOGRADOURO',this.state.now.ENDERECO, this.handleChange)}
-                                    {geraInput('NUMERO','Nº',this.state.now.NUMERO, this.handleChange, '100px')}
-                                    {geraInput('BAIRRO','BAIRRO',this.state.now.BAIRRO, this.handleChange)}
-                                    {geraInput('CIDADE','CIDADE',this.state.now.CIDADE, this.handleChange)}
+                                    {geraInput('ENDERECO','LOGRADOURO',this.state.now.ENDERECO || '', this.handleChange)}
+                                    {geraInput('NUMERO','Nº',this.state.now.NUMERO || '', this.handleChange, '100px')}
+                                    {geraInput('BAIRRO','BAIRRO',this.state.now.BAIRRO || '', this.handleChange)}
+                                    {geraInput('CIDADE','CIDADE',this.state.now.CIDADE || '', this.handleChange)}
                                 </div>
                                 CONTATO
                                 <div className='box_inverted'>
                                     <div className="FormField">
                                         <label className="FormField__Label" htmlFor="FONE1">FONE 1</label>
                                         <input type="text" id="DDD1" className="FormField__Input" style={{width: '60px', margin: '0px 5px 0px 0px'}}
-                                        name="DDD1" value={this.state.now.DDD1} onChange={this.handleChange}/>
+                                        name="DDD1" value={this.state.now.DDD1 || ''} onChange={this.handleChange}/>
                                         <input type="text" id="FONE1" className="FormField__InputTelefone"
-                                        name="FONE1" value={this.state.now.FONE1} onChange={this.handleChange}/>
+                                        name="FONE1" value={this.state.now.FONE1 || ''} onChange={this.handleChange}/>
                                     </div>
                                     <div className="FormField">
                                         <label className="FormField__Label" htmlFor="FONE2">FONE 2</label>
                                         <input type="text" id="DDD2" className="FormField__Input" style={{width: '60px', margin: '0px 5px 0px 0px'}}
-                                        name="DDD2" value={this.state.now.DDD2} onChange={this.handleChange}/>
+                                        name="DDD2" value={this.state.now.DDD2 || ''} onChange={this.handleChange}/>
                                         <input type="text" id="FONE2" className="FormField__InputTelefone"
-                                        name="FONE2" value={this.state.now.FONE1} onChange={this.handleChange}/>
+                                        name="FONE2" value={this.state.now.FONE1 || ''} onChange={this.handleChange}/>
                                     </div>
-                                    {geraInput('EMAIL','EMAIL NFE',this.state.now.EMAIL, this.handleChange)}
-                                    {geraInput('EMAIL_FINANCEIRO','EMAIL FINANCEIRO',this.state.now.EMAIL_FINANCEIRO, this.handleChange)}
+                                    {geraInput('EMAIL','EMAIL NFE',this.state.now.EMAIL || '', this.handleChange)}
+                                    {geraInput('EMAIL_FINANCEIRO','EMAIL FINANCEIRO',this.state.now.EMAIL_FINANCEIRO || '', this.handleChange)}
                                 </div>
 
 
                                 {this.hideShow()}
-                                <LinkContainer to="/clientes"><button className="FormField__Button mr-20">Voltar</button></LinkContainer>
+                                <LinkContainer to="/macropecas/clientes"><button className="FormField__Button mr-20">Voltar</button></LinkContainer>
                                 {this.saveBtn(this.state.ok)}
                             </form>
                             </div>
                         </div>
                     </div>
             )
-    } else { return <Redirect exact to="/"/>}
+    } else { return <Redirect exact to="/macropecas/"/>}
   }
 }
 

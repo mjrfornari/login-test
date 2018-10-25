@@ -9,13 +9,13 @@ import { ic_add_shopping_cart } from 'react-icons-kit/md/ic_add_shopping_cart';
 import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_sync} from 'react-icons-kit/md/ic_sync'
-import {ic_assignment} from 'react-icons-kit/md/ic_assignment'
 import {ListGroup, ListGroupItem, Pagination} from 'react-bootstrap'
 // import PouchDB from "pouchdb"
 import { readTable, deleteData, zeraNull, garanteDate } from "./Utils";
 import {ic_keyboard_arrow_left} from 'react-icons-kit/md/ic_keyboard_arrow_left'
 import {ic_keyboard_arrow_right} from 'react-icons-kit/md/ic_keyboard_arrow_right'
-
+import Dropdown from 'react-dropdown'
+import 'react-dropdown/style.css'
 
 
 
@@ -57,6 +57,7 @@ class Example extends React.Component {
         this.setPage = this.setPage.bind(this);
         this.calcPages = this.calcPages.bind(this);
         this.masterDetail = this.masterDetail.bind(this)
+        this.ordenar = this.ordenar.bind(this)
 
     }
 
@@ -81,7 +82,7 @@ class Example extends React.Component {
             if (this.state.detailed === true){
                         if (this.state.iddetailed === id){
                             return   (
-                                <ListGroupItem href="#" header={'Código: '+item.CODIGO_REPRESENTADA} className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
+                                <ListGroupItem href="#" key={id} header={'Código: '+item.CODIGO_REPRESENTADA} className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
                                     Descrição: {item.NOME_REPRESENTADA}<br/>
                                     NCM: {item.CLASSIFICACAO_FISCAL}<br/>
                                     EAN: {item.CODIGO_BARRAS}<br/>
@@ -116,14 +117,14 @@ class Example extends React.Component {
                             )
                         } else {
                             return (
-                                <ListGroupItem href="#" header={'Código: '+item.CODIGO_REPRESENTADA}  className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
+                                <ListGroupItem href="#" key={id} header={'Código: '+item.CODIGO_REPRESENTADA}  className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
                                     Descrição: {item.NOME_REPRESENTADA}<br/>
                                 </ListGroupItem>
                             )
                         }
                     } else {
                         return (
-                            <ListGroupItem href="#" header={'Código: '+item.CODIGO_REPRESENTADA}  className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
+                            <ListGroupItem href="#" key={id} header={'Código: '+item.CODIGO_REPRESENTADA}  className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
                                 Descrição: {item.NOME_REPRESENTADA}<br/>
                             </ListGroupItem>
                         )
@@ -150,8 +151,8 @@ class Example extends React.Component {
                                         onItemSelection={ (id, parent) => {
                                             if (id==='exit'){  
                                                 localStorage.setItem("logou", false);    
-                                                this.props.history.push('/')
-                                            } else {this.props.history.push('/'+id)
+                                                this.props.history.push('/macropecas/')
+                                            } else {this.props.history.push('/macropecas/'+id)
                             }}}>                      
                                 <Nav id='home'>
                                     <NavIcon><SvgIcon size={30} icon={ic_home}/></NavIcon>    
@@ -161,17 +162,13 @@ class Example extends React.Component {
                                     <NavIcon><SvgIcon size={30} icon={ic_account_box}/></NavIcon>    
                                     <NavText> Clientes </NavText>
                                 </Nav>
-                                <Nav id='pedidos'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_add_shopping_cart}/></NavIcon>
-                                    <NavText> Pedidos </NavText>
-                                </Nav>
                                 <Nav id='produtos'>
                                     <NavIcon><SvgIcon size={30} icon={ic_build}/></NavIcon>
                                     <NavText> Produtos </NavText>
                                 </Nav>
-                                <Nav id='notas'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_assignment}/></NavIcon>
-                                    <NavText> Notas Fiscais </NavText>
+                                <Nav id='pedidos'>
+                                    <NavIcon><SvgIcon size={30} icon={ic_add_shopping_cart}/></NavIcon>
+                                    <NavText> Pedidos </NavText>
                                 </Nav>
                                 <Nav id='sync'>
                                     <NavIcon><SvgIcon size={30} icon={ic_sync}/></NavIcon>
@@ -180,7 +177,7 @@ class Example extends React.Component {
                                 <Nav id='exit'>
                                     <NavIcon><SvgIcon size={30} icon={ic_exit_to_app}/></NavIcon>
                                     <NavText> Sair </NavText>
-                                </Nav>   
+                                </Nav>     
                             </SideNav>
                         </div>
                         </div>
@@ -291,11 +288,18 @@ class Example extends React.Component {
         }
     }
 
+    ordenar(e){
+        let list = this.state.filtered
+        list.sort((a,b) => (a[e.value] > b[e.value]) ? 1 : ((b[e.value] > a[e.value]) ? -1 : 0))
+        this.setState({filtered: list, ordenado: e})
+    }
+
  render() {
     let Data = this.state.filtered
     let listData = Data.map(this.createItems)
     let logou = localStorage.getItem("logou");
     let bar = this.appBar(this.state.show);
+    const ordenacao = [{ value: 'CODIGO_REPRESENTADA', label: 'Código' }, { value: 'NOME_REPRESENTADA', label: 'Descrição' }]
     if (logou === "true") {
     return (     
               <div className="App">
@@ -314,11 +318,11 @@ class Example extends React.Component {
                                         <div className="FormField">
                                             <label className="FormFilter__Label" htmlFor="CODIGO_REPRESENTADA">Código do Produto</label>
                                             <input type="text" id="CODIGO_REPRESENTADA" className="FormFilter__Input" 
-                                            name="CODIGO_REPRESENTADA" value={this.state.filter.CODIGO_REPRESENTADA} onChange={this.handleChange}/>
+                                            name="CODIGO_REPRESENTADA" value={this.state.filter.CODIGO_REPRESENTADA || ''} onChange={this.handleChange}/>
                                             <br/>
                                             <label className="FormFilter__Label" htmlFor="NOME_REPRESENTADA">Descrição do Produto</label>
                                             <input type="text" id="NOME_REPRESENTADA" className="FormFilter__Input" 
-                                            name="NOME_REPRESENTADA" value={this.state.filter.NOME_REPRESENTADA} onChange={this.handleChange}/>
+                                            name="NOME_REPRESENTADA" value={this.state.filter.NOME_REPRESENTADA || ''} onChange={this.handleChange}/>
                                             <div>
                                                 <button className="FormField__Button" onClick={this.handleRefresh}>Filtrar</button>  
                                                 <button className="FormField__Button" onClick={this.handleClean}>Limpar</button> 
@@ -337,6 +341,9 @@ class Example extends React.Component {
                                 <br/>
                                 {this.hideShow()}
                                 {/* <LinkContainer to={"/clientes/registro"}><button className="FormField__Button__Fix" onClick={this.handleShow}><SvgIcon className='FormField__Icon__Fix' size={24} icon={plus}/></button></LinkContainer>                        */}
+                            </div>
+                            <div className="FormField">
+                                <Dropdown options={ordenacao} onChange={this.ordenar} value={this.state.ordenado} className="FormField__Dropdown" placeholder="Ordenação" />
                             </div>
                             <div>                    
                                 <ListGroup>
@@ -365,7 +372,7 @@ class Example extends React.Component {
                 </div>
             </div>
 
-    );} else { return <Redirect exact to="/"/>}
+    );} else { return <Redirect exact to="/macropecas/"/>}
   }
 }
 
