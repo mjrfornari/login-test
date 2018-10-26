@@ -38,10 +38,11 @@ class Example extends React.Component {
         produtos : [],
         st_icms : {value: '', codigo: ''},
         cliente : {display: '', value: '', codigo: ''},
-        produto : {display: '', value: '', codigo: '', IPI: 0, ST_ICMS: 0},
+        produto : {display: '', value: '', codigo: '', IPI: 0, ST_ICMS: 0, PRECO_PROM_REGIAO_1:0, PRECO_PROM_REGIAO_2:0, PRECO_PROM_REGIAO_3:0, PRECO_PROM_REGIAO_4:0,  PRECO_VENDA_PROMO:0, PRECO_VENDA_LISTA:0, PRECO_REGIAO_1:0, PRECO_REGIAO_2:0, PRECO_REGIAO_3:0, PRECO_REGIAO_4:0 },
         cond_pag: {display: '', value: '', codigo: ''},
+        cidades: {},
         cond_pags: [],
-        now : {NUMPED:0, FK_CLI: 0, FK_CPG: 0, PK_PED: 0, OBSERVACAO: '', ORCAMENTO: 'N'},
+        now : {NUMPED:0, FK_CLI: 0, FK_CPG: 0, PK_PED: 0, OBSERVACAO: '', ORCAMENTO: 'N', DATA: new Date()},
         editIte: {CODIGOPRO: '', VALOR: '', TOTAL: 0, DESCONTO1: '', DESCONTO2: '', id:0, ST_ICMS: 0, IPI: 0},
         append: false,
         isLoading: true,
@@ -72,7 +73,11 @@ class Example extends React.Component {
     this.createSons = this.createSons.bind(this)
     this.willShow = this.willShow.bind(this)
     this.loading = this.loading.bind(this)
-    this.novoCliente = this.novoCliente.bind(this)
+    this.precoUnit = this.precoUnit.bind(this)
+    this.pegaRegiao = this.pegaRegiao.bind(this)
+    this.pegaStIcms = this.pegaStIcms.bind(this)
+    this.aplicaDescontos = this.aplicaDescontos.bind(this)
+    this.descontosDigitados = this.descontosDigitados.bind(this)
   }
   
     saveBtn(ok) {
@@ -187,26 +192,47 @@ class Example extends React.Component {
                         let listCondPags = []
                         let listProdutos = []
                         let listSt_icms = []
+                        let listCidades = Data.data.cidades;
+                        let listDescontoLog = Data.data.descontolog
                         Data.data.clientes.forEach((element, elementid) => {
                             if (element.PK_CLI === Data.data.pedidos[ID].FK_CLI){
                                 let cli = {
                                     display : element.RAZAO_SOCIAL,
                                     value : element.CNPJ+' - '+element.RAZAO_SOCIAL,
-                                    codigo : element.PK_CLI
+                                    codigo : element.PK_CLI,
+                                    cidade : element.FK_CID,
+                                    simples_nacional: element.SIMPLESNACIONAL
                                 }
 
                                 this.setState({cliente: cli})
                             }
-                            listClientes.push({value: element.CNPJ+' - '+element.RAZAO_SOCIAL, display: element.RAZAO_SOCIAL, codigo : element.PK_CLI})
+                            listClientes.push({value: element.CNPJ+' - '+element.RAZAO_SOCIAL, simples_nacional: element.SIMPLESNACIONAL, cidade : element.FK_CID, display: element.RAZAO_SOCIAL, codigo : element.PK_CLI})
                         }); 
+                        
+                        
 
 
                         Data.data.st_icms.forEach((element, elementid) => {
-                            listSt_icms.push({value: element.PERCENTUAL_ST, codigo : element.FK_PRO})
+                            listSt_icms.push({value: element.PERCENTUAL_ST, codigo : element.FK_PRO, destino: element.FK_ESTDESTINO, origem: element.ORIGEM, simples_nacional: element.SIMPLES_NACIONAL})
                         }); 
 
                         Data.data.produtos.forEach((element, elementid) => {
-                            listProdutos.push({value: element.CODIGO_REPRESENTADA+' - '+element.NOME_REPRESENTADA, ST_ICMS: 0,IPI : element.IPI,display: element.CODIGO_REPRESENTADA+' - '+element.NOME_REPRESENTADA, codigo : element.PK_PRO})
+                            listProdutos.push({value: element.CODIGO_REPRESENTADA+' - '+element.NOME_REPRESENTADA, 
+                                DATA_VALID_PROMO: element.DATA_VALID_PROMO,
+                                PRECO_VENDA_LISTA: element.PRECO_VENDA_LISTA,
+                                PRECO_VENDA_PROMO: element.PRECO_VENDA_PROMO,
+                                PRECO_REGIAO_1: element.PRECO_REGIAO_1,
+                                PRECO_REGIAO_2: element.PRECO_REGIAO_2,
+                                PRECO_REGIAO_3: element.PRECO_REGIAO_3,
+                                PRECO_REGIAO_4: element.PRECO_REGIAO_4, 
+                                PRECO_PROM_REGIAO_1: element.PRECO_PROM_REGIAO_1, 
+                                PRECO_PROM_REGIAO_2: element.PRECO_PROM_REGIAO_2, 
+                                PRECO_PROM_REGIAO_3: element.PRECO_PROM_REGIAO_3,
+                                PRECO_PROM_REGIAO_4: element.PRECO_PROM_REGIAO_4, 
+                                ST_ICMS: 0,
+                                IPI : element.IPI,
+                                display: element.CODIGO_REPRESENTADA+' - '+element.NOME_REPRESENTADA, 
+                                codigo : element.PK_PRO})
                         }); 
 
                         Data.data.cond_pag.forEach((element, elementid) => {
@@ -214,14 +240,15 @@ class Example extends React.Component {
                                 let cpg = {
                                     display : element.NOME,
                                     value : element.NOME,
-                                    codigo : element.PK_CPG
+                                    codigo : element.PK_CPG,
+                                    desconto : element.DESCONTO
                                 }
 
                                 this.setState({cond_pag: cpg})
                             }
-                            listCondPags.push({value: element.NOME, display: element.NOME, codigo : element.PK_CPG})
+                            listCondPags.push({value: element.NOME, display: element.NOME, codigo : element.PK_CPG, desconto: element.DESCONTO})
                         }); 
-                        this.setState({cond_pags: listCondPags, clientes: listClientes, produtos: listProdutos, st_icms: listSt_icms})
+                        this.setState({cond_pags: listCondPags, descontoLog: listDescontoLog, cidades:listCidades, clientes: listClientes, produtos: listProdutos, st_icms: listSt_icms})
                 
                     })
                 } else {
@@ -230,22 +257,39 @@ class Example extends React.Component {
                         let listCondPags = []
                         let listProdutos = []
                         let listSt_icms = []
+                        let listCidades = Data.data.cidades;
+                        let listDescontoLog = Data.data.descontolog
                         Data.data.clientes.forEach((element, elementid) => {
-                            listClientes.push({value: element.CNPJ+' - '+element.RAZAO_SOCIAL, display: element.RAZAO_SOCIAL, codigo : element.PK_CLI})
+                            listClientes.push({value: element.CNPJ+' - '+element.RAZAO_SOCIAL, simples_nacional: element.SIMPLESNACIONAL, cidade : element.FK_CID, display: element.RAZAO_SOCIAL, codigo : element.PK_CLI})
                         }); 
                         
                         Data.data.st_icms.forEach((element, elementid) => {
-                            listSt_icms.push({value: element.PERCENTUAL_ST, codigo : element.FK_PRO})
+                            listSt_icms.push({value: element.PERCENTUAL_ST, codigo : element.FK_PRO, destino: element.FK_ESTDESTINO, origem: element.ORIGEM, simples_nacional: element.SIMPLES_NACIONAL})
                         }); 
 
                         Data.data.produtos.forEach((element, elementid) => {
-                            listProdutos.push({value: element.CODIGO_REPRESENTADA+' - '+element.NOME_REPRESENTADA, display: element.CODIGO_REPRESENTADA+' - '+element.NOME_REPRESENTADA, codigo : element.PK_PRO})
+                            listProdutos.push({value: element.CODIGO_REPRESENTADA+' - '+element.NOME_REPRESENTADA, 
+                                DATA_VALID_PROMO: element.DATA_VALID_PROMO,
+                                PRECO_VENDA_LISTA: element.PRECO_VENDA_LISTA,
+                                PRECO_VENDA_PROMO: element.PRECO_VENDA_PROMO,
+                                PRECO_REGIAO_1: element.PRECO_REGIAO_1,
+                                PRECO_REGIAO_2: element.PRECO_REGIAO_2,
+                                PRECO_REGIAO_3: element.PRECO_REGIAO_3,
+                                PRECO_REGIAO_4: element.PRECO_REGIAO_4, 
+                                PRECO_PROM_REGIAO_1: element.PRECO_PROM_REGIAO_1, 
+                                PRECO_PROM_REGIAO_2: element.PRECO_PROM_REGIAO_2, 
+                                PRECO_PROM_REGIAO_3: element.PRECO_PROM_REGIAO_3,
+                                PRECO_PROM_REGIAO_4: element.PRECO_PROM_REGIAO_4, 
+                                ST_ICMS: 0,
+                                IPI : element.IPI,
+                                display: element.CODIGO_REPRESENTADA+' - '+element.NOME_REPRESENTADA, 
+                                codigo : element.PK_PRO})
                         }); 
 
                         Data.data.cond_pag.forEach((element, elementid) => {
-                            listCondPags.push({value: element.NOME, display: element.NOME, codigo : element.PK_CPG})
+                            listCondPags.push({value: element.NOME, display: element.NOME, codigo : element.PK_CPG, desconto: element.DESCONTO})
                         }); 
-                        this.setState({cond_pags: listCondPags, clientes: listClientes, produtos: listProdutos, st_icms: listSt_icms})
+                        this.setState({cond_pags: listCondPags, descontoLog: listDescontoLog, cidades: listCidades, clientes: listClientes, produtos: listProdutos, st_icms: listSt_icms})
                 
                     })
                 this.setState({append: true, isLoading: false})
@@ -303,11 +347,41 @@ class Example extends React.Component {
             let name = target.name
             if (name !== 'PK_PED'){
                 let reg = this.state.now
+                if (this.state.append === true) {
+                    reg.DATA = new Date()
+                }
                 reg[name] = value
                 this.setState({now : reg})
             }
 
     }
+
+
+    pegaStIcms(cliente, produto){
+        let cidade = this.state.cidades.filter((value) => {return (value.PK_CID === cliente.cidade)})
+        let percSt = 0
+        if (cidade.length > 0){
+            let destino = cidade[0].FK_EST
+            let regiao = this.pegaRegiao(cliente)
+            if ((regiao === 3) || (regiao === 4)) {
+                let st = this.state.st_icms.filter((value) => {
+                    return ((value.codigo === produto.codigo) && (value.destino === destino) && (value.origem === 'PE') && (value.simples_nacional === cliente.simples_nacional))
+                })
+                if (st.length > 0) {
+                    percSt = st[0].value
+                }
+            } else {
+                let st = this.state.st_icms.filter((value) => {
+                    return ((value.codigo === produto.codigo) && (value.destino === destino) && (value.origem === 'PR') && (value.simples_nacional === cliente.simples_nacional))
+                })
+                if (st.length > 0) {
+                    percSt = st[0].value
+                }                
+            }
+        }
+        return percSt
+    }
+
 
     handleToggle(e){
         e.preventDefault();
@@ -328,24 +402,23 @@ class Example extends React.Component {
             }
             if (name !== 'TOTAL'){
                 reg[name] = value
-                console.log('editou')
             }
             if ((name === 'VALOR') || (name === 'DESCONTO1') || (name === 'DESCONTO2') || (name === 'QUANTIDADE') ){
-                console.log('editou total')
                 let ipi = 0
                 if (this.state.produto.IPI > 0){
                     ipi=this.state.produto.IPI
                 }
-                let st = 0
-                if (this.state.produto.ST_ICMS > 0){
-                    st = this.state.produto.ST_ICMS
-                }
-                reg['IPI'] = (ipi * ((reg['VALOR']*reg['QUANTIDADE'])/100)).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});;
-
-                reg['ST_ICMS'] = (st * ((reg['VALOR']*reg['QUANTIDADE'])/100)).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});;
-                
-                reg.TOTAL = (((reg['VALOR'] * reg['QUANTIDADE'] * ((100-reg['DESCONTO1'])/100)) * ((100-reg['DESCONTO2'])/100)) + (ipi * ((reg['VALOR']*reg['QUANTIDADE'])/100)) + (st * ((reg['VALOR']*reg['QUANTIDADE'])/100)));
-                reg.TOTAL = reg.TOTAL.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+                let st = this.pegaStIcms(this.state.cliente, this.state.produto)
+                let preco = this.precoUnit(this.state.cliente, this.state.produto)
+                preco = this.aplicaDescontos(preco)
+                reg.VALOR = preco
+                let precodscto = this.descontosDigitados(preco)
+                reg.ST_ICMS = (st * (precodscto/100)).toFixed(2)
+                reg.ST_ICMS = Number(reg.ST_ICMS)
+                reg.IPI = (ipi * (precodscto/100)).toFixed(2)
+                reg.IPI = Number(reg.IPI)
+                reg.TOTAL = ((precodscto + reg.IPI + reg.ST_ICMS)*reg.QUANTIDADE).toFixed(2)
+                reg.TOTAL = Number(reg.TOTAL)
             }
             this.setState({editIte: reg})
     }
@@ -356,6 +429,91 @@ class Example extends React.Component {
         } else {
             return a.value
         }
+    }
+
+    pegaRegiao(cliente){
+        let cidade = this.state.cidades.filter((value) => {return (value.PK_CID === cliente.cidade)})
+        if (cidade.length > 0){
+            let uf = cidade[0].UF
+            let r1 = [ 'RS', 'SP', 'SC', 'MG', 'RJ' ]
+            let r3 = [ 'PE' ]
+            let r4 = [ 'AL', 'BA', 'CE', 'MA', 'PI', 'PB', 'RN', 'SE' ]
+            if ( uf === 'PR') {
+                return 0
+            } else if ( r1.indexOf(uf) !== -1) {
+                return 1
+            } else if ( r3.indexOf(uf) !== -1) {
+                return 3
+            } else if ( r4.indexOf(uf) !== -1) {
+                return 4
+            } else {
+                return 2
+            }
+        } else {
+            alert('Cliente sem cidade cadastrada!! Preço baseado no estado do Paraná!')
+            return 0
+        }
+    }
+
+    pegaPreco(tipo, regiao, produto){
+        let preco = 0
+        if ( tipo === 'PROMO' ){
+            if (regiao === 0) {
+                preco = produto.PRECO_VENDA_PROMO
+            } else {
+                preco = produto['PRECO_PROM_REGIAO_'+regiao]
+            }
+        } else {
+            if (regiao === 0) {
+                preco = produto.PRECO_VENDA_LISTA
+            } else {
+                preco = produto['PRECO_REGIAO_'+regiao]
+            }
+        }
+        return preco
+    }
+
+    precoUnit(cliente, produto){
+        let preco = 0
+        let regiao = this.pegaRegiao(cliente)
+        if (new Date(this.state.now.DATA) > new Date(produto.DATA_VALID_PROMO)) {
+            preco = this.pegaPreco('LISTA', regiao, produto)
+            console.log('lista '+regiao+' - '+preco)
+        } else {
+            preco = this.pegaPreco('PROMO', regiao, produto)
+            console.log('promo '+regiao+' - '+preco)
+        }
+        if ( preco > 0 ) {
+            return preco
+        } else {
+            alert('Preço Unitário não foi encontrado! Verifique no menu "Produtos"')
+            return 0.00
+        }
+    }
+
+    aplicaDescontos(preco){
+        let dataPedido = new Date(this.state.now.DATA)
+        let logistica = this.state.descontoLog.filter((value) => { return ((value.MES === (dataPedido.getMonth()+1)) && (value.ANO === dataPedido.getFullYear()) && (dataPedido <= (new Date(value.DATA_LIMITE))))})
+
+        let descontoLog = 0
+        if (logistica.length>0){
+            descontoLog = logistica[0].DESCONTO
+        }
+        let calc = (preco - (preco*(descontoLog/100))).toFixed(2)
+        preco = Number(calc)
+        console.log('desconto log '+descontoLog+' : '+preco)
+        let descontoCpg = this.state.cond_pag.desconto || 0
+        calc = (preco - (preco*(descontoCpg/100))).toFixed(2)
+        preco = Number(calc)
+        console.log('desconto cpg '+descontoCpg+' : '+preco)
+        console.log('--------------------------------------------------')
+        return Number(preco)       
+
+    }
+
+    descontosDigitados(preco){
+        preco = (preco * (1-(this.state.editIte.DESCONTO1/100)) * (1-(this.state.editIte.DESCONTO2/100))).toFixed(2)
+        return Number(preco)
     }
 
     salvaComplete(selecionado, nomefk, tablename, idItem){
@@ -371,15 +529,19 @@ class Example extends React.Component {
         } else if (nomefk === 'FK_PRO') {
             reg = this.state.editIte
             reg[nomefk] = selecionado.codigo
-            reg.IPI = (selecionado.IPI * ((reg.QUANTIDADE*reg.VALOR)/100)).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
-            let percSt = 0 
-            let procuraSt = this.state.st_icms.filter((value) => {return (value.codigo === selecionado.codigo)})
-            if (procuraSt.length > 0) {
-                percSt = procuraSt[0].value
-            }
+            let preco = this.precoUnit(this.state.cliente, selecionado)
+            preco = this.aplicaDescontos(preco)
+            reg.VALOR = preco
+            let precodscto = this.descontosDigitados(preco)
+            reg.IPI = (selecionado.IPI * ((reg.VALOR)/100));
+            let percSt = this.pegaStIcms(this.state.cliente, selecionado)
             selecionado.ST_ICMS = percSt
-            reg.ST_ICMS = (percSt * ((reg.QUANTIDADE*reg.VALOR)/100)).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
-            reg.TOTAL = (((reg['VALOR'] * reg['QUANTIDADE'] * ((100-reg['DESCONTO1'])/100)) * ((100-reg['DESCONTO2'])/100)) + (selecionado.IPI * ((reg.QUANTIDADE*reg.VALOR)/100)) + (percSt * ((reg.QUANTIDADE*reg.VALOR)/100))).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+            reg.ST_ICMS = (percSt * (precodscto/100)).toFixed(2)
+            reg.ST_ICMS = Number(reg.ST_ICMS)
+            reg.IPI = (selecionado.IPI * (precodscto/100)).toFixed(2)
+            reg.IPI = Number(reg.IPI)
+            reg.TOTAL = ((precodscto + reg.IPI + reg.ST_ICMS)*reg.QUANTIDADE).toFixed(2)
+            reg.TOTAL = Number(reg.TOTAL)
             this.setState({editIte: reg, [tablename]: selecionado})
         }
         
@@ -417,7 +579,7 @@ class Example extends React.Component {
                                                     .map((item, index) => {return(
                                                     <li className="FormField__List"
                                                         {...getItemProps({
-                                                        key: item.value,
+                                                        key: index,
                                                         index,
                                                         item,
                                                         style: {
@@ -456,14 +618,6 @@ class Example extends React.Component {
         }
     }
 
-    novoCliente(){
-        // alert(this.state.mostraModal)
-        if (this.state.mostraTotal === true) {
-            return 'ModalShow_Total'
-        } else {
-            return 'ModalHide'
-        }
-    }
 
 
     closeModal(e){
@@ -506,9 +660,9 @@ class Example extends React.Component {
                     prod[0].ST_ICMS = 0
                 }
                 
-                item.IPI =  (((item.QUANTIDADE * item.VALOR)/100) * (prod[0].IPI)).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});    
-                item.ST_ICMS = (((item.QUANTIDADE * item.VALOR)/100) * (prod[0].ST_ICMS)).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
-                item.TOTAL = (((item.QUANTIDADE * item.VALOR * ((100-item.DESCONTO1)/100)) * ((100-item.DESCONTO2)/100)) +  (((item.QUANTIDADE * item.VALOR)/100) * (prod[0].IPI)) + (((item.QUANTIDADE * item.VALOR)/100) * (prod[0].ST_ICMS))).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+                item.IPI =  (((item.QUANTIDADE * item.VALOR)/100) * (prod[0].IPI));    
+                item.ST_ICMS = (((item.QUANTIDADE * item.VALOR)/100) * (prod[0].ST_ICMS));
+                item.TOTAL = (((item.QUANTIDADE * item.VALOR * ((100-item.DESCONTO1)/100)) * ((100-item.DESCONTO2)/100)) +  (((item.QUANTIDADE * item.VALOR)/100) * (prod[0].IPI)) + (((item.QUANTIDADE * item.VALOR)/100) * (prod[0].ST_ICMS)));
                 this.setState({mostraModal: true, editIte: item, appendItem: false, produto: prod[0]})
             } else {
                 this.setState({mostraModal: true, appendItem: true, itemAdded: 'ItemAdded-hide'})
@@ -563,17 +717,6 @@ class Example extends React.Component {
                                         </Modal.Footer>
                                     </Modal.Dialog>
                                 </div>
-                                <div className={this.novoCliente()} tabIndex="-1">
-                                    <Modal.Dialog className="Modal">
-                                        <Modal.Body className="ModalBg">    
-                                            Total do Pedido: R$ {this.state.now.TOTAL}
-                                        </Modal.Body>
-                                        <Modal.Footer className="ModalBg">
-                                            <Button className="FormField__Button mr-20" onClick={this.closeModal}>Cancelar</Button>
-                                            <Button className="FormField__Button mr-20" onClick={this.handleSave}>Salvar</Button>
-                                        </Modal.Footer>
-                                    </Modal.Dialog>
-                                </div>
                                 <div className={this.showModal()} tabIndex="-1" >
                                     <Modal.Dialog className="Modal">
                                         <Modal.Header className="ModalBg">
@@ -600,12 +743,12 @@ class Example extends React.Component {
                                                     <div style={{display:'flex'}}>
                                                         <div style={{width: '45%', display:'inline'}}>
                                                         
-                                                           <input type="number" min="1" step="1" id="QUANTIDADE" className="FormField__Input" 
-                                                            name="QUANTIDADE" value={this.state.editIte.QUANTIDADE || ''} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
+                                                           <input type="text" id="QUANTIDADE" className="FormField__Input" 
+                                                            name="QUANTIDADE" value={(this.state.editIte.QUANTIDADE || '0')} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
                                                         </div>
                                                         <div style={{width: '45%', display:'inline'}}>
-                                                            <input type="number" min="0.00" step="0.01" id="VALOR" className="FormField__Input"
-                                                            name="VALOR" value={this.state.editIte.VALOR || ''} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
+                                                            <input type="text" id="VALOR" className="FormField__Input"
+                                                            name="VALOR" value={this.state.editIte.VALOR.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}) || 'R$ 0.00'} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
                                                         </div>
                                                     </div>
                                             </div>
@@ -623,12 +766,12 @@ class Example extends React.Component {
                                                     </div>
                                                     <div style={{display:'flex'}}>
                                                         <div style={{width: '45%', display:'inline'}}>
-                                                            <input type="number" min="0.00" step="0.01" id="DESCONTO1" className="FormField__Input"  style={{margin: '0px 5px 0px 0px', display:'inline-block'}} 
-                                                            name="DESCONTO1" value={this.state.editIte.DESCONTO1 || ''} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
+                                                            <input type="text" id="DESCONTO1" className="FormField__Input"  style={{margin: '0px 5px 0px 0px', display:'inline-block'}} 
+                                                            name="DESCONTO1" value={(this.state.editIte.DESCONTO1 || '0.00')+' %'} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
                                                         </div>
                                                         <div style={{width: '45%', display:'inline'}}>
-                                                            <input type="number" min="0.00" step="0.01" id="DESCONTO2" className="FormField__Input"  style={{margin: '0px 5px 0px 0px'}}
-                                                            name="DESCONTO2" value={this.state.editIte.DESCONTO2 || ''} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
+                                                            <input type="text" id="DESCONTO2" className="FormField__Input"  style={{margin: '0px 5px 0px 0px'}}
+                                                            name="DESCONTO2" value={(this.state.editIte.DESCONTO2 || '0.00')+' %'} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
                                                         </div>
                                                     </div>
                                             </div>
@@ -644,11 +787,11 @@ class Example extends React.Component {
                                                     <div style={{display:'flex'}}>
                                                         <div style={{width: '30%', display:'inline'}}>
                                                             <input type="text" id="PROIPI" className="FormField__Input" 
-                                                            name="PROIPI" value={this.state.produto.IPI || ''} readOnly/>
+                                                            name="PROIPI" value={(this.state.produto.IPI || '0.00')+' %'} readOnly/>
                                                         </div>
                                                         <div style={{width: '65%', display:'inline'}}>
                                                             <input type="text" id="IPI" className="FormField__Input"
-                                                            name="IPI" value={this.state.editIte.IPI || ''} readOnly/>
+                                                            name="IPI" value={this.state.editIte.IPI.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}) || ''} readOnly/>
                                                         </div>
                                                     </div>
                                             </div>
@@ -664,18 +807,18 @@ class Example extends React.Component {
                                                     <div style={{display:'flex'}}>
                                                         <div style={{width: '30%', display:'inline'}}>
                                                             <input type="text" id="PROIPI" className="FormField__Input" 
-                                                            name="PROST_ICMS" value={this.state.produto.ST_ICMS || ''} readOnly/>
+                                                            name="PROST_ICMS" value={(this.state.produto.ST_ICMS || '0.00')+' %'} readOnly/>
                                                         </div>
                                                         <div style={{width: '65%', display:'inline'}}>
                                                             <input type="text" id="ST_ICMS" className="FormField__Input"
-                                                            name="ST_ICMS" value={this.state.editIte.ST_ICMS || ''} readOnly/>
+                                                            name="ST_ICMS" value={this.state.editIte.ST_ICMS.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}) || ''} readOnly/>
                                                         </div>
                                                     </div>
                                             </div>
                                             <div className="FormField">
                                                 <label className="FormField__Label" htmlFor="TOTAL">VALOR TOTAL</label>
                                                 <input type="text" id="TOTAL" className="FormField__Input" 
-                                                name="TOTAL" value={this.state.editIte.TOTAL || ''} readOnly/>
+                                                name="TOTAL" value={this.state.editIte.TOTAL.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}) || ''} readOnly/>
                                             </div>
 
                                         </Modal.Body>

@@ -617,69 +617,74 @@ export function syncData(user, callback){
         fetch(server+'/produtos').then(pro => pro.json()).then(pro => {
           fetch(server+'/clientes/'+user).then(r => r.json()).then(r => {
             fetch(server+'/cpg').then(rcpg => rcpg.json()).then(rcpg => {
-              let result = {
-                _id: 'base',
-                data: {
-                  clientes: r,
-                  pedidos: pegaPedidos,
-                  produtos: pro,
-                  st_icms: st,
-                  cond_pag: rcpg
-                }
-              }
-              console.log(st)
+              fetch(server+'/cidades').then(cid => cid.json()).then(cid => {
+                fetch(server+'/descontolog').then(desc => desc.json()).then(desc => {  
+                  let result = {
+                    _id: 'base',
+                    data: {
+                      clientes: r,
+                      pedidos: pegaPedidos,
+                      produtos: pro,
+                      st_icms: st,
+                      cond_pag: rcpg,
+                      cidades: cid,
+                      descontolog: desc
+                    }
+                  }
+                  console.log(st)
 
-              db.get('base').then(function(doc) {
-                let newResult = {
-                  _id: 'base',
-                  data:  result.data,
-                  _rev: doc._rev
-                }     
-                return db.put(newResult);
-              }).then(function(response) {
-                console.log('Base updated!')
-                
-              }).catch(function (err) {
-                if (err.name === 'not_found') {
-                  db.put(result).then(function (response) {
-                      console.log('Base created!')
+                  db.get('base').then(function(doc) {
+                    let newResult = {
+                      _id: 'base',
+                      data:  result.data,
+                      _rev: doc._rev
+                    }     
+                    return db.put(newResult);
+                  }).then(function(response) {
+                    console.log('Base updated!')
+                    
                   }).catch(function (err) {
-                    console.log(err);
+                    if (err.name === 'not_found') {
+                      db.put(result).then(function (response) {
+                          console.log('Base created!')
+                      }).catch(function (err) {
+                        console.log(err);
+                      });
+                    }
                   });
-                }
-              });
 
-              let read = {
-                _id: 'read',
-                data: {
-                  clientes: r,
-                  pedidos: ped
-                }        
-              }
+                  let read = {
+                    _id: 'read',
+                    data: {
+                      clientes: r,
+                      pedidos: ped
+                    }        
+                  }
 
-              db.get('read').then(function(doc) {
-                let newRead = {
-                  _id: 'read',
-                  data:  result.data,
-                  _rev: doc._rev
-                }     
-                return db.put(newRead);
-              }).then(function(response) {
-                console.log('Read updated!')
-                alert('Sincronizado!')
-                callback()
-              }).catch(function (err) {
-                if (err.name === 'not_found') {
-                  db.put(read).then(function (response) {
-                      console.log('Read created!')
-                      alert('Sincronizado!')
-                      callback()
+                  db.get('read').then(function(doc) {
+                    let newRead = {
+                      _id: 'read',
+                      data:  result.data,
+                      _rev: doc._rev
+                    }     
+                    return db.put(newRead);
+                  }).then(function(response) {
+                    console.log('Read updated!')
+                    alert('Sincronizado!')
+                    callback()
                   }).catch(function (err) {
-                    console.log(err);
+                    if (err.name === 'not_found') {
+                      db.put(read).then(function (response) {
+                          console.log('Read created!')
+                          alert('Sincronizado!')
+                          callback()
+                      }).catch(function (err) {
+                        console.log(err);
+                      });
+                    }
                   });
-                }
-              });
-              
+                })
+              }) 
             })
           })
         })
