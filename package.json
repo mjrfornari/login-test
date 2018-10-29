@@ -19,6 +19,7 @@
     "react": "^16.4.2",
     "react-bootstrap": "^0.32.4",
     "react-bootstrap-extended": "0.0.7",
+    "react-currency-input": "^1.3.6",
     "react-data-grid": "^4.0.8",
     "react-detect-offline": "^2.1.2",
     "react-dom": "^16.4.2",

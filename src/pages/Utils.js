@@ -1,4 +1,8 @@
 import React from "react";
+import ReactLoading from 'react-loading';
+import {Modal, Button} from 'react-bootstrap'
+import SvgIcon from 'react-icons-kit';
+import {check} from 'react-icons-kit/metrize/check'
 // import namor from "namor";
 // import { render } from "react-dom";
 import "../App.css";
@@ -7,6 +11,45 @@ import PouchDB from 'pouchdb';
 // const server = 'http://187.44.93.73:8080';
 const server = 'http://192.168.0.251:3001';
 const db = new PouchDB('macropecas');
+
+
+
+export function savingItem(show, phase, funcao){
+	if (phase === 1){
+		return (
+			<div style={show}>
+				<Modal.Dialog className="Modal" >
+					<Modal.Body className="ModalBg">    
+						<div className="Saved">
+							<ReactLoading type='spin' color='#649764' height={'80px'} width={'80px'} className="Loading"/>
+							<p className='ItemMsg'>Salvando registro...</p>
+						</div> 
+					</Modal.Body>
+					<Modal.Footer className="ModalBg">
+						<Button className="FormField__ButtonDisabled mr-20">Ok</Button>
+					</Modal.Footer>
+				</Modal.Dialog>
+			</div>
+		)
+	} else {
+		return(
+			<div style={show}>
+				<Modal.Dialog className="Modal" >
+					<Modal.Body className="ModalBg">    
+					<div className="Saved">
+						<SvgIcon size={80} icon={check} style={{ color: '#649764', margin: '15px 15px 15px 15px' }}/>
+						<p className='ItemMsg'>Registro salvo!</p>
+					</div>
+					</Modal.Body>
+					<Modal.Footer className="ModalBg">
+						<Button className="FormField__Button mr-20" onClick={() => {funcao()}}>Ok</Button>
+					</Modal.Footer>
+				</Modal.Dialog>
+			</div>
+		)		
+	}
+}
+
 
 export function removeAcento (text)
 {       
@@ -70,73 +113,62 @@ export function zeraNull(texto){
 }
 
 
-export function editData(tabela, item, id) {
-
-  //console.log(item)
-  readTable(Data => { 
-       
-        let read = Data
-        db.get('read').then(function(doc) {
-        let newRead = {
-          _id: 'read',
-          data:  Data.data,
-          _rev: doc._rev
-        }     
-        newRead.data[tabela][id] = item  
-        // newRead.data[tabela].map(function(_, i) { 
-        //   if (_.PK_CLI == item.PK_CLI) {
-        //     newRead.data[tabela][i] = item
-        //   }
-        // })
-
-        return db.put(newRead)
-      }).then(function(response) {
-        console.log('Read updated!')
-        
-        updateTable(Data => {
-          let update = Data
-          db.get('update').then(function(doc) {
-            let newUpdate = {
-              _id: 'update',
-              data:  Data.data,
-              _rev: doc._rev
-            } 
-            item.read = id
-            newUpdate.data[tabela].push(item)
-            return db.put(newUpdate)
+export function editData(tabela, item, id, callback) {
+  return readTable(Data => { 
+    let read = Data
+    return db.get('read').then(function(doc) {
+      let newRead = {
+        _id: 'read',
+        data:  Data.data,
+        _rev: doc._rev
+     }     
+     newRead.data[tabela][id] = item  
+     return db.put(newRead)
+    }).then(function(response) {
+      console.log('Read updated!')  
+      updateTable(Data => {
+        let update = Data
+        db.get('update').then(function(doc) {
+          let newUpdate = {
+            _id: 'update',
+            data:  Data.data,
+            _rev: doc._rev
+          } 
+          item.read = id
+          newUpdate.data[tabela].push(item)
+          return db.put(newUpdate)
         }).then(function(response) {
           console.log('Update updated!')
-          alert('Registro alterado com sucesso!') 
-          return true
+        //   alert('Registro alterado com sucesso!') 
+          callback('Button')
         }).catch(function (err) {
           if (err.name === 'not_found') {
             db.put(update).then(function (response) {
-                console.log('Update Created!')
-                alert('Registro alterado com sucesso!') 
-                return true
+              console.log('Update Created!')
+            //   alert('Registro alterado com sucesso!') 
+              callback('Button')
             }).catch(function (err) {
               console.log(err);
             });
           }
-        });})
-      }).catch(function (err) {
-        if (err.name === 'not_found') {
-          db.put(read).then(function (response) {
-              console.log('Read Created!')
-          }).catch(function (err) {
-            console.log(err);
-          });
-        }
-      });})
-
-  
-
+        });
+      })
+    }).catch(function (err) {
+      if (err.name === 'not_found') {
+        db.put(read).then(function (response) {
+            console.log('Read Created!')
+        }).catch(function (err) {
+          console.log(err);
+        });
+      }
+    });
+  })
 }
 
-export function appendData(tabela, item) {
+export function appendData(tabela, item, callback) {
         
   //console.log(item)
-  readTable(Data => { 
+  return readTable(Data => { 
         let id = 0
         let read = Data
         db.get('read').then(function(doc) {
@@ -165,14 +197,14 @@ export function appendData(tabela, item) {
             return db.put(newCreate)
         }).then(function(response) {
           console.log('Create updated!')
-          alert('Registro incluído com sucesso!') 
-          return true
+        //   alert('Registro incluído com sucesso!') 
+          callback('Button')
         }).catch(function (err) {
           if (err.name === 'not_found') {
             db.put(create).then(function (response) {
                 console.log('Create Created!')
-                alert('Registro incluído com sucesso!') 
-                return true
+                // alert('Registro incluído com sucesso!') 
+                callback('Button')
             }).catch(function (err) {
               console.log(err);
             });
@@ -359,14 +391,13 @@ export function makeData(tabela) {
 
 
 export function readTable(callback){
-    db.get('read', function(err, doc) {
+  db.get('read', function(err, doc) {
       if (err) {
           return console.log(err);
       } else {
         callback(doc);
       }
     })
-
 }
 
 export function createTable(callback){

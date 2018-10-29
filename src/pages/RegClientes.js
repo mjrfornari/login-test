@@ -10,7 +10,7 @@ import { ic_add_shopping_cart } from 'react-icons-kit/md/ic_add_shopping_cart';
 import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_sync} from 'react-icons-kit/md/ic_sync'
-import { readTable, editData, appendData, geraInput, removeAcento } from "./Utils";
+import { readTable, editData, appendData, geraInput, removeAcento, savingItem } from "./Utils";
 import {ic_keyboard_arrow_left} from 'react-icons-kit/md/ic_keyboard_arrow_left'
 import {ic_keyboard_arrow_right} from 'react-icons-kit/md/ic_keyboard_arrow_right'
 import {ic_search} from 'react-icons-kit/md/ic_search'
@@ -32,6 +32,8 @@ class Example extends React.Component {
         append: false,
         isLoading: true,
         id: 0,
+        savingShow: {display: 'none'},
+        savingPhase: 1,
         ok: false
     };
     this.show = false
@@ -43,6 +45,7 @@ class Example extends React.Component {
     this.handleBar = this.handleBar.bind(this);
     this.appBar = this.appBar.bind(this);
     this.enviaCEP = this.enviaCEP.bind(this);
+    this.saving = this.saving.bind(this);
   }
   
     saveBtn(ok) {
@@ -51,6 +54,10 @@ class Example extends React.Component {
         } else {
             return (<input type="submit" className="FormField__ButtonDisabled mr-20" value="Salvar"/>)
         }
+    }
+
+    saving(){
+        this.setState({savingShow: {display: 'none'}})
     }
 
     appBar(mostra){
@@ -143,12 +150,13 @@ class Example extends React.Component {
     handleSubmit (e) {
         e.preventDefault();
         // console.log('a')
+         this.setState({savingPhase: 1, savingShow:{}})
         if (this.state.ok ===false){
             if (this.state.append === true) {
-                appendData('clientes', this.state.now)     
+                appendData('clientes', this.state.now, res => {this.setState({savingPhase: 2, savingShow:{}})})    
                 this.setState({ok: true})    
             } else {
-                editData('clientes', this.state.now, this.state.id)
+                editData('clientes', this.state.now, this.state.id, res => {this.setState({savingPhase: 2, savingShow:{}})})
                 this.setState({ok: true})  
             }
         }
@@ -254,7 +262,7 @@ class Example extends React.Component {
                                     {geraInput('EMAIL_FINANCEIRO','EMAIL FINANCEIRO',this.state.now.EMAIL_FINANCEIRO || '', this.handleChange)}
                                 </div>
 
-
+                                {savingItem(this.state.savingShow, this.state.savingPhase, this.saving)}
                                 {this.hideShow()}
                                 <LinkContainer to="/macropecas/clientes"><button className="FormField__Button mr-20">Voltar</button></LinkContainer>
                                 {this.saveBtn(this.state.ok)}

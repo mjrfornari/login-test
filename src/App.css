@@ -5,6 +5,7 @@
 }
 
 
+
 table {
     border-collapse: collapse;
     background: #649764;
@@ -32,6 +33,15 @@ th, td {
   animation-name: added;
   animation-duration: 2s;
   visibility: hidden;
+}
+
+.Saved{
+  background-color: rgb(48, 76, 85);
+  z-index: 1500;
+  margin-left: 10%;
+  width: 80%;
+  height: 150px;
+  text-align: center;
 }
 
 .ItemAdded-hide{
@@ -128,10 +138,11 @@ tr:hover {background-color:#506b55;}
 
 .Loading {
   position: relative;
-  top: 50%;
   left: 50%;
+  margin-top: 20px;
   margin-right: -50%;
-  transform: translate(-50%, -50%); 
+  transform: translate(-50%, 0); 
+  margin-bottom: 20px;
 }
 
 
@@ -350,11 +361,58 @@ tr:hover {background-color:#506b55;}
 
 }
 
+.FormField__InputUn {
+  width: 55%;
+  border-radius: 25px 0px 0px 25px;
+  background-color: #649764;
+  border: none;
+  color: white;
+  outline: none;
+  /* border: 2px solid #506b55; */
+  font-size: 1em;
+  padding: 10px;
+  font-weight: 300;
+  /* padding-bottom: 10px; */
+  margin-top: 5px;
+  margin-right: 0px;
+}
+
+.ButtonsHide{
+  display:none;
+}
+
+
+
+.FormField__Un {
+  width: 25%;
+  padding: 10px;
+  margin-left:-5px !important;
+  border-radius: 0px 25px 25px 0px;
+  background-color: #506b55;
+  border: none;
+  color: white;
+  outline: none;
+  text-align: right;
+  /* border: 2px solid #506b55; */
+  font-size: 1em;
+  font-weight: 300;
+  /* padding-bottom: 10px; */
+
+}
+
+.FormField__Input:read-only {
+  background-color: #506b55;
+
+}
 
 
 
 
 
+
+.ui.checkbox {
+  margin-right: 30px;
+}
 
 
 .ui.checkbox input,
@@ -416,6 +474,11 @@ tr:hover {background-color:#506b55;}
   /* padding-bottom: 10px; */
   margin-top: 5px;
 
+}
+
+.FormField__Input__OBS:read-only {
+  background-color: #506b55;
+  height: 80px;
 }
 
 
