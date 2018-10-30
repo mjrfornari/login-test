@@ -35,6 +35,14 @@ th, td {
   visibility: hidden;
 }
 
+.Totais{
+  margin-top: 20px;
+}
+
+.TotaisRadio{
+  margin-left: 20px;
+}
+
 .Saved{
   background-color: rgb(48, 76, 85);
   z-index: 1500;

@@ -102,6 +102,14 @@ export function garanteDate(texto){
     return data;
 }
 
+export function dateSql(texto){
+    let data = ''
+    if (texto != null){
+      data=texto.substr(0,4)+'-'+texto.substr(5,2)+'-'+texto.substr(8,2)
+    }
+    return data;
+}
+
 export function zeraNull(texto){
     let valor = 0
     if (texto === null) {
@@ -479,21 +487,47 @@ function atualizaItem(table, fieldsnvalues, where,callback) {
 
 
 
-export function createToFirebird(nomepk, tablename,callback) {
+export function createToFirebird(callback) {
     let newCreate = {
         _id: 'create',
         data:  [],
         _rev: 0
     }
+    let pedidos = []
+    let itepedidos = []
    setTimeout(function() {
     db.get('create').then(function(doc) { 
         newCreate.data = doc.data
         newCreate._rev = doc._rev
         let clientes = doc.data.clientes
-        const geraPkPromiseList = clientes.map((element, index) => geraPk(nomepk).then(Data => ( { ...element, PK_CLI: Data[0].VALOR })))
-        return Promise.all(geraPkPromiseList)
-    }).then(clientes => {
-        newCreate.data.clientes = clientes
+        pedidos = doc.data.pedidos
+        const geraPkListPromise = clientes.map((element, index) => geraPk('PK_CLI').then(Data => ( { ...element, PK_CLI: Data[0].VALOR })))
+        
+        return Promise.all(geraPkListPromise)
+    }).then(data => {
+        newCreate.data.clientes = data
+        const geraPkListPormisePedidos = pedidos.map((element, index) => geraPk('PK_PED').then(Data => ( { ...element, PK_PED: Data[0].VALOR })))
+        // newCreate.data.pedidos = data.data.pedidos
+
+        return Promise.all(geraPkListPormisePedidos)
+    }).then(data => {
+        const geraPkListPormisePedidos = data.map((element, index) => geraPk('NUMWEB').then(Data => ( { ...element, NUMWEB: Data[0].VALOR })))
+        console.log(data)
+        return Promise.all(geraPkListPormisePedidos)
+    }).then(data => {
+        let itens = []
+        pedidos = data
+        data.forEach((element, index) => {
+          element.itens.forEach((elementson, indexson)=>{
+            itens.push({...elementson, FK_PED: element.PK_PED})
+          })
+        })
+        const geraPkListPormiseItePedidos = itens.map((element, index) => geraPk('PK_IPE').then(Data => ( { ...element, PK_IPE: Data[0].VALOR })))
+        console.log(itens)
+        return Promise.all(geraPkListPormiseItePedidos)
+    }).then(data => {
+        console.log(data)
+        itepedidos = data
     }).then(function(response) {
           // console.log('Read updated with new pks!')
           newCreate.data.clientes.forEach(function (icreated, idcreate)  {
@@ -504,7 +538,9 @@ export function createToFirebird(nomepk, tablename,callback) {
             fields = fields+", FK_VEN"
             let usuario = localStorage.getItem("macropecas")
             values = values+", "+usuario
-            criaItem(tablename,fields, values)
+            console.log(fields)
+            console.log(values)
+            // criaItem('clientes',fields, values)
             db.get('update').then(function(doc) {
               let newUpdate = {
                 _id: 'update',
@@ -513,16 +549,96 @@ export function createToFirebird(nomepk, tablename,callback) {
               }
               newUpdate.data.clientes.forEach(function (iupdated, idupdated) {
                   if (icreated.read === iupdated.read){
-                    newUpdate.data.clientes[idupdated][nomepk]=icreated[nomepk]
+                    newUpdate.data.clientes[idupdated]['PK_CLI']=icreated['PK_CLI']
                   }
               })
               return db.put(newUpdate)
             }).then(function(response) {
               console.log('Update updated!')
+
             })
             // newCreate.data.clientes.splice(idcreate,1)
             // console.log(newCreate.data.clientes)
           })
+
+                        pedidos.forEach(function (icreated, idcreate)  {
+                icreated.itens = []
+                icreated.RAZAO_SOCIAL = []
+                icreated.NOMECPG = []
+                console.log(icreated.VALOR_CALCULADO)
+                let dataped = icreated.DATA
+                icreated.DATA = dateSql(dataped)
+                let propscreated = JSON.stringify(Object.getOwnPropertyNames(icreated))
+                let valuescreated = JSON.stringify(Object.values(icreated))
+                let fields = propscreated.split('"').join("").split('[').join("").split(']').join("").split('itens,').join("").split('IMPORTADO').join("IMPORTACAO").split(',RAZAO_SOCIAL').join("").split(',NOMECPG').join("")
+                let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",")
+                fields = fields+", FK_VEN"
+                let usuario = localStorage.getItem("macropecas")
+                values = values+", "+usuario
+                console.log(fields)
+                console.log(values)
+                criaItem('pedidos_venda',fields, values)
+                db.get('update').then(function(doc) {
+                  let newUpdate = {
+                    _id: 'update',
+                    data:  doc.data,
+                    _rev: doc._rev
+                  }
+                  if (typeof newUpdate.data.pedidos !== 'undefined'){
+                    newUpdate.data.pedidos.forEach(function (iupdated, idupdated) {
+                        if (icreated.read === iupdated.read){
+                          newUpdate.data.pedidos[idupdated]['PK_PED']=icreated['PK_PED']
+                          newUpdate.data.pedidos[idupdated]['NUMWEB']=icreated['NUMWEB']
+                        }
+                    })
+                  }
+                  return db.put(newUpdate)
+                }).then(function(response) {
+                  console.log('Update updated!')
+                  itepedidos.forEach(function (icreated, idcreate)  {
+                    icreated.DESCRICAOPRO = []
+                    icreated.CODIGOPRO = '%$#'
+                    icreated.OBS_PROMOCIONAL = '%$#'
+                    icreated.TOTAL = '%$#'
+                    icreated.id = []
+                    icreated.QUANTIDADE=Number(icreated.QUANTIDADE)
+                    icreated.DESCONTO1=Number(icreated.DESCONTO1)
+                    icreated.DESCONTO2=Number(icreated.DESCONTO2)
+                    icreated.VALOR_IPI =[]
+                    let propscreated = JSON.stringify(Object.getOwnPropertyNames(icreated))
+                    let valuescreated = JSON.stringify(Object.values(icreated))
+                    let fields = propscreated.split('"').join("").split('[').join("").split(']').join("").split(',DESCRICAOPRO').join("").split('CODIGOPRO,').join("").split(',id').join("").split(',VALOR_IPI').join("").split(',OBS_PROMOCIONAL').join("").split(',TOTAL').join("")
+                    let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",").split(",'%$#'").join("").split("'%$#',").join("")
+                    console.log(fields)
+                    console.log(values)
+                    criaItem('itens_ped_venda',fields, values)
+                    db.get('update').then(function(doc) {
+                      let newUpdate = {
+                        _id: 'update',
+                        data:  doc.data,
+                        _rev: doc._rev
+                      }
+                      if (typeof newUpdate.data.pedidos !== 'undefined'){
+                        newUpdate.data.pedidos.forEach(function (iupdated, idupdated) {
+                          newUpdate.data.pedidos.itens.forEach(function (iupdatedson, idupdatedson) {
+                            if (iupdated.PK_PED === icreated.FK_PED){
+                              newUpdate.data.clientes[idupdated]['FK_PED']=icreated['FK_PED']
+                            }
+                          })
+                        })
+                      }
+                      // return db.put(newUpdate)
+                    }).then(function(response) {
+                      console.log('Update updated!')
+                    })
+                    // itepedidos.splice(idcreate,1)
+                    // console.log(newCreate.data.clientes)
+                  })
+                })
+                // pedidos.splice(idcreate,1)
+                // console.log(newCreate.data.clientes)
+              })
+
     }).then(function(response) {
     }).catch(function(err){
         console.log(err)
@@ -534,7 +650,7 @@ export function createToFirebird(nomepk, tablename,callback) {
 }
 
 
-export function updateToFirebird(nomepk, tablename, callback) {
+export function updateToFirebird(callback) {
     let newUpdate = {
         _id: 'update',
         data:  [],  
@@ -544,37 +660,8 @@ export function updateToFirebird(nomepk, tablename, callback) {
     db.get('update').then(function(doc) { 
         newUpdate.data = doc.data
         newUpdate._rev = doc._rev
-        if (tablename === 'pedidos'){
-          // let pai = newUpdate.data[tablename]
-          
-          newUpdate.data[tablename].forEach(function (iupdated, idupdated)  {
-              let propsupdated = JSON.stringify(Object.getOwnPropertyNames(iupdated))
-              let valuesupdated = JSON.stringify(Object.values(iupdated))
-              let fields = propsupdated.split('"').join("").split('[').join("").split(']').join("")
-              let values = valuesupdated.split('"').join("'").split('[').join("").split(']').join("")
-              console.log(fields)
-              console.log(values)
-              const xSplited = fields.split(',')
-              const ySplited = values.split(',')
-              let where = ''
-              console.log(xSplited)
-              let fieldsnvalues = []
-              fieldsnvalues = xSplited.map((x, i) => {
-                if (x===nomepk){
-                  where = x+'='+ySplited[i]
-                } else if (x ==='itens') {
-                  console.log('itens')
-                } else if (ySplited[i] === 'null') {
-                    console.log('erro - '+x+'='+ySplited[i]) 
-                } else return fieldsnvalues[i]=x+'='+ySplited[i]
-                return ''
-              })
-              fieldsnvalues = JSON.stringify(fieldsnvalues).split('"').join("").split('[').join("").split(']').join("").split("=null,").join("*").split("null,").join("").split("*").join("=null,");
-              atualizaItem(tablename,fieldsnvalues, where)
-            })
 
-        } else {
-          newUpdate.data[tablename].forEach(function (iupdated, idupdated)  {
+          newUpdate.data.clientes.forEach(function (iupdated, idupdated)  {
               let propsupdated = JSON.stringify(Object.getOwnPropertyNames(iupdated))
               let valuesupdated = JSON.stringify(Object.values(iupdated))
               let fields = propsupdated.split('"').join("").split('[').join("").split(']').join("")
@@ -595,7 +682,7 @@ export function updateToFirebird(nomepk, tablename, callback) {
                 //     console.log('erro - '+x+'='+ySplited[i]) 
                 // } else return fieldsnvalues[i]=x+'='+ySplited[i]
                 // return ''
-                if (x===nomepk){
+                if (x==='PK_CLI'){
                   where = x+'='+ySplited[i]
                   return ''
                 } else if (x ==='itens') {
@@ -604,9 +691,41 @@ export function updateToFirebird(nomepk, tablename, callback) {
                 } else return fieldsnvalues[i]=x+'='+ySplited[i]
               })
               fieldsnvalues = JSON.stringify(fieldsnvalues).split('"').join("").split('[').join("").split(']').join("").split("=null,").join("*").split("null,").join("").split("*").join("=null,");
-              atualizaItem(tablename,fieldsnvalues, where)
+              atualizaItem('clientes',fieldsnvalues, where)
           })
-        }
+
+          // newUpdate.data.pedidos.forEach(function (iupdated, idupdated)  {
+          //     let propsupdated = JSON.stringify(Object.getOwnPropertyNames(iupdated))
+          //     let valuesupdated = JSON.stringify(Object.values(iupdated))
+          //     let fields = propsupdated.split('"').join("").split('[').join("").split(']').join("")
+          //     let values = valuesupdated.split('"').join("'").split('[').join("").split(']').join("")
+          //     console.log(fields)
+          //     console.log(values)
+          //     const xSplited = fields.split(',')
+          //     const ySplited = values.split(',')
+          //     let where = ''
+          //     console.log(xSplited)
+          //     let fieldsnvalues = []
+          //     fieldsnvalues = xSplited.map((x, i) => {
+          //       // if (x===nomepk){
+          //       //   where = x+'='+ySplited[i]
+          //       // } else if (x ==='itens') {
+          //       //   console.log('itens')
+          //       // } else if (ySplited[i] === 'null') {
+          //       //     console.log('erro - '+x+'='+ySplited[i]) 
+          //       // } else return fieldsnvalues[i]=x+'='+ySplited[i]
+          //       // return ''
+          //       if (x==='PK_CLI'){
+          //         where = x+'='+ySplited[i]
+          //         return ''
+          //       } else if (x ==='itens') {
+          //         console.log('itens')
+          //         return ''
+          //       } else return fieldsnvalues[i]=x+'='+ySplited[i]
+          //     })
+          //     fieldsnvalues = JSON.stringify(fieldsnvalues).split('"').join("").split('[').join("").split(']').join("").split("=null,").join("*").split("null,").join("").split("*").join("=null,");
+          //     atualizaItem('clientes',fieldsnvalues, where)
+          // })
 
     }).then(function(response) {
 

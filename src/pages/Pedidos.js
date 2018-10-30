@@ -76,10 +76,12 @@ class Example extends React.Component {
     createSons(item, id){
         return(
             <ListGroupItem href="#" key={id} className="FormField__Grid">
-            Código: {item.CODIGOPRO}<br/>
-            Quantidade: {item.QUANTIDADE}<br/>
-            Valor: {'R$ '+item.VALOR}<br/>
-            Valor ICMS: {'R$ '+(item.VALOR_STICMS||'0.00')}<br/>
+                Código: {item.CODIGOPRO}<br/>
+                Descrição: {item.DESCRICAOPRO}<br/>
+                Quantidade: {item.QUANTIDADE}<br/>
+                IPI: {item.IPI+'%'}<br/>
+                Valor: {'R$ '+item.VALOR}<br/>
+                Valor ICMS: {'R$ '+(item.VALOR_STICMS||'0.00')}<br/>
             </ListGroupItem>
         )
     }
@@ -114,8 +116,10 @@ class Example extends React.Component {
                         Data: {garanteDate(item.DATA)}<br/>
                         Cliente: {item.RAZAO_SOCIAL}<br/>
                         Condição de Pagamento: {item.NOMECPG}<br/>
-                        Valor: {'R$ '+item.VALOR_CALCULADO}<br/>
-                        Valor Informado: {'R$ '+item.VALOR_CALCULADO}<br/>
+                        Valor: {'R$ '+item.VALOR_INFORMADO}<br/>
+                        Valor Produtos: {'R$ '+item.VALOR_CALCULADO}<br/>
+                        Valor Ipi: {'R$ '+item.VALOR_IPI}<br/>
+                        Valor ST ICMS: {'R$ '+item.VALOR_ST}<br/>
                         Data de Envio: {garanteDate(item.DATA_ENVIO)}<br/>
                         Código: {item.PK_PED}<br/>
                         <div>
@@ -135,7 +139,7 @@ class Example extends React.Component {
                         Data: {garanteDate(item.DATA)}<br/>
                         Cliente: {item.RAZAO_SOCIAL}<br/>
                         Condição de Pagamento: {item.NOMECPG}<br/>
-                        Valor: {'R$ '+item.VALOR_CALCULADO}<br/>
+                        Valor: {'R$ '+item.VALOR_INFORMADO}<br/>
                         <LinkContainer to={"/macropecas/pedidos/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
                         </ListGroupItem>
                     )
@@ -146,7 +150,7 @@ class Example extends React.Component {
                     Data: {garanteDate(item.DATA)}<br/>
                     Cliente: {item.RAZAO_SOCIAL}<br/>
                     Condição de Pagamento: {item.NOMECPG}<br/>
-                    Valor: {'R$ '+item.VALOR_CALCULADO}<br/>
+                    Valor: {'R$ '+item.VALOR_INFORMADO}<br/>
                     <LinkContainer to={"/macropecas/pedidos/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
                     </ListGroupItem>
                 )

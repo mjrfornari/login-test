@@ -42,8 +42,8 @@ class Example extends React.Component {
         cond_pag: {display: '', value: '', codigo: ''},
         cidades: {},
         cond_pags: [],
-        now : {NUMPED:0, FK_CLI: 0, FK_CPG: 0, PK_PED: 0, OBSERVACAO: '', ORCAMENTO: '', DATA: new Date()},
-        editIte: {CODIGOPRO: '', QUANTIDADE: 0, VALOR: '', PERCIPI: 0, PERCST_ICMS: 0, TOTAL: 0, DESCONTO1: '', DESCONTO2: '', id:0, ST_ICMS: 0, IPI: 0},
+        now : {FK_CLI: 0, NUMPED:null, NUMWEB:0, FK_CPG: 0, PK_PED: 0, OBSERVACAO: '', ORCAMENTO: '', DATA: new Date(), FK_REP: 1, ENVIADO: 'N', IMPORTACAO: 'N', STATUS: 'A', WEB: 'S'},
+        editIte: {CODIGOPRO: '', QUANTIDADE: 0, VALOR_STICMS:0, VALOR_IPI:0, IPI:0, PERC_STICMS:0, VALOR: 0, DESCONTO1: 0, DESCONTO2: 0, id:0},
         append: false,
         isLoading: true,
         id: 0,
@@ -108,6 +108,7 @@ class Example extends React.Component {
                     Código: {item.CODIGOPRO}<br/>
                     Descrição: {item.DESCRICAOPRO}<br/>
                     Quantidade: {item.QUANTIDADE}<br/>
+                    IPI: {item.IPI+'%'}<br/>
                     Valor: {'R$ '+item.VALOR}<br/>
                     Valor ICMS: {'R$ '+(item.VALOR_STICMS||'0.00')}<br/>
                 </div>
@@ -341,13 +342,17 @@ class Example extends React.Component {
             pedido.itens.forEach((element, elementid) => {
                 let desconto = (1-(Number(element.DESCONTO1)/100))*(1-(Number(element.DESCONTO2)/100))
                 total = (element.VALOR*Number(element.QUANTIDADE))*desconto + total
-                ipi = (element.IPI*Number(element.QUANTIDADE))*desconto + ipi
-                sticms = (element.ST_ICMS*Number(element.QUANTIDADE))*desconto + sticms
+                ipi = (element.VALOR_IPI*Number(element.QUANTIDADE))*desconto + ipi
+                sticms = (element.VALOR_STICMS*Number(element.QUANTIDADE))*desconto + sticms
             })
-            pedido.TOTALPRO = total.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
-            pedido.TOTALIPI = ipi.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
-            pedido.TOTALSTI = sticms.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
-            pedido.TOTAL = (total+ipi+sticms).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+            pedido.VALOR_CALCULADO = total.toFixed(2)
+            pedido.VALOR_IPI = ipi.toFixed(2)
+            pedido.VALOR_ST = sticms.toFixed(2)
+            pedido.VALOR_INFORMADO = (total+ipi+sticms).toFixed(2)
+            pedido.VALOR_CALCULADO = Number(pedido.VALOR_CALCULADO)
+            pedido.VALOR_IPI = Number(pedido.VALOR_IPI)
+            pedido.VALOR_ST = Number(pedido.VALOR_ST)
+            pedido.VALOR_INFORMADO = Number(pedido.VALOR_INFORMADO)
             this.setState({mostraTotal: true, now: pedido})
         } 
     }
@@ -448,16 +453,18 @@ class Example extends React.Component {
                 if (this.state.produto.IPI > 0){
                     ipi=this.state.produto.IPI
                 }
+                reg.IPI = ipi
                 let st = this.pegaStIcms(this.state.cliente, this.state.produto)
                 let preco = this.precoUnit(this.state.cliente, this.state.produto)
                 preco = this.aplicaDescontos(preco)
                 reg.VALOR = preco
+                reg.PERC_STICMS = st
                 let precodscto = this.descontosDigitados(preco)
-                reg.ST_ICMS = (st * (precodscto/100)).toFixed(2)
-                reg.ST_ICMS = Number(reg.ST_ICMS)
-                reg.IPI = (ipi * (precodscto/100)).toFixed(2)
-                reg.IPI = Number(reg.IPI)
-                reg.TOTAL = ((precodscto + reg.IPI + reg.ST_ICMS)*reg.QUANTIDADE).toFixed(2)
+                reg.VALOR_STICMS = (st * (precodscto/100)).toFixed(2)
+                reg.VALOR_STICMS = Number(reg.VALOR_STICMS)
+                reg.VALOR_IPI = (ipi * (precodscto/100)).toFixed(2)
+                reg.VALOR_IPI = Number(reg.VALOR_IPI)
+                reg.TOTAL = ((precodscto + reg.VALOR_IPI + reg.VALOR_STICMS)*reg.QUANTIDADE).toFixed(2)
                 reg.TOTAL = Number(reg.TOTAL)
             }
             this.setState({editIte: reg})
@@ -525,7 +532,7 @@ class Example extends React.Component {
         }
         if ( preco > 0 ) {
             return preco
-        } else {
+        } else if (produto.codigo > 0) {
             alert('Preço Unitário não foi encontrado! Verifique no menu "Produtos"')
             return 0.00
         }
@@ -575,14 +582,15 @@ class Example extends React.Component {
             preco = this.aplicaDescontos(preco)
             reg.VALOR = preco
             let precodscto = this.descontosDigitados(preco)
-            reg.IPI = (selecionado.IPI * ((reg.VALOR)/100));
+            reg.IPI = selecionado.IPI
             let percSt = this.pegaStIcms(this.state.cliente, selecionado)
             selecionado.ST_ICMS = percSt
-            reg.ST_ICMS = (percSt * (precodscto/100)).toFixed(2)
-            reg.ST_ICMS = Number(reg.ST_ICMS)
-            reg.IPI = (selecionado.IPI * (precodscto/100)).toFixed(2)
-            reg.IPI = Number(reg.IPI)
-            reg.TOTAL = ((precodscto + reg.IPI + reg.ST_ICMS)*reg.QUANTIDADE).toFixed(2)
+            reg.PERC_STICMS = percSt
+            reg.VALOR_STICMS = (percSt * (precodscto/100)).toFixed(2)
+            reg.VALOR_STICMS = Number(reg.VALOR_STICMS)
+            reg.VALOR_IPI = (selecionado.IPI * (precodscto/100)).toFixed(2)
+            reg.VALOR_IPI = Number(reg.VALOR_IPI)
+            reg.TOTAL = ((precodscto + reg.VALOR_IPI + reg.VALOR_STICMS)*reg.QUANTIDADE).toFixed(2)
             console.log(reg.Total)
             reg.TOTAL = Number(reg.TOTAL)
             
@@ -670,7 +678,7 @@ class Example extends React.Component {
 
     closeModal(e){
         e.preventDefault();
-        this.setState({mostraModal: false, mostraTotal: false, itemAdded: 'ItemAdded-hide', editIte: {CODIGOPRO: '', QUANTIDADE: 0,VALOR: '', TOTAL: '', IPI:'', ST_ICMS: '', DESCONTO1: '', DESCONTO2: '', id:0}, produto: {display: '',codigo:'', value: '', ST_ICMS: 0, IPI: 0}})
+        this.setState({mostraModal: false, mostraTotal: false, itemAdded: 'ItemAdded-hide', editIte: {CODIGOPRO: '', QUANTIDADE: 0,VALOR: '', TOTAL: '', DESCONTO1: '', DESCONTO2: '', id:0}, produto: {display: '', OBS_PROMOCIONAL:'',codigo:'', value: '', ST_ICMS: 0, IPI: 0}})
     }
 
     saveModal(e, id){
@@ -691,7 +699,7 @@ class Example extends React.Component {
         if (this.state.appendItem === false) {
             let item = Object.assign({},this.state.now)
             item.itens[id] = this.state.editIte;
-            this.setState({mostraModal: false, now: item, editIte: {CODIGOPRO: '', QUANTIDADE: 0,VALOR: '', TOTAL: '', DESCONTO1: '', DESCONTO2: '', IPI: '', ST_ICMS: '',id:0}, produto: {display: '',codigo:'', value: '', ST_ICMS: 0, IPI: 0}})
+            this.setState({mostraModal: false, now: item, editIte: {CODIGOPRO: '', VALOR_STICMS:0, VALOR_IPI:0, PERC_STICMS:0, QUANTIDADE: 0,VALOR: 0, TOTAL: '', DESCONTO1: 0, DESCONTO2: 0, IPI: 0,id:0}, produto: {display: '', OBS_PROMOCIONAL:'',codigo:'', value: '', ST_ICMS: 0, IPI: 0}})
         } else {
             // let nextId = 0
             let item = Object.assign({},this.state.now)
@@ -702,7 +710,7 @@ class Example extends React.Component {
                 item.itens.push(this.state.editIte);
             }
             let nextId = item.itens.length
-            this.setState({itemAdded: 'ItemAdded', mostraModal: true, now: item, editIte: {CODIGOPRO: '', VALOR: '', QUANTIDADE: 0, TOTAL: '', DESCONTO1: '', IPI: '', ST_ICMS: '', DESCONTO2: '', id: nextId}, produto: {display: '',codigo:'', value: '', ST_ICMS: 0, IPI: 0}})
+            this.setState({itemAdded: 'ItemAdded', mostraModal: true, now: item, editIte: {CODIGOPRO: '', VALOR_STICMS:0, VALOR_IPI:0, PERC_STICMS:0,VALOR: 0, QUANTIDADE: 0, TOTAL: '', DESCONTO1: 0, IPI: 0, DESCONTO2: 0, id: nextId}, produto: {display: '', OBS_PROMOCIONAL:'',codigo:'', value: '', ST_ICMS: 0, IPI: 0}})
         }
     }
 
@@ -770,15 +778,19 @@ class Example extends React.Component {
                             <div className="App__Form">
                                 <div className={this.showTotal()} tabIndex="-1">
                                     <Modal.Dialog className="Modal" >
-                                        <Modal.Body className="ModalBg">    
-                                            <div className="FormField">
+                                        <Modal.Body className="ModalBg">   
+                                        <div className='Saved'> 
+                                            <div className='TotaisRadio'>
                                                 <Radio label='PEDIDO' name='ORCAMENTO' style={{color: 'white'}} checked={this.state.now.ORCAMENTO === "N"} onChange={this.handleTogglePed} toggle/>
                                                 <Radio label='ORÇAMENTO' name='ORCAMENTO' style={{color: 'white'}} checked={this.state.now.ORCAMENTO === "S"} onChange={this.handleToggleOrc} toggle/>
-                                            </div> 
-                                            Total Produtos: R$ {this.state.now.TOTALPRO}<br/>
-                                            Total IPI: R$ {this.state.now.TOTALIPI}<br/>
-                                            Total ST Icms: R$ {this.state.now.TOTALSTI}<br/>
-                                            Total do Pedido: R$ {this.state.now.TOTAL}
+                                            </div>
+                                            <div className='Totais'>
+                                            Total Produtos: R$ {(this.state.now.VALOR_CALCULADO||0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}<br/>
+                                            Total IPI: R$ {(this.state.now.VALOR_IPI||0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}<br/>
+                                            Total ST ICMS: R$ {(this.state.now.VALOR_ST||0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}<br/>
+                                            Total do Pedido: R$ {(this.state.now.VALOR_INFORMADO||0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}
+                                            </div>
+                                        </div>
                                         </Modal.Body>
                                         <Modal.Footer className="ModalBg">
                                             <Button className="FormField__Button mr-20" onClick={this.closeModal}>Cancelar</Button>
@@ -811,8 +823,8 @@ class Example extends React.Component {
                                                     </div>
                                                     <div style={{display:'flex'}}>
                                                         <div style={{width: '45%', display:'inline'}}>
-                                                           <input type="text" id="QUANTIDADE" className="FormField__Input" 
-                                                            name="QUANTIDADE" value={(this.state.editIte.QUANTIDADE || '0')} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
+                                                           <input type="number" id="QUANTIDADE" className="FormField__Input" 
+                                                            name="QUANTIDADE" value={(this.state.editIte.QUANTIDADE)} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
                                                         </div>
                                                         <div style={{width: '45%', display:'inline'}}>
                                                             <input type="text" id="VALOR" className="FormField__Input"
@@ -823,7 +835,7 @@ class Example extends React.Component {
                                             <div className="FormField">
                                                 <label className="FormField__Label" htmlFor="OBS_PROMOCIONAL">OBSERVAÇÃO PROMOCIONAL</label>
                                                 <textarea id="OBS_PROMOCIONAL" className="FormField__Input__OBS" 
-                                                name="OBS_PROMOCIONAL" value={this.state.produto.OBS_PROMOCIONAL || ''} tabIndex="-1" readOnly/>
+                                                name="OBS_PROMOCIONAL" value={this.state.produto.OBS_PROMOCIONAL} tabIndex="-1" readOnly/>
                                             </div>
 
 
@@ -839,12 +851,12 @@ class Example extends React.Component {
                                                     <div style={{display:'flex'}}>
                                                         <div style={{width: '45%', display:'inline'}}>
                                                             <input type="number" data-number-to-fixed="2" id="DESCONTO1" className="FormField__InputUn"  style={{margin: '0px 5px 0px 0px', display:'inline-block' }} 
-                                                            name="DESCONTO1" value={(this.state.editIte.DESCONTO1) || 0.00} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
+                                                            name="DESCONTO1" value={(this.state.editIte.DESCONTO1)} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
                                                             <input type="text" value="%" readOnly tabIndex='-1' className="FormField__Un" style={{margin: '0px 5px 0px 0px', display:'inline-block' }}></input>
                                                         </div>
                                                         <div style={{width: '45%', display:'inline'}}>
                                                             <input type="number" id="DESCONTO2" className="FormField__InputUn"  style={{margin: '0px 5px 0px 0px'}}
-                                                            name="DESCONTO2" value={(this.state.editIte.DESCONTO2 || 0.00)} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
+                                                            name="DESCONTO2" value={(this.state.editIte.DESCONTO2)} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
                                                         <input type="text" value="%" readOnly tabIndex='-1' className="FormField__Un" style={{margin: '0px 5px 0px 0px', display:'inline-block' }}></input>
                                                         </div>
                                                     </div>
@@ -861,11 +873,11 @@ class Example extends React.Component {
                                                     <div style={{display:'flex'}}>
                                                         <div style={{width: '30%', display:'inline'}}>
                                                             <input type="text" id="PROIPI" className="FormField__Input" 
-                                                            name="PROIPI" value={(this.state.produto.IPI+' %' || '0.00 %')} tabIndex="-1" readOnly/>
+                                                            name="PROIPI" value={(this.state.editIte.IPI+' %' || '0.00 %')} tabIndex="-1" readOnly/>
                                                         </div>
                                                         <div style={{width: '65%', display:'inline'}}>
                                                             <input type="text" id="IPI" className="FormField__Input"
-                                                            name="IPI" value={(this.state.editIte.IPI||0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})} tabIndex="-1" readOnly/>
+                                                            name="IPI" value={(this.state.editIte.VALOR_IPI||0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})} tabIndex="-1" readOnly/>
                                                         </div>
                                                     </div>
                                             </div>
@@ -881,11 +893,11 @@ class Example extends React.Component {
                                                     <div style={{display:'flex'}}>
                                                         <div style={{width: '30%', display:'inline'}}>
                                                             <input type="text" id="PROIPI" className="FormField__Input" 
-                                                            name="PROST_ICMS" value={(this.state.produto.ST_ICMS+' %' || '0.00 %')} tabIndex="-1" readOnly/>
+                                                            name="PROST_ICMS" value={(this.state.editIte.PERC_STICMS+' %' || '0.00 %')} tabIndex="-1" readOnly/>
                                                         </div>
                                                         <div style={{width: '65%', display:'inline'}}>
                                                             <input type="text" id="ST_ICMS" className="FormField__Input"
-                                                            name="ST_ICMS" value={(this.state.editIte.ST_ICMS||0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})} tabIndex="-1" readOnly/>
+                                                            name="ST_ICMS" value={(this.state.editIte.VALOR_STICMS||0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})} tabIndex="-1" readOnly/>
                                                         </div>
                                                     </div>
                                             </div>

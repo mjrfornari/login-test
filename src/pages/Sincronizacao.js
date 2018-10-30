@@ -47,16 +47,13 @@ class Example extends React.Component {
         
         e.preventDefault(); 
         this.setState({sync: true}) 
-        createToFirebird('PK_CLI', 'clientes',() => {      
-            updateToFirebird('PK_CLI', 'clientes', () => { 
-                // createToFirebird('PK_PED', 'pedidos',() => {      
-                    updateToFirebird('PK_PED', 'pedidos', () => { 
-                        syncData(localStorage.getItem('macropecas'), ()=> {this.setState({sync: false})})
-                    })
-                // })
+        createToFirebird(() => {      
+            updateToFirebird(() => { 
+                syncData(localStorage.getItem('macropecas'), ()=> {this.setState({sync: false})})
             })
         })
         
+        // createToFirebird(() => {console.log('A')})
         
         
     }
