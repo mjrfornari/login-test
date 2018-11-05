@@ -28,7 +28,6 @@ class Example extends React.Component {
       loading: true,
       sync: false
     };
-
     this.handleSync = this.handleSync.bind(this);
     this.handleTeste = this.handleTeste.bind(this);
     
@@ -52,9 +51,9 @@ class Example extends React.Component {
                 syncData(localStorage.getItem('macropecas'), ()=> {this.setState({sync: false})})
             })
         })
-        
-        // createToFirebird(() => {console.log('A')})
-        
+        // createToFirebird(() => {
+        //     updateToFirebird(() => {console.log('A')})
+        // })
         
     }
 
@@ -77,37 +76,37 @@ class Example extends React.Component {
                 <div className={this.hideBar()}>
                     {/* <div className="App__Aside__BG"></div> */}
                     <div> 
-                        <SideNav highlightColor='white' highlightBgColor='#506b55' defaultSelected='sync' 
+                        <SideNav hhighlightColor='var(--cor-letra)' highlightBgColor='var(--cor-2)' defaultSelected='sync' 
                         onItemSelection={ (id, parent) => {
                             if (id==='exit'){  
                                 localStorage.setItem("logou", false);    
                                 this.props.history.push('/macropecas/')
                             } else this.props.history.push('/macropecas/'+id)
                         }}>       
-                            <Nav id='home'>
-                                <NavIcon><SvgIcon size={30} icon={ic_home}/></NavIcon>    
-                                <NavText> Página Inicial </NavText>
-                            </Nav>
-                            <Nav id='clientes'>
-                                <NavIcon><SvgIcon size={30} icon={ic_account_box}/></NavIcon>    
-                                <NavText> Clientes </NavText>
-                            </Nav>
-                            <Nav id='produtos'>
-                                <NavIcon><SvgIcon size={30} icon={ic_build}/></NavIcon>
-                                <NavText> Produtos </NavText>
-                            </Nav>
-                            <Nav id='pedidos'>
-                                <NavIcon><SvgIcon size={30} icon={ic_add_shopping_cart}/></NavIcon>
-                                <NavText> Pedidos </NavText>
-                            </Nav>
-                            <Nav id='sync'>
-                                <NavIcon><SvgIcon size={30} icon={ic_sync}/></NavIcon>
-                                <NavText> Sincronização </NavText>
-                            </Nav>
-                            <Nav id='exit'>
-                                <NavIcon><SvgIcon size={30} icon={ic_exit_to_app}/></NavIcon>
-                                <NavText> Sair </NavText>
-                            </Nav>   
+                                <Nav id='home'>
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_home}/></NavIcon>    
+                                    <NavText className='BarText'> Página Inicial </NavText>
+                                </Nav>
+                                <Nav id='clientes'>
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_account_box}/></NavIcon>    
+                                    <NavText className='BarText'> Clientes </NavText>
+                                </Nav>
+                                <Nav id='produtos'>
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_build}/></NavIcon>
+                                    <NavText className='BarText'> Produtos </NavText>
+                                </Nav>
+                                <Nav id='pedidos'>
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_add_shopping_cart}/></NavIcon>
+                                    <NavText className='BarText'> Pedidos </NavText>
+                                </Nav>
+                                <Nav id='sync'>
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_sync}/></NavIcon>
+                                    <NavText className='BarText'> Sincronização </NavText>
+                                </Nav>
+                                <Nav id='exit'>
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_exit_to_app}/></NavIcon>
+                                    <NavText className='BarText'> Sair </NavText>
+                                </Nav>      
                         </SideNav>
                     </div>
                 </div>

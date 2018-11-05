@@ -3,7 +3,6 @@
   "short_name": "Macropecas",
   "start_url": ".",
   "display": "standalone",
-  "orientation": "portrait",
   "background_color": "#304c55",
   "theme_color": "#649764",
   "icons": [

@@ -16,7 +16,7 @@ class EntrarForm extends Component {
         };
 
         this.logado = false;
-
+        
         this.handleChange = this.handleChange.bind(this);
         this.handleUserChange = this.handleUserChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -25,7 +25,7 @@ class EntrarForm extends Component {
     handleSubmit (e) {
         e.preventDefault();
         if ((this.state.user!=='') && (this.state.password!=='')){
-            fetch('http://192.168.0.251:3001/login/'+this.state.user+'/'+this.state.password).then(r => r.json()).then(r => {
+            fetch('https://macropecasweb.sytes.net:8080/api/login/'+this.state.user+'/'+this.state.password).then(r => r.json()).then(r => {
                 this.logado=false;
             
                 if (Object.keys(r).length > 0){

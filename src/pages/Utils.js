@@ -9,8 +9,8 @@ import "../App.css";
 import PouchDB from 'pouchdb';
 
 // const server = 'http://187.44.93.73:8080';
-const server = 'http://192.168.0.251:3001';
-const db = new PouchDB('macropecas');
+const server = 'https://macropecasweb.sytes.net:8080/api';
+const db = new PouchDB('macropecas', {auto_compaction: true});
 
 
 
@@ -102,10 +102,14 @@ export function garanteDate(texto){
     return data;
 }
 
-export function dateSql(texto){
+export function dateSql(texto, entre){
     let data = ''
     if (texto != null){
-      data=texto.substr(0,4)+'-'+texto.substr(5,2)+'-'+texto.substr(8,2)
+      if (typeof entre !== 'undefined'){
+        data=entre+texto.substr(0,4)+'-'+texto.substr(5,2)+'-'+texto.substr(8,2)+entre
+      } else {
+        data=texto.substr(0,4)+'-'+texto.substr(5,2)+'-'+texto.substr(8,2)
+      }
     }
     return data;
 }
@@ -118,6 +122,15 @@ export function zeraNull(texto){
       valor = texto
     }
     return valor
+}
+
+export function now(aux){
+    let now = new Date ()
+    now.setDate(now.getDate() + aux)
+    let year = now.getFullYear()
+    let month = now.getMonth()+1<10 ? '0'+now.getMonth()+1 : now.getMonth()+1
+    let day = now.getDate()<10 ? '0'+now.getDate() : now.getDate()
+    return year+'-'+month+'-'+day
 }
 
 
@@ -235,98 +248,79 @@ export function appendData(tabela, item, callback) {
 
 
 export function includeDelete(tabela,item, id){
-
-  deleteTable(Data => { 
-        let deleted = Data
-        db.get('delete').then(function(doc) {
-        let newDelete = {
-          _id: 'delete',
-          data:  Data.data,
-          _rev: doc._rev
+  createTable(Data => {
+    let create = Data
+    db.get('create').then(function(doc) {
+      let newCreate = {
+        _id: 'create',
+        data:  Data.data,
+        _rev: doc._rev
+      }
+      let table = newCreate
+      table.data[tabela].forEach(function (element, index)  {
+        console.log(element)
+        console.log(id)
+        console.log('*********')
+        if (Number(element.read) === Number(id)) {
+            newCreate.data[tabela].splice(index,1)
         } 
-
-        newDelete.data[tabela].push(item)
-        return db.put(newDelete)
-      }).then(function(response) {
-        console.log('Delete updated!')
-
-        createTable(Data => {
-          let create = Data
-          db.get('create').then(function(doc) {
-            let newCreate = {
-              _id: 'create',
-              data:  Data.data,
-              _rev: doc._rev
-            }
-            let table = newCreate
-            table.data[tabela].forEach(function (element, index)  {
-              if (element.read === id) {
-                  newCreate.data[tabela].splice(index,1)
-              } 
-            });
-            table = newCreate
-            table.data[tabela].forEach(function (element, index)  {
-              if (element.read > id) {
-                  newCreate.data[tabela][index].read -= 1               
-              }  
-            });
-            return db.put(newCreate)
-        }).then(function(response) {
-          console.log('Create updated!')
-        }).catch(function (err) {
-          if (err.name === 'not_found') {
-            db.put(create).then(function (response) {
-                console.log('Create Created!')
-            }).catch(function (err) {
-              console.log(err);
-            });
-          }
-        });})
-
-
-
-        updateTable(Data => {
-          let update = Data
-          db.get('update').then(function(doc) {
-            let newUpdate = {
-              _id: 'update',
-              data:  Data.data,
-              _rev: doc._rev
-            }
-            let table = newUpdate
-            table.data[tabela].forEach(function (element, index)  {
-              if (element.read === id) {
-                  newUpdate.data[tabela].splice(index,1)
-              } 
-            });
-            table = newUpdate
-            table.data[tabela].forEach(function (element, index)  {
-              if (element.read > id) {
-                  newUpdate.data[tabela][index].read -= 1               
-              }  
-            });
-            return db.put(newUpdate)
-        }).then(function(response) {
-          console.log('Update updated!')
-        }).catch(function (err) {
-          if (err.name === 'not_found') {
-            db.put(update).then(function (response) {
-                console.log('Update Created!')
-            }).catch(function (err) {
-              console.log(err);
-            });
-          }
-        });})
- 
+      });
+      table = newCreate
+      table.data[tabela].forEach(function (element, index)  {
+        if (Number(element.read) > Number(id)) {
+            newCreate.data[tabela][index].read -= 1               
+        }  
+      });
+      return db.put(newCreate)
+  }).then(function(response) {
+    console.log('Create updated!')
+  }).catch(function (err) {
+    if (err.name === 'not_found') {
+      db.put(create).then(function (response) {
+          console.log('Create Created!')
       }).catch(function (err) {
-        if (err.name === 'not_found') {
-          db.put(deleted).then(function (response) {
-              console.log('Delete Created!')
-          }).catch(function (err) {
-            console.log(err);
-          });
-        }
-      });})
+        console.log(err);
+      });
+    }
+  });
+  })
+
+
+
+  updateTable(Data => {
+    let update = Data
+    db.get('update').then(function(doc) {
+      let newUpdate = {
+        _id: 'update',
+        data:  Data.data,
+        _rev: doc._rev
+      }
+      let table = newUpdate
+      table.data[tabela].forEach(function (element, index)  {
+        if (Number(element.read) === Number(id)) {
+            newUpdate.data[tabela].splice(index,1)
+        } 
+      });
+      table = newUpdate
+      table.data[tabela].forEach(function (element, index)  {
+        if (Number(element.read) > Number(id)) {
+            newUpdate.data[tabela][index].read -= 1               
+        }  
+      });
+      return db.put(newUpdate)
+  }).then(function(response) {
+    console.log('Update updated!')
+  }).catch(function (err) {
+    if (err.name === 'not_found') {
+      db.put(update).then(function (response) {
+          console.log('Update Created!')
+      }).catch(function (err) {
+        console.log(err);
+      });
+    }
+  });
+})
+ 
 
 }
 
@@ -561,7 +555,7 @@ export function createToFirebird(callback) {
             // console.log(newCreate.data.clientes)
           })
 
-                        pedidos.forEach(function (icreated, idcreate)  {
+                pedidos.forEach(function (icreated, idcreate)  {
                 icreated.itens = []
                 icreated.RAZAO_SOCIAL = []
                 icreated.NOMECPG = []
@@ -585,10 +579,14 @@ export function createToFirebird(callback) {
                     _rev: doc._rev
                   }
                   if (typeof newUpdate.data.pedidos !== 'undefined'){
-                    newUpdate.data.pedidos.forEach(function (iupdated, idupdated) {
-                        if (icreated.read === iupdated.read){
-                          newUpdate.data.pedidos[idupdated]['PK_PED']=icreated['PK_PED']
-                          newUpdate.data.pedidos[idupdated]['NUMWEB']=icreated['NUMWEB']
+                    newUpdate.data.pedidos.forEach(function (iupdated, idupdated) { 
+                        if (Number(icreated.read) === Number(iupdated.read)){
+                          iupdated['PK_PED']=icreated['PK_PED']
+                          iupdated['NUMWEB']=icreated['NUMWEB']
+                          console.log(icreated.PK_PED+' ** '+icreated.NUMWEB)
+                          iupdated.itens.forEach(function (iupdatedson, idupdatedson) {
+                            iupdatedson.FK_PED = icreated['PK_PED']
+                          })
                         }
                     })
                   }
@@ -620,11 +618,13 @@ export function createToFirebird(callback) {
                       }
                       if (typeof newUpdate.data.pedidos !== 'undefined'){
                         newUpdate.data.pedidos.forEach(function (iupdated, idupdated) {
-                          newUpdate.data.pedidos.itens.forEach(function (iupdatedson, idupdatedson) {
-                            if (iupdated.PK_PED === icreated.FK_PED){
-                              newUpdate.data.clientes[idupdated]['FK_PED']=icreated['FK_PED']
+                            if (Number(iupdated.PK_PED) === Number(icreated.FK_PED)){
+                              iupdated.itens.forEach(function (iupdatedson, idupdatedson) {
+                                if (Number(iupdatedson.read) === Number(icreated.read)){
+                                  iupdatedson.PK_IPE = icreated.PK_IPE
+                                }
+                              })
                             }
-                          })
                         })
                       }
                       // return db.put(newUpdate)
@@ -666,12 +666,12 @@ export function updateToFirebird(callback) {
               let valuesupdated = JSON.stringify(Object.values(iupdated))
               let fields = propsupdated.split('"').join("").split('[').join("").split(']').join("")
               let values = valuesupdated.split('"').join("'").split('[').join("").split(']').join("")
-              console.log(fields)
-              console.log(values)
+              // console.log(fields)
+              // console.log(values)
               const xSplited = fields.split(',')
               const ySplited = values.split(',')
               let where = ''
-              console.log(xSplited)
+              // console.log(xSplited)
               let fieldsnvalues = []
               fieldsnvalues = xSplited.map((x, i) => {
                 // if (x===nomepk){
@@ -694,38 +694,69 @@ export function updateToFirebird(callback) {
               atualizaItem('clientes',fieldsnvalues, where)
           })
 
-          // newUpdate.data.pedidos.forEach(function (iupdated, idupdated)  {
-          //     let propsupdated = JSON.stringify(Object.getOwnPropertyNames(iupdated))
-          //     let valuesupdated = JSON.stringify(Object.values(iupdated))
-          //     let fields = propsupdated.split('"').join("").split('[').join("").split(']').join("")
-          //     let values = valuesupdated.split('"').join("'").split('[').join("").split(']').join("")
-          //     console.log(fields)
-          //     console.log(values)
-          //     const xSplited = fields.split(',')
-          //     const ySplited = values.split(',')
-          //     let where = ''
-          //     console.log(xSplited)
-          //     let fieldsnvalues = []
-          //     fieldsnvalues = xSplited.map((x, i) => {
-          //       // if (x===nomepk){
-          //       //   where = x+'='+ySplited[i]
-          //       // } else if (x ==='itens') {
-          //       //   console.log('itens')
-          //       // } else if (ySplited[i] === 'null') {
-          //       //     console.log('erro - '+x+'='+ySplited[i]) 
-          //       // } else return fieldsnvalues[i]=x+'='+ySplited[i]
-          //       // return ''
-          //       if (x==='PK_CLI'){
-          //         where = x+'='+ySplited[i]
-          //         return ''
-          //       } else if (x ==='itens') {
-          //         console.log('itens')
-          //         return ''
-          //       } else return fieldsnvalues[i]=x+'='+ySplited[i]
-          //     })
-          //     fieldsnvalues = JSON.stringify(fieldsnvalues).split('"').join("").split('[').join("").split(']').join("").split("=null,").join("*").split("null,").join("").split("*").join("=null,");
-          //     atualizaItem('clientes',fieldsnvalues, where)
-          // })
+          newUpdate.data.pedidos.forEach(function (iupdated, idupdated)  {
+               iupdated.itens.forEach(function (iupdatedson, idupdatedson)  {
+                iupdatedson.DESCRICAOPRO = []
+                iupdatedson.CODIGOPRO = '%$#'
+                iupdatedson.OBS_PROMOCIONAL = '%$#'
+                iupdatedson.TOTAL = '%$#'
+                iupdatedson.id = []
+                iupdatedson.FK_PED = iupdated.PK_PED
+                iupdatedson.mostraModal='%$#'
+                iupdatedson.QUANTIDADE=Number(iupdatedson.QUANTIDADE)
+                iupdatedson.DESCONTO1=Number(iupdatedson.DESCONTO1)
+                iupdatedson.DESCONTO2=Number(iupdatedson.DESCONTO2)
+                iupdatedson.VALOR_IPI =[]
+                let propsupdatedson = JSON.stringify(Object.getOwnPropertyNames(iupdatedson))
+                let valuesupdatedson = JSON.stringify(Object.values(iupdatedson))
+                let fieldsson = propsupdatedson.split('"').join("").split('[').join("").split(']').join("").split(',DESCRICAOPRO').join("").split(',mostraModal').join("").split('CODIGOPRO,').join("").split(',id').join("").split(',VALOR_IPI').join("").split(',OBS_PROMOCIONAL').join("").split(',TOTAL').join("")
+                let valuesson = valuesupdatedson.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",").split(",'%$#'").join("").split("'%$#',").join("")
+                if (typeof iupdatedson.PK_IPE === 'undefined'){
+                  geraPk('PK_IPE').then(res => {
+                    fieldsson=fieldsson+',PK_IPE'
+                    valuesson=valuesson+','+res[0].VALOR})
+                  .then(res =>{
+                    criaItem('itens_ped_venda',fieldsson, valuesson)  
+                  }) 
+                } else {
+                  const xSplitedson = fieldsson.split(',')
+                  const ySplitedson = valuesson.split(',')
+                  let whereson = ''
+                  let fieldsnvaluesson = []
+                  xSplitedson.forEach((xson, ison) => {
+                    if (xson==='PK_IPE'){
+                      whereson = xson+'='+ySplitedson[ison]
+                    } else fieldsnvaluesson[ison]=xson+'='+ySplitedson[ison]
+                  })
+                  fieldsnvaluesson = JSON.stringify(fieldsnvaluesson).split('"').join("").split('[').join("").split(']').join("").split("=null,").join("*").split("null,").join("").split("*").join("=null,");
+                  atualizaItem('itens_ped_venda',fieldsnvaluesson, whereson)
+                }
+              })
+              iupdated.itens = []
+              iupdated.RAZAO_SOCIAL = []
+              iupdated.NOMECPG = []
+              let propsupdated = JSON.stringify(Object.getOwnPropertyNames(iupdated))
+              let valuesupdated = JSON.stringify(Object.values(iupdated))
+              let fields = propsupdated.split('"').join("").split('[').join("").split(']').join("").split('itens,').join("").split('IMPORTADO').join("IMPORTACAO").split(',RAZAO_SOCIAL').join("").split(',NOMECPG').join("")
+              let values = valuesupdated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",")
+
+              const xSplited = fields.split(',')
+              const ySplited = values.split(',')
+              let where = ''
+              // console.log(xSplited)
+              let fieldsnvalues = []
+              xSplited.forEach((x, i) => {
+                if (x==='PK_PED'){
+                  where = x+'='+ySplited[i]
+                } else if (x==='DATA'){
+                  fieldsnvalues[i]=x+'='+dateSql(ySplited[i].split("'").join(""), "'")
+                } else fieldsnvalues[i]=x+'='+ySplited[i]
+              })
+              fieldsnvalues = JSON.stringify(fieldsnvalues).split('"').join("").split('[').join("").split(']').join("").split("=null,").join("*").split("null,").join("").split("*").join("=null,");
+
+              atualizaItem('pedidos_venda',fieldsnvalues, where)
+             
+          })
 
     }).then(function(response) {
 
@@ -752,6 +783,7 @@ export function syncData(user, callback){
     setTimeout(function() {
     let pegaPedidos = []
     fetch(server+'/pedidos/'+user).then(ped => ped.json()).then(ped => {
+      console.log(ped)
       ped.forEach(function(pedido, idpedido){
         ped[idpedido].itens=[];
         fetch(server+'/itepedidos/'+pedido.PK_PED).then(r => r.json()).then(r => {            
@@ -807,8 +839,13 @@ export function syncData(user, callback){
                     _id: 'read',
                     data: {
                       clientes: r,
-                      pedidos: ped
-                    }        
+                      pedidos: pegaPedidos,
+                      produtos: pro,
+                      st_icms: st,
+                      cond_pag: rcpg,
+                      cidades: cid,
+                      descontolog: desc
+                    }     
                   }
 
                   db.get('read').then(function(doc) {

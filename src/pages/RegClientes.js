@@ -65,7 +65,7 @@ class Example extends React.Component {
             return(
                 <div className='App__Aside'>
                         <div>   
-                            <SideNav highlightColor='white' highlightBgColor='#506b55' defaultSelected='clientes'
+                            <SideNav highlightColor='var(--cor-letra)' highlightBgColor='var(--cor-2)' defaultSelected='clientes'
                                         onItemSelection={ (id, parent) => {
                                             if (id==='exit'){  
                                                 localStorage.setItem("logou", false);    
@@ -73,29 +73,29 @@ class Example extends React.Component {
                                             } else {this.props.history.push('/macropecas/'+id)
                             }}}>                      
                                 <Nav id='home'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_home}/></NavIcon>    
-                                    <NavText> Página Inicial </NavText>
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_home}/></NavIcon>    
+                                    <NavText className='BarText'> Página Inicial </NavText>
                                 </Nav>
                                 <Nav id='clientes'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_account_box}/></NavIcon>    
-                                    <NavText> Clientes </NavText>
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_account_box}/></NavIcon>    
+                                    <NavText className='BarText'> Clientes </NavText>
                                 </Nav>
                                 <Nav id='produtos'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_build}/></NavIcon>
-                                    <NavText> Produtos </NavText>
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_build}/></NavIcon>
+                                    <NavText className='BarText'> Produtos </NavText>
                                 </Nav>
                                 <Nav id='pedidos'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_add_shopping_cart}/></NavIcon>
-                                    <NavText> Pedidos </NavText>
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_add_shopping_cart}/></NavIcon>
+                                    <NavText className='BarText'> Pedidos </NavText>
                                 </Nav>
                                 <Nav id='sync'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_sync}/></NavIcon>
-                                    <NavText> Sincronização </NavText>
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_sync}/></NavIcon>
+                                    <NavText className='BarText'> Sincronização </NavText>
                                 </Nav>
                                 <Nav id='exit'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_exit_to_app}/></NavIcon>
-                                    <NavText> Sair </NavText>
-                                </Nav>    
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_exit_to_app}/></NavIcon>
+                                    <NavText className='BarText'> Sair </NavText>
+                                </Nav>       
                             </SideNav>
                         </div>
                         </div>
@@ -149,18 +149,29 @@ class Example extends React.Component {
   
     handleSubmit (e) {
         e.preventDefault();
-        // console.log('a')
-         this.setState({savingPhase: 1, savingShow:{}})
-        if (this.state.ok ===false){
-            if (this.state.append === true) {
-                appendData('clientes', this.state.now, res => {this.setState({savingPhase: 2, savingShow:{}})})    
-                this.setState({ok: true})    
+        if (this.state.ok===false){
+            if ( this.state.now.RAZAO_SOCIAL==='' ){
+                alert('Informe a Razão Social!')
+            } else
+            if ( this.state.now.NOME_FANTASIA===''){
+                alert('Informe o Nome Fantasia!')
+            } else
+            if ( this.state.now.CNPJ.length !== 14  ){
+                alert('CNPJ inválido!!')
             } else {
-                editData('clientes', this.state.now, this.state.id, res => {this.setState({savingPhase: 2, savingShow:{}})})
-                this.setState({ok: true})  
+            // console.log('a')
+                this.setState({savingPhase: 1, savingShow:{}})
+                if (this.state.ok ===false){
+                    if (this.state.append === true) {
+                        appendData('clientes', this.state.now, res => {this.setState({savingPhase: 2, savingShow:{}})})    
+                        this.setState({ok: true})    
+                    } else {
+                        editData('clientes', this.state.now, this.state.id, res => {this.setState({savingPhase: 2, savingShow:{}})})
+                        this.setState({ok: true})  
+                    }
+                }
             }
         }
-
     }
 
   handleChange(e){

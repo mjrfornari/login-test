@@ -51,6 +51,7 @@ class Example extends React.Component {
         mostraModal: false,
         mostraTotal: false,
         appendItem: false,
+        show: false,
         savingShow: {display: 'none'},
         savingPhase: 1,
         buttons: 'Buttons',
@@ -86,6 +87,7 @@ class Example extends React.Component {
   }
   
     saveBtn(ok) {
+        
         if (ok === false){
             return (<input type="submit" className="FormField__Button mr-20" value="Salvar" onSubmit={this.handleSubmit}/>)
         } else {
@@ -132,7 +134,7 @@ class Example extends React.Component {
             return(
                 <div className='App__Aside'>
                         <div>   
-                            <SideNav highlightColor='white' highlightBgColor='#506b55' defaultSelected='pedidos'
+                            <SideNav highlightColor='var(--cor-letra)' highlightBgColor='var(--cor-2)' defaultSelected='pedidos'
                                         onItemSelection={ (id, parent) => {
                                             if (id==='exit'){  
                                                 localStorage.setItem("logou", false);    
@@ -140,29 +142,29 @@ class Example extends React.Component {
                                             } else {this.props.history.push('/macropecas/'+id)
                             }}}>                      
                                 <Nav id='home'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_home}/></NavIcon>    
-                                    <NavText> Página Inicial </NavText>
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_home}/></NavIcon>    
+                                    <NavText className='BarText'> Página Inicial </NavText>
                                 </Nav>
                                 <Nav id='clientes'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_account_box}/></NavIcon>    
-                                    <NavText> Clientes </NavText>
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_account_box}/></NavIcon>    
+                                    <NavText className='BarText'> Clientes </NavText>
                                 </Nav>
                                 <Nav id='produtos'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_build}/></NavIcon>
-                                    <NavText> Produtos </NavText>
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_build}/></NavIcon>
+                                    <NavText className='BarText'> Produtos </NavText>
                                 </Nav>
                                 <Nav id='pedidos'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_add_shopping_cart}/></NavIcon>
-                                    <NavText> Pedidos </NavText>
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_add_shopping_cart}/></NavIcon>
+                                    <NavText className='BarText'> Pedidos </NavText>
                                 </Nav>
                                 <Nav id='sync'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_sync}/></NavIcon>
-                                    <NavText> Sincronização </NavText>
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_sync}/></NavIcon>
+                                    <NavText className='BarText'> Sincronização </NavText>
                                 </Nav>
                                 <Nav id='exit'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_exit_to_app}/></NavIcon>
-                                    <NavText> Sair </NavText>
-                                </Nav>   
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_exit_to_app}/></NavIcon>
+                                    <NavText className='BarText'> Sair </NavText>
+                                </Nav>     
                             </SideNav>
                         </div>
                         </div>
@@ -198,76 +200,83 @@ class Example extends React.Component {
             if (this.state.isLoading === true) {
                 if (this.props.location.pathname !== '/macropecas/pedidos/registro') {
                     let ID = this.props.location.pathname.replace('/macropecas/pedidos/registro/','');
-                    readTable(Data => { this.setState({pedidos: Data.data.pedidos, isLoading: true})
-                        this.setState({now: Data.data.pedidos[ID], id: ID, isLoading: false}) 
-                        let listClientes = []
-                        let listCondPags = []
-                        let listProdutos = []
-                        let listSt_icms = []
-                        let listCidades = Data.data.cidades;
-                        let listDescontoLog = Data.data.descontolog
-                        Data.data.clientes.forEach((element, elementid) => {
-                            if (element.PK_CLI === Data.data.pedidos[ID].FK_CLI){
-                                let cli = {
-                                    display : element.RAZAO_SOCIAL,
-                                    value : element.CNPJ+' - '+element.RAZAO_SOCIAL,
-                                    codigo : element.PK_CLI,
-                                    cidade : element.FK_CID,
-                                    simples_nacional: element.SIMPLESNACIONAL
-                                }
+                    readTable(Data => { 
+                        if (typeof Data.data.pedidos[ID].PK_PED !== 'undefined'){
+                            if (Number(Data.data.pedidos[ID].PK_PED) === 0){
+                                this.setState({pedidos: Data.data.pedidos, isLoading: true})
+                                this.setState({now: Data.data.pedidos[ID], id: ID, isLoading: false}) 
+                                let listClientes = []
+                                let listCondPags = []
+                                let listProdutos = []
+                                let listSt_icms = []
+                                let listCidades = Data.data.cidades;
+                                let listDescontoLog = Data.data.descontolog
+                                Data.data.clientes.forEach((element, elementid) => {
+                                    if (element.PK_CLI === Data.data.pedidos[ID].FK_CLI){
+                                        let cli = {
+                                            display : element.RAZAO_SOCIAL,
+                                            value : element.CNPJ+' - '+element.RAZAO_SOCIAL,
+                                            codigo : element.PK_CLI,
+                                            cidade : element.FK_CID,
+                                            simples_nacional: element.SIMPLESNACIONAL
+                                        }
 
-                                this.setState({cliente: cli})
-                            }
-                            listClientes.push({value: element.CNPJ+' - '+element.RAZAO_SOCIAL, simples_nacional: element.SIMPLESNACIONAL, cidade : element.FK_CID, display: element.RAZAO_SOCIAL, codigo : element.PK_CLI})
-                        }); 
-                        
-                        
+                                        this.setState({cliente: cli})
+                                    }
+                                    listClientes.push({value: element.CNPJ+' - '+element.RAZAO_SOCIAL, simples_nacional: element.SIMPLESNACIONAL, cidade : element.FK_CID, display: element.RAZAO_SOCIAL, codigo : element.PK_CLI})
+                                }); 
+                                
+                                
 
 
-                        Data.data.st_icms.forEach((element, elementid) => {
-                            listSt_icms.push({value: element.PERCENTUAL_ST, codigo : element.FK_PRO, destino: element.FK_ESTDESTINO, origem: element.ORIGEM, simples_nacional: element.SIMPLES_NACIONAL})
-                        }); 
+                                Data.data.st_icms.forEach((element, elementid) => {
+                                    listSt_icms.push({value: element.PERCENTUAL_ST, codigo : element.FK_PRO, destino: element.FK_ESTDESTINO, origem: element.ORIGEM, simples_nacional: element.SIMPLES_NACIONAL})
+                                }); 
 
-                        Data.data.produtos.forEach((element, elementid) => {
-                            listProdutos.push({value: element.CODIGO_REPRESENTADA+' - '+element.NOME_REPRESENTADA, 
-                                DATA_VALID_PROMO: element.DATA_VALID_PROMO,
-                                PRECO_VENDA_LISTA: element.PRECO_VENDA_LISTA,
-                                PRECO_VENDA_PROMO: element.PRECO_VENDA_PROMO,
-                                PRECO_REGIAO_1: element.PRECO_REGIAO_1,
-                                PRECO_REGIAO_2: element.PRECO_REGIAO_2,
-                                PRECO_REGIAO_3: element.PRECO_REGIAO_3,
-                                PRECO_REGIAO_4: element.PRECO_REGIAO_4, 
-                                PRECO_PROM_REGIAO_1: element.PRECO_PROM_REGIAO_1, 
-                                PRECO_PROM_REGIAO_2: element.PRECO_PROM_REGIAO_2, 
-                                PRECO_PROM_REGIAO_3: element.PRECO_PROM_REGIAO_3,
-                                PRECO_PROM_REGIAO_4: element.PRECO_PROM_REGIAO_4, 
-                                OBS_PROMOCIONAL: element.OBS_PROMOCIONAL,
-                                DESCRICAOPRO: element.NOME_REPRESENTADA,
-                                CODIGOPRO: element.CODIGO_REPRESENTADA,
-                                ST_ICMS: 0,
-                                IPI : element.IPI,
-                                display: element.CODIGO_REPRESENTADA+' - '+element.NOME_REPRESENTADA, 
-                                codigo : element.PK_PRO})
-                        }); 
+                                Data.data.produtos.forEach((element, elementid) => {
+                                    listProdutos.push({value: element.CODIGO_REPRESENTADA+' - '+element.NOME_REPRESENTADA, 
+                                        DATA_VALID_PROMO: element.DATA_VALID_PROMO,
+                                        PRECO_VENDA_LISTA: element.PRECO_VENDA_LISTA,
+                                        PRECO_VENDA_PROMO: element.PRECO_VENDA_PROMO,
+                                        PRECO_REGIAO_1: element.PRECO_REGIAO_1,
+                                        PRECO_REGIAO_2: element.PRECO_REGIAO_2,
+                                        PRECO_REGIAO_3: element.PRECO_REGIAO_3,
+                                        PRECO_REGIAO_4: element.PRECO_REGIAO_4, 
+                                        PRECO_PROM_REGIAO_1: element.PRECO_PROM_REGIAO_1, 
+                                        PRECO_PROM_REGIAO_2: element.PRECO_PROM_REGIAO_2, 
+                                        PRECO_PROM_REGIAO_3: element.PRECO_PROM_REGIAO_3,
+                                        PRECO_PROM_REGIAO_4: element.PRECO_PROM_REGIAO_4, 
+                                        OBS_PROMOCIONAL: element.OBS_PROMOCIONAL,
+                                        DESCRICAOPRO: element.NOME_REPRESENTADA,
+                                        CODIGOPRO: element.CODIGO_REPRESENTADA,
+                                        ST_ICMS: 0,
+                                        IPI : element.IPI,
+                                        display: element.CODIGO_REPRESENTADA+' - '+element.NOME_REPRESENTADA, 
+                                        codigo : element.PK_PRO})
+                                }); 
 
-                        Data.data.cond_pag.forEach((element, elementid) => {
-                            if (element.PK_CPG === Data.data.pedidos[ID].FK_CPG){
-                                let cpg = {
-                                    display : element.NOME,
-                                    value : element.NOME,
-                                    codigo : element.PK_CPG,
-                                    desconto : element.DESCONTO
-                                }
+                                Data.data.cond_pag.forEach((element, elementid) => {
+                                    if (element.PK_CPG === Data.data.pedidos[ID].FK_CPG){
+                                        let cpg = {
+                                            display : element.NOME,
+                                            value : element.NOME,
+                                            codigo : element.PK_CPG,
+                                            desconto : element.DESCONTO
+                                        }
 
-                                this.setState({cond_pag: cpg})
-                            }
-                            listCondPags.push({value: element.NOME, display: element.NOME, codigo : element.PK_CPG, desconto: element.DESCONTO})
-                        }); 
-                        this.setState({cond_pags: listCondPags, descontoLog: listDescontoLog, cidades:listCidades, clientes: listClientes, produtos: listProdutos, st_icms: listSt_icms})
-                
+                                        this.setState({cond_pag: cpg})
+                                    }
+                                    listCondPags.push({value: element.NOME, display: element.NOME, codigo : element.PK_CPG, desconto: element.DESCONTO})
+                                }); 
+                                this.setState({cond_pags: listCondPags, descontoLog: listDescontoLog, cidades:listCidades, clientes: listClientes, produtos: listProdutos, st_icms: listSt_icms})
+                            } else {alert('Pedido já sincronizado. Edição bloqueada.')
+                            this.setState({isLoading: false, ok: true})
+                            this.props.history.push('/macropecas/pedidos')}
+                            
+                        }
                     })
-                } else {
-                readTable(Data => { this.setState({pedidos: Data.data.pedidos, isLoading: false})
+                    } else {
+                    readTable(Data => { this.setState({pedidos: Data.data.pedidos, isLoading: false})
                         let listClientes = []
                         let listCondPags = []
                         let listProdutos = []
@@ -319,42 +328,45 @@ class Example extends React.Component {
   
     handleSubmit (e) {
         e.preventDefault();
-        let cliente = this.state.now.FK_CLI || 0
-        let cpg = this.state.now.FK_CPG || 0
-        let itens = this.state.now.itens || []
-        let tipo = this.state.now.ORCAMENTO || 'A'
-        if ( tipo==='A' ){
-            alert('Informe se é Pedido ou Orçamento!!')
-        } else
-        if ( cliente===0 ){
-            alert('Informe o Cliente!!')
-        } else
-        if ( cpg===0 ){
-            alert('Informe a Condição de Pagamento!!')
-        } else
-        if ( itens.length===0 ){
-            alert('Informe pelo menos um Item para o pedido/orçamento!!')
-        } else {
-            let pedido = this.state.now
-            let total = 0
-            let ipi = 0
-            let sticms = 0
-            pedido.itens.forEach((element, elementid) => {
-                let desconto = (1-(Number(element.DESCONTO1)/100))*(1-(Number(element.DESCONTO2)/100))
-                total = (element.VALOR*Number(element.QUANTIDADE))*desconto + total
-                ipi = (element.VALOR_IPI*Number(element.QUANTIDADE))*desconto + ipi
-                sticms = (element.VALOR_STICMS*Number(element.QUANTIDADE))*desconto + sticms
-            })
-            pedido.VALOR_CALCULADO = total.toFixed(2)
-            pedido.VALOR_IPI = ipi.toFixed(2)
-            pedido.VALOR_ST = sticms.toFixed(2)
-            pedido.VALOR_INFORMADO = (total+ipi+sticms).toFixed(2)
-            pedido.VALOR_CALCULADO = Number(pedido.VALOR_CALCULADO)
-            pedido.VALOR_IPI = Number(pedido.VALOR_IPI)
-            pedido.VALOR_ST = Number(pedido.VALOR_ST)
-            pedido.VALOR_INFORMADO = Number(pedido.VALOR_INFORMADO)
-            this.setState({mostraTotal: true, now: pedido})
-        } 
+        console.log(this.state.ok)
+        if (this.state.ok===false){
+            let cliente = this.state.now.FK_CLI || 0
+            let cpg = this.state.now.FK_CPG || 0
+            let itens = this.state.now.itens || []
+            let tipo = this.state.now.ORCAMENTO || 'A'
+            if ( tipo==='A' ){
+                alert('Informe se é Pedido ou Orçamento!!')
+            } else
+            if ( cliente===0 ){
+                alert('Informe o Cliente!!')
+            } else
+            if ( cpg===0 ){
+                alert('Informe a Condição de Pagamento!!')
+            } else
+            if ( itens.length===0 ){
+                alert('Informe pelo menos um Item para o pedido/orçamento!!')
+            } else {
+                let pedido = this.state.now
+                let total = 0
+                let ipi = 0
+                let sticms = 0
+                pedido.itens.forEach((element, elementid) => {
+                    let desconto = (1-(Number(element.DESCONTO1)/100))*(1-(Number(element.DESCONTO2)/100))
+                    total = (element.VALOR*Number(element.QUANTIDADE))*desconto + total
+                    ipi = ((element.VALOR*(element.IPI/100))*Number(element.QUANTIDADE))*desconto + ipi
+                    sticms = (element.VALOR_STICMS*Number(element.QUANTIDADE))*desconto + sticms
+                })
+                pedido.VALOR_CALCULADO = total.toFixed(2)
+                pedido.VALOR_IPI = ipi.toFixed(2)
+                pedido.VALOR_ST = sticms.toFixed(2)
+                pedido.VALOR_INFORMADO = (total+ipi+sticms).toFixed(2)
+                pedido.VALOR_CALCULADO = Number(pedido.VALOR_CALCULADO)
+                pedido.VALOR_IPI = Number(pedido.VALOR_IPI)
+                pedido.VALOR_ST = Number(pedido.VALOR_ST)
+                pedido.VALOR_INFORMADO = Number(pedido.VALOR_INFORMADO)
+                this.setState({mostraTotal: true, now: pedido})
+            } 
+        }
     }
 
     handleSave (e) {
@@ -639,8 +651,8 @@ class Example extends React.Component {
                                                         index,
                                                         item,
                                                         style: {
-                                                            backgroundColor: (selectedItem === item) || (highlightedIndex === index) ? '#506b55' : '#649764',
-                                                            color:'white',
+                                                            backgroundImage: (selectedItem === item) || (highlightedIndex === index) ? 'var(--cor-2)' : 'var(--cor-1)',
+                                                            color:'var(--cor-letra)',
                                                             fontWeight: selectedItem === item ? 'bold' : 'normal',
                                                         },
                                                         })}

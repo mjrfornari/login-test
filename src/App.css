@@ -1,14 +1,30 @@
+
 .App {
   height: 100vh;
   display: flex;
-  color: white;
+  color: var(--cor-letra);
+  /* --cor-1: #649764;
+  --cor-2: #506b55;
+  --cor-3: #306639c0;
+  --cor-letra: white;
+  --cor-fundo: rgb(48, 76, 85); */
+  
+  --cor-1: #59778b;
+  --cor-2: linear-gradient(to left, #243949 0%, #517fa4 100%) !important;
+  --cor-3: #243949;
+  --cor-letra: white;
+  --cor-letra-disble: rgb(172, 180, 190);
+  /* --cor-fundo: white; */
+  background-image: linear-gradient(-225deg, #243949 0%, #517fa4 100%) !important;
+
+
 }
 
 
 
 table {
     border-collapse: collapse;
-    background: #649764;
+    background: var(--cor-1);
     width: 100%;
 }
 
@@ -19,11 +35,11 @@ th, td {
 }
 
 .ItemAdded{
-  background-color: rgb(48, 76, 85);
+  background-color: var(--cor-fundo);
   z-index: 1500;
   position: absolute;
   border-radius: 25px;
-  border-color: #649764;
+  border-color: var(--cor-1);
   border-style: solid;
   width: 80%;
   height: 150px;
@@ -39,12 +55,13 @@ th, td {
   margin-top: 20px;
 }
 
+
 .TotaisRadio{
   margin-left: 20px;
 }
 
 .Saved{
-  background-color: rgb(48, 76, 85);
+  background-color: var(--cor-fundo);
   z-index: 1500;
   margin-left: 10%;
   width: 80%;
@@ -57,7 +74,7 @@ th, td {
   z-index: 1500;
   position: absolute;
   border-radius: 25px;
-  border-color: #649764;
+  border-color: var(--cor-1);
   border-style: solid;
   width: 80%;
   height: 150px;
@@ -65,17 +82,17 @@ th, td {
 }
 
 @-webkit-keyframes added {
-    0%   {background-color:rgb(48, 76, 85); left:100%; top:30%; visibility: visible;}
-    100% {background-color:rgb(48, 76, 85); left:10%; top:30%; visibility: visible;}
+    0%   {background-color:var(--cor-fundo); left:100%; top:30%; visibility: visible;}
+    100% {background-color:var(--cor-fundo); left:10%; top:30%; visibility: visible;}
 }
 
 /* Standard syntax */
 @keyframes added {
-    0%   {background-color:rgb(48, 76, 85); left:100%; top:30%; visibility: visible;}
-    100% {background-color:rgb(48, 76, 85); left:10%; top:30%; visibility: visible;}
+    0%   {background-color:var(--cor-fundo); left:100%; top:30%; visibility: visible;}
+    100% {background-color:var(--cor-fundo); left:10%; top:30%; visibility: visible;}
 }
 
-tr:hover {background-color:#506b55;}
+tr:hover {background-color:var(--cor-2);}
 
 .ItemMsg{
   display: block;
@@ -83,7 +100,7 @@ tr:hover {background-color:#506b55;}
 }
 
 .box {
-    border: 1px solid rgb(48, 76, 85);
+    border: 1px solid var(--cor-fundo);
     padding: 15px 15px 15px 15px;
     margin-top:10px;
     margin-bottom: 10px;
@@ -92,7 +109,7 @@ tr:hover {background-color:#506b55;}
 
 
 .box_inverted {
-    border: 1px solid #649764;
+    border: 1px solid var(--cor-1);
 
     padding: 15px 15px 15px 15px;
     margin-top:10px;
@@ -138,8 +155,8 @@ tr:hover {background-color:#506b55;}
 }
 
 .ModalBg{ 
-  background: rgb(48, 76, 85);
-  color: white;
+  background: var(--cor-fundo);
+  color: var(--cor-letra);
 
 }
 
@@ -154,38 +171,104 @@ tr:hover {background-color:#506b55;}
 }
 
 
-
-
-@media screen and (min-width: 601px) {
+@media screen and (min-width: 1201px) and (orientation: portrait){
   .App__Aside {
-    width: 30%;
-    font-size: 1vw;
-    background-color: #306639c0;
-    display: block;
+    width: 30% !important;
+    font-size: 1vw !important;
+    background-color: var(--cor-3) !important;
+    display: block !important;
+    overflow-y: auto !important;
+    /* background-image: linear-gradient(-225deg, rgb(85, 101, 138) 0%, #87A7D9 80%, #DEF3F8 100%); */
   }
 
   .App__Aside__Hide {
-    display: none;
+    display: none !important;
   }
+
+}
+
+@media screen and (min-width: 601px) and (orientation: landscape) {
+  .App__Aside {
+    width: 30% !important;
+    font-size: 1.5vw !important;
+    background-color: var(--cor-3) !important;
+    display: block !important;
+    overflow-y: auto !important;
+    /* background-image: linear-gradient(-225deg, rgb(85, 101, 138) 0%, #87A7D9 80%, #DEF3F8 100%); */
+  }
+
+  .App__Aside__Hide {
+    display: none !important;
+  }
+
 }
 
 /* If the screen size is 600px wide or less, set the font-size of <div> to 30px */
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1200px) and (orientation: portrait) {
   .App__Aside {
-    width: 30%;
-    font-size: 2.5vw;
-    background-color: #306639c0;
-    display: block;
+    width: 30% !important;
+    font-size: 2.5vw !important;
+    background-color: var(--cor-3) !important;
+    display: block !important;
+    overflow-y: auto !important;
+    /* background-image: linear-gradient(-225deg, rgb(85, 101, 138) 0%, #87A7D9 80%, #DEF3F8 100%); */
   }
 
   .App__Aside__Hide {
-    display: none;
+    display: none !important;
+  }
+
+  .BarText{
+    width: 100% !important;
+    display: block !important;
+    text-align: center !important;
+    padding: 0 !important;
+    margin: 5px 0 5px 0 !important;
+  }
+
+  .BarIcon{
+    width: 100% !important;
+    padding: 0 !important;
+    display: block !important;
+    text-align: center !important;
+    margin: 5px 0 5px 0 !important;
+  }
+}
+
+@media screen and (max-width: 600px) and (orientation: landscape) {
+  .App__Aside {
+    width: 30% !important;
+    font-size: 2.5vw !important;
+    background-color: var(--cor-3) !important;
+    display: block !important;
+    overflow-y: auto !important;
+    /* background-image: linear-gradient(-225deg, rgb(85, 101, 138) 0%, #87A7D9 80%, #DEF3F8 100%); */
+  }
+
+  .App__Aside__Hide {
+    display: none !important;
+  }
+
+  .BarText{
+    width: 100% !important;
+    display: block !important;
+    text-align: center !important;
+    padding: 0 !important;
+    margin: 5px 0 5px 0 !important;
+  }
+
+  .BarIcon{
+    width: 100% !important;
+    padding: 0 !important;
+    display: block !important;
+    text-align: center !important;
+    margin: 5px 0 5px 0 !important;
   }
 }
 
 
 .MenuBar {
-  background-color: #306639c0;
+  background-color: var(--cor-3);
 }
 
 .App__Aside__BG{
@@ -201,8 +284,8 @@ tr:hover {background-color:#506b55;}
 
 
 .GridsBg {
-  background-color: #649764;
-  color: #649764;
+  background-color: var(--cor-1);
+  color: var(--cor-1);
 }
 
 
@@ -219,7 +302,7 @@ tr:hover {background-color:#506b55;}
 
 .App__Form {
   width: 100%;
-  background-color: rgb(48, 76, 85);
+  background-color: var(--cor-fundo);
   padding: 5% 5% 5% 5%;
   overflow: auto;
   
@@ -230,7 +313,7 @@ tr:hover {background-color:#506b55;}
 .App__Form__Full {
   width: 100%;
   /* height: 100%; */
-  background-color: rgb(48, 76, 85);
+  background-color: var(--cor-fundo);
   padding: 5% 5% 5% 5%;
   position: absolute;
   overflow: auto;
@@ -271,8 +354,8 @@ tr:hover {background-color:#506b55;}
 }
 
 .PageSwitcher__Item--Active {
-  background-color: #649764;
-  color: white;
+  background-color: var(--cor-1);
+  color: var(--cor-letra);
 }
 
 .PageSwitcher__Item:first-child {
@@ -289,7 +372,7 @@ tr:hover {background-color:#506b55;}
 }
 
 .FormTitle {
-  color: #707C8B;
+  color: var(--cor-letra-disable);
   font-weight: 300;
   margin-bottom: 50px;
   text-decoration: none;
@@ -297,7 +380,7 @@ tr:hover {background-color:#506b55;}
 }
 
 .FormTitle__Link {
-  color: #707C8B;
+  color: var(--cor-letra-disable);
   text-decoration: none;
   display: inline-block;
   font-size: 1.7em;
@@ -310,14 +393,14 @@ tr:hover {background-color:#506b55;}
 }
 
 .FormTitle__Link--Active {
-  color: white;
+  color: var(--cor-letra);
   text-decoration: none;
   display: inline-block;
   font-size: 1.7em;
   /* margin-top: 60%; */
   padding-bottom: 5px;
   padding-top: 10px;
-  border-bottom: 1px solid #649764;
+  border-bottom: 1px solid var(--cor-1);
 }
 
 .App__Title{
@@ -330,15 +413,15 @@ tr:hover {background-color:#506b55;}
 
 .ButtonIcon{
    background-color: transparent;
-  color: white;
+  color: var(--cor-letra);
   border: none;
   text-align: center;
   font-size: 0.8em;
   display: inline; 
   border: none;
-  color: white;
+  color: var(--cor-letra);
   outline: none;
-  /* border: 2px solid #506b55; */
+  /* border: 2px solid var(--cor-2); */
 }
 
 
@@ -350,17 +433,17 @@ tr:hover {background-color:#506b55;}
   display: block;
   text-transform: uppercase;
   font-size: .9em;
-  color: white;
+  color: var(--cor-letra);
 }
 
 .FormField__Input {
   width: 80%;
   border-radius: 25px;
-  background-color: #649764;
+  background-color: var(--cor-1);
   border: none;
-  color: white;
+  color: var(--cor-letra);
   outline: none;
-  /* border: 2px solid #506b55; */
+  /* border: 2px solid var(--cor-2); */
   font-size: 1em;
   padding: 10px;
   font-weight: 300;
@@ -372,11 +455,11 @@ tr:hover {background-color:#506b55;}
 .FormField__InputUn {
   width: 55%;
   border-radius: 25px 0px 0px 25px;
-  background-color: #649764;
+  background-color: var(--cor-1);
   border: none;
-  color: white;
+  color: var(--cor-letra);
   outline: none;
-  /* border: 2px solid #506b55; */
+  /* border: 2px solid var(--cor-2); */
   font-size: 1em;
   padding: 10px;
   font-weight: 300;
@@ -396,12 +479,12 @@ tr:hover {background-color:#506b55;}
   padding: 10px;
   margin-left:-5px !important;
   border-radius: 0px 25px 25px 0px;
-  background-color: #506b55;
+  background-color: var(--cor-2);
   border: none;
-  color: white;
+  color: var(--cor-letra);
   outline: none;
   text-align: right;
-  /* border: 2px solid #506b55; */
+  /* border: 2px solid var(--cor-2); */
   font-size: 1em;
   font-weight: 300;
   /* padding-bottom: 10px; */
@@ -409,7 +492,7 @@ tr:hover {background-color:#506b55;}
 }
 
 .FormField__Input:read-only {
-  background-color: #506b55;
+  background-color: var(--cor-2);
 
 }
 
@@ -429,33 +512,33 @@ tr:hover {background-color:#506b55;}
 }
 
 .ui.toggle.checkbox input:checked ~ label, .ui.toggle.checkbox input:focus:checked ~ label{
-  color:white !important;
+  color:var(--cor-letra) !important;
 }
 
 .ui.toggle.checkbox input:checked ~ .box:before, .ui.toggle.checkbox input:checked ~ label:before {
-    background-color:  #649764 !important;
-    color:white !important;
+    background-color:  var(--cor-1) !important;
+    color:var(--cor-letra) !important;
 }
 
 .ui.toggle.checkbox input:checked ~ .box:before, .ui.toggle.checkbox input:checked ~ label:before {
-    background-color: #649764 !important;
-    color:white !important;
+    background-color: var(--cor-1) !important;
+    color:var(--cor-letra) !important;
 }
 
 .ui.toggle.checkbox input:focus:checked ~ .box:before, .ui.toggle.checkbox input:focus:checked ~ label:before {
-    background-color: #649764 !important;
-    color:white !important;
+    background-color: var(--cor-1) !important;
+    color:var(--cor-letra) !important;
 }
 
 
 .FormField__Radio {
   width: 80%;
   border-radius: 25px;
-  background-color: #649764;
+  background-color: var(--cor-1);
   border: none;
-  color: white;
+  color: var(--cor-letra);
   outline: none;
-  /* border: 2px solid #506b55; */
+  /* border: 2px solid var(--cor-2); */
   font-size: 1em;
   padding: 10px;
   font-weight: 300;
@@ -467,15 +550,15 @@ tr:hover {background-color:#506b55;}
 .FormField__Input__OBS {
   width: 80%;
   border-radius: 25px;
-  background-color: #649764;
+  background-color: var(--cor-1);
   border: none;
-  color: white;
+  color: var(--cor-letra);
   height: 150px;
   outline: none;
   word-break: break-word;
   text-align: top;
   vertical-align: top;
-  /* border: 2px solid #506b55; */
+  /* border: 2px solid var(--cor-2); */
   font-size: 1em;
   padding: 10px;
   font-weight: 300;
@@ -485,7 +568,7 @@ tr:hover {background-color:#506b55;}
 }
 
 .FormField__Input__OBS:read-only {
-  background-color: #506b55;
+  background-color: var(--cor-2);
   height: 80px;
 }
 
@@ -493,11 +576,11 @@ tr:hover {background-color:#506b55;}
 .FormField__InputTelefone {
   width: 80%;
   border-radius: 25px;
-  background-color: #649764;
+  background-color: var(--cor-1);
   border: none;
-  color: white;
+  color: var(--cor-letra);
   outline: none;
-  /* border: 2px solid #506b55; */
+  /* border: 2px solid var(--cor-2); */
   font-size: 1em;
   padding: 10px;
   font-weight: 300;
@@ -510,18 +593,18 @@ tr:hover {background-color:#506b55;}
   display: block;
   text-transform: uppercase;
   font-size: .9em;
-  color: white;
+  color: var(--cor-letra);
   /* padding-right: 0.5em; */
 }
 
 .FormFilter__Input {
   width: 100%;
   border-radius: 25px;
-  background-color: #649764;
+  background-color: var(--cor-1);
   border: none;
-  color: white;
+  color: var(--cor-letra);
   outline: none;
-  /* border: 2px solid #506b55; */
+  /* border: 2px solid var(--cor-2); */
   font-size: 1em;
   font-weight: 300;
   padding: 10px;
@@ -532,11 +615,11 @@ tr:hover {background-color:#506b55;}
 .FormFilter__Date {
   width: 50%;
   border-radius: 25px;
-  background-color: #649764;
+  background-color: var(--cor-1);
   border: none;
-  color: white;
+  color: var(--cor-letra);
   outline: none;
-  /* border: 2px solid #506b55; */
+  /* border: 2px solid var(--cor-2); */
   font-size: 1em;
   font-weight: 300;
   padding: 10px;
@@ -544,14 +627,36 @@ tr:hover {background-color:#506b55;}
   /* margin-top: 10px; */
 }
 
+
+.Dropdown-control {
+  width: 100px;
+  border-radius: 25px;
+  padding: 8px 10px;
+  font-size: 0.9em;
+  font-weight: 400;
+}
+
+.Dropdown-menu {
+  width: 100px;
+  border-radius: 25px;
+  padding: 8px 10px;
+  font-size: 0.9em;
+  font-weight: 400;
+}
+
+
+
 .Dropdown-option, .Dropdown-menu, .Dropdown-title, .Dropdown-control {
     border-color: transparent !important;
-    color: white !important;
-    background-color: #649764 !important;
+    color: var(--cor-letra) !important;
+    background-color: var(--cor-1) !important;
+    position: relative !important;
+
   }
 
   .Dropdown-root {
-    left: 80%
+    margin-right: 20px;
+    
   }
 
   .Dropdown-control {
@@ -565,33 +670,34 @@ tr:hover {background-color:#506b55;}
   
 
   .Dropdown-menu, .Dropdown-title, .Dropdown-control{
-    width: 20% !important
+    width: 120px !important;
+    margin-right: 10px !important;
   }
 
   .Dropdown-option.is-selected {
-    background-color: #506b55 !important;
+    background-color: var(--cor-2) !important;
     border-radius: 15px !important;
     width: 100% !important
   }
 
   .Dropdown-arrow {
-    border-color: white transparent transparent !important;
+    border-color: var(--cor-letra) transparent transparent !important;
   }
 
   .is-open .Dropdown-arrow {
-    border-color:  transparent transparent white !important;
+    border-color:  transparent transparent var(--cor-letra) !important;
   }
 
 
 
-@media screen and (min-width: 601px) {
+@media screen and (min-width: 1201px) {
 
 
   .FormField__List {
     border-radius: 25px;
-    background-color: #649764;
+    background-color: var(--cor-1);
     border: none;
-    color: white;
+    color: var(--cor-letra);
     outline: none;
     list-style-type: none; 
     padding: 1px;
@@ -608,12 +714,12 @@ tr:hover {background-color:#506b55;}
   .FormField__Complete {
     width: 80%;
     border-radius: 25px;
-    background-color: #649764;
+    background-color: var(--cor-1);
     border: none;
-    color: white;
+    color: var(--cor-letra);
     height: 150px;
     outline: none;
-    /* border: 2px solid #506b55; */
+    /* border: 2px solid var(--cor-2); */
     font-size: 1em;
     padding: 10px;
     font-weight: 300;
@@ -625,15 +731,15 @@ tr:hover {background-color:#506b55;}
 }
 
 /* If the screen size is 600px wide or less, set the font-size of <div> to 30px */
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1200px){
 
 
 
   .FormField__List {
     border-radius: 25px;
-    background-color: #649764;
+    background-color: var(--cor-1);
     border: none;
-    color: white;
+    color: var(--cor-letra);
     outline: none;
     list-style-type: none; 
     padding: 1px;
@@ -648,12 +754,12 @@ tr:hover {background-color:#506b55;}
   .FormField__Complete {
     width: 80%;
     border-radius: 25px;
-    background-color: #649764;
+    background-color: var(--cor-1);
     border: none;
     height: 200px;
-    color: white;
+    color: var(--cor-letra);
     outline: none;
-    /* border: 2px solid #506b55; */
+    /* border: 2px solid var(--cor-2); */
     font-size: 1em;
     padding: 10px;
     font-weight: 300;
@@ -678,7 +784,7 @@ tr:hover {background-color:#506b55;}
 .FormField__Label__Desconto {
   text-transform: uppercase;
   font-size: .9em;
-  color: white;
+  color: var(--cor-letra);
 }
 
 .FormField__Input::placeholder {
@@ -686,8 +792,8 @@ tr:hover {background-color:#506b55;}
 }
 
 .FormField__Button {
-  background-color: #649764;
-  color: white;
+  background-color: var(--cor-1);
+  color: var(--cor-letra);
   border: none;
   outline: none;
   width: 100px;
@@ -700,29 +806,61 @@ tr:hover {background-color:#506b55;}
 }
 
 .FormField__Pagination {
-  background-color: #649764;
-  color: white;
+  background-color: var(--cor-1);
+  color: var(--cor-letra);
   border: none;
   outline: none;
-  width: 9%;
+  width: 20%;
   height: 40px;
   /* padding: 15px 20px; */
   text-align: center;
   margin-top: 10px;
   margin-bottom: 10px;
   font-size: 0.9em;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.FormField__Pagination__OutInput {
+  background-color: var(--cor-1);
+  color: var(--cor-letra);
+  border: none;
+  outline: none;
+  width: 26%;
+  height: 40px;
+  /* padding: 15px 20px; */
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 0.9em;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.FormField__Pagination__Input {
+  background-color: var(--cor-2);
+  color: var(--cor-letra);
+  border: none;
+  outline: none;
+  width: 100%;
+  height: 34px;
+  /* padding: 15px 20px; */
+  text-align: center;
+  margin-top: 3px;
+  margin-bottom: 3px;
+  font-size: 1em;
   font-weight: 400;
   text-decoration: none;
 }
 
 .FormField__Pagination__Page {
-  background-color: #506b55;
-  color: white;
+  background-color: var(--cor-2);
+  color: var(--cor-letra);
   text-align: center;
   border: none;
   height: 40px;
   outline: none;
-  width: 9%;
+  width: 20%;
   /* padding: 15px 20px; */
   margin-top: 10px;
   margin-bottom: 10px;
@@ -731,30 +869,29 @@ tr:hover {background-color:#506b55;}
   text-decoration: none;
 }
 
-.FormField__Pagination:hover {
-  background-color: #506b55;
-  color: white;
+/* .FormField__Pagination:hover {
+  background-color: var(--cor-2);
+  color: var(--cor-letra);
   border: none;
   outline: none;
   text-align: center;
   height: 40px;
-  width: 9%;
-  /* padding: 15px 20px; */
+  width: 13%;
   margin-top: 10px;
   margin-bottom: 10px;
   font-size: 0.9em;
-  text-decoration-color: white;
+  text-decoration-color: var(--cor-letra);
   font-weight: 400;
-}
+} */
 
 .FormField__Pagination__First {
-  background-color: #649764;
-  color: white;
+  background-color: var(--cor-1);
+  color: var(--cor-letra);
   border: none;
   height: 40px;
   text-align: center;
   outline: none;
-  width: 9%;
+  width: 20%;
   /* padding: 15px 20px; */
   border-top-left-radius: 60px;
   border-bottom-left-radius: 60px;
@@ -766,32 +903,31 @@ tr:hover {background-color:#506b55;}
   text-decoration: none;
 }
 
-.FormField__Pagination__First:hover {
-  background-color: #506b55;
-  color: white;
+/* .FormField__Pagination__First:hover {
+  background-color: var(--cor-2);
+  color: var(--cor-letra);
   border: none;
   height: 40px;
   outline: none;
-  width: 9%;
+  width: 13%;
   text-align: center;
-  /* padding: 15px 20px; */
   margin-top: 10px;
   margin-bottom: 10px;
   border-top-left-radius: 60px;
   border-bottom-left-radius: 60px;
   font-size: 0.9em;
-  text-decoration-color: white;
+  text-decoration-color: var(--cor-letra);
   font-weight: 400;
-}
+} */
 
 .FormField__Pagination__Last {
-  background-color: #649764;
-  color: white;
+  background-color: var(--cor-1);
+  color: var(--cor-letra);
   border: none;
   height: 40px;
   outline: none;
   text-align: center;
-  width: 9%;
+  width: 20%;
   /* padding: 15px 20px; */
   margin-top: 10px;
   border-top-right-radius: 60px;
@@ -802,29 +938,28 @@ tr:hover {background-color:#506b55;}
   text-decoration: none;
 }
 
-.FormField__Pagination__Last:hover {
-  background-color: #506b55;
-  color: white;
+/* .FormField__Pagination__Last:hover {
+  background-color: var(--cor-2);
+  color: var(--cor-letra);
   border: none;
   outline: none;
   height: 40px;
   text-align: center;
-  width: 9%;
-  /* padding: 15px 20px; */
+  width: 13%;
   border-top-right-radius: 60px;
   border-bottom-right-radius: 60px;
   margin-top: 10px;
   margin-bottom: 10px;
   font-size: 0.9em;
-  text-decoration-color: white;
+  text-decoration-color: var(--cor-letra);
   font-weight: 400;
-}
+} */
 
 
 
 .FormField__Button__Fix {
-  background-color: #506b55;
-  color: white;
+  background-color: var(--cor-2);
+  color: var(--cor-letra);
   border: none;
   position: absolute;
   z-index: 999;
@@ -832,7 +967,7 @@ tr:hover {background-color:#506b55;}
   width: 40px;
   height: 40px;
   border-radius: 40px;
-  border-color: white;
+  border-color: var(--cor-letra);
   padding: 8px 10px;
   top: calc(3% + 50px);
   right:5%;
@@ -842,8 +977,8 @@ tr:hover {background-color:#506b55;}
 }
 
 .FormField__Button__HideShow {
-  background-color: #506b55;
-  color: white;
+  background-color: var(--cor-2);
+  color: var(--cor-letra);
   border: none;
   position: absolute;
   z-index: 1000;
@@ -851,7 +986,7 @@ tr:hover {background-color:#506b55;}
   width: 40px;
   height: 40px;
   border-radius: 40px;
-  border-color: white;
+  border-color: var(--cor-letra);
   padding: 8px 10px;
   top: 3%;
   right:5%;
@@ -862,7 +997,7 @@ tr:hover {background-color:#506b55;}
 
 
 .FormField__Icon__ShowHide {
-  color: white;
+  color: var(--cor-letra);
   border: none;
   position: relative;
   z-index: 1000;
@@ -880,7 +1015,7 @@ tr:hover {background-color:#506b55;}
 
 
 .FormField__Icon__Fix {
-  color: white;
+  color: var(--cor-letra);
   border: none;
   position: relative;
   z-index: 1000;
@@ -898,7 +1033,7 @@ tr:hover {background-color:#506b55;}
 
 .FormField__ButtonDisabled {
   background-color: rgb(68, 87, 94);
-  color: white;
+  color: var(--cor-letra);
   border: none;
   outline: none;
   width: 100px;
@@ -910,40 +1045,44 @@ tr:hover {background-color:#506b55;}
 
 .Grid__Button {
   background-color: transparent;
-  color: white;
+  color: var(--cor-letra);
   border: 2px;
   margin-top: 9px;
   border-style: solid;
-  border-color: white;
+  border-color: var(--cor-letra);
   /* outline: 10px; */
-  outline-color: white;
+  outline-color: var(--cor-letra);
   border-radius: 25px;
   /* padding: 15px 70px; */
 
 }
 
+.Grid__Button__Hide {
+  display: none
+}
+
 .Grid__Button:hover {
-  background-color: #649764;
+  background-color: var(--cor-1);
 }
 
 .FormField__Grid {
-  background-color: #649764;
-  color: white;
+  background-color: var(--cor-1);
+  color: var(--cor-letra);
 
 }
 
 .FormField__Grid:hover {
-  background-color: #506b55;
-  color: white;
+  background-color: var(--cor-2);
+  color: var(--cor-letra);
 }
 .FormField__GridDetailed:hover {
-  background-color: #506b55;
-  color: white;
+  background-color: var(--cor-2);
+  color: var(--cor-letra);
 }
 
 .FormField__GridDetailed {
-  background-color: #506b55;
-  color: white;
+  background-color: var(--cor-2);
+  color: var(--cor-letra);
 
 }
 
@@ -951,7 +1090,7 @@ tr:hover {background-color:#506b55;}
 
 .FormField__Button__Bar {
   background-color:transparent;
-  color: white;
+  color: var(--cor-letra);
   border: none;
   outline: none;
   border-radius: 100px;
@@ -966,8 +1105,8 @@ tr:hover {background-color:#506b55;}
 
 
 .FormField__MenuButton {
-  background-color: #649764;
-  color: white;
+  background-color: var(--cor-1);
+  color: var(--cor-letra);
   border: none;
   outline: none;
   position: relative;
@@ -984,12 +1123,12 @@ tr:hover {background-color:#506b55;}
   color: #66707D;
   text-decoration: none;
   display: inline-block;
-  border-bottom: 1.5px solid #649764;
+  border-bottom: 1.5px solid var(--cor-1);
   padding-bottom: 5px;
 }
 
 .FormField__CheckboxLabel {
-  color: #646F7D;
+  color: var(--cor-letra-disable);
   font-size: .9em;
 }
 
@@ -1000,7 +1139,7 @@ tr:hover {background-color:#506b55;}
 }
 
 .FormField__TermsLink {
-  color: white;
+  color: var(--cor-letra);
   border-bottom: 1px solid #79bb79;
   text-decoration: none;
   display: inline-block;

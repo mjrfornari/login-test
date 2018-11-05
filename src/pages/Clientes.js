@@ -35,7 +35,7 @@ class Example extends React.Component {
         super(props, context);
         this.state = {
             clientes  : [],
-            show: true,
+            show: false,
             filter:  {
                 RAZAO_SOCIAL: '',
                 CNPJ: '', 
@@ -46,8 +46,10 @@ class Example extends React.Component {
             iddetailed: 0,
             op: 'r',
             page: 1,
+            inputPage: 1,
             maxPages: 1
         };
+        this.show = false;
         this.handleRefresh = this.handleRefresh.bind(this);
         this.createItems = this.createItems.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -58,6 +60,7 @@ class Example extends React.Component {
         this.appBar = this.appBar.bind(this);
         this.setPage = this.setPage.bind(this);
         this.calcPages = this.calcPages.bind(this);
+        this.paginacao = this.paginacao.bind(this);
         this.masterDetail = this.masterDetail.bind(this)
     }
 
@@ -80,6 +83,24 @@ class Example extends React.Component {
             } else {
                 return this.state.page-1
             }
+    }
+
+    paginacao(){
+        if (this.state.maxPages>1){
+            return (
+                <Pagination>
+                    <button className="FormField__Pagination__First" onClick={event => this.setPage(event,this.state.page,-1)}>{'◀'}</button>
+                    <button className="FormField__Pagination" onClick={event => this.setPage(event,1,0)}>1</button>
+
+                    <div className="FormField__Pagination__OutInput">
+                        <input type="text" className="FormField__Pagination__Input" value={this.state.inputPage} onChange={event => this.setPage(event,1,0)}></input> 
+                    </div>
+
+                    <button className="FormField__Pagination" onClick={event => this.setPage(event,this.state.maxPages,0)}>{this.state.maxPages}</button>
+                    <button className="FormField__Pagination__Last" onClick={event => this.setPage(event,this.state.page,1)}>{'▶'}</button>
+                </Pagination>
+            )
+        }
     }
 
     createItems(item, id){
@@ -150,7 +171,7 @@ class Example extends React.Component {
             return(
                 <div className='App__Aside'>
                         <div>   
-                            <SideNav highlightColor='white' highlightBgColor='#506b55' defaultSelected='clientes'
+                            <SideNav highlightColor='var(--cor-letra)' highlightBgColor='var(--cor-2)' defaultSelected='clientes'
                                         onItemSelection={ (id, parent) => {
                                             if (id==='exit'){  
                                                 localStorage.setItem("logou", false);    
@@ -158,29 +179,29 @@ class Example extends React.Component {
                                             } else {this.props.history.push('/macropecas/'+id)
                             }}}>                      
                                 <Nav id='home'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_home}/></NavIcon>    
-                                    <NavText> Página Inicial </NavText>
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_home}/></NavIcon>    
+                                    <NavText className='BarText'> Página Inicial </NavText>
                                 </Nav>
                                 <Nav id='clientes'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_account_box}/></NavIcon>    
-                                    <NavText> Clientes </NavText>
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_account_box}/></NavIcon>    
+                                    <NavText className='BarText'> Clientes </NavText>
                                 </Nav>
                                 <Nav id='produtos'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_build}/></NavIcon>
-                                    <NavText> Produtos </NavText>
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_build}/></NavIcon>
+                                    <NavText className='BarText'> Produtos </NavText>
                                 </Nav>
                                 <Nav id='pedidos'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_add_shopping_cart}/></NavIcon>
-                                    <NavText> Pedidos </NavText>
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_add_shopping_cart}/></NavIcon>
+                                    <NavText className='BarText'> Pedidos </NavText>
                                 </Nav>
                                 <Nav id='sync'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_sync}/></NavIcon>
-                                    <NavText> Sincronização </NavText>
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_sync}/></NavIcon>
+                                    <NavText className='BarText'> Sincronização </NavText>
                                 </Nav>
                                 <Nav id='exit'>
-                                    <NavIcon><SvgIcon size={30} icon={ic_exit_to_app}/></NavIcon>
-                                    <NavText> Sair </NavText>
-                                </Nav>   
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_exit_to_app}/></NavIcon>
+                                    <NavText className='BarText'> Sair </NavText>
+                                </Nav>     
                             </SideNav>
                         </div>
                         </div>
@@ -264,13 +285,25 @@ class Example extends React.Component {
 
     setPage(e,setar, add){
         e.preventDefault();
-        let gotoPage = (setar+add)
-        if (gotoPage > this.state.maxPages){
-            gotoPage = this.state.maxPages
-        } else if (gotoPage < 1) {
-            gotoPage = 1
+        console.log(e.target.type)
+        if (e.target.type === 'submit'){
+            let gotoPage = (setar+add)
+            if (gotoPage > this.state.maxPages){
+                gotoPage = this.state.maxPages
+            } else if (gotoPage < 1) {
+                gotoPage = 1
+            }
+            this.setState({page: gotoPage, inputPage: gotoPage})
+        } else {
+                let pg = e.target.value
+                if (pg !== '') {
+                    if (pg > this.state.maxPages || pg < 1) {
+                        alert('Página não encontrada')
+                    } else {
+                        this.setState({page: Number(pg), inputPage: Number(pg)})
+                    }
+                } else {this.setState({inputPage: Number(pg)})}
         }
-        this.setState({page: gotoPage})
     }
 
     calcPages(registros){
@@ -311,7 +344,7 @@ class Example extends React.Component {
                                             <input type="text" id="CNPJ" className="FormFilter__Input" 
                                             name="CNPJ" value={this.state.filter.CNPJ || ''} onChange={this.handleChange}/>
                                             <div>
-                                                <button className="FormField__Button" onClick={this.handleRefresh}>Filtrar</button>  
+                                                <button className="FormField__Button" onClick={this.handleRefresh}>Pesquisar</button>  
                                                 <button className="FormField__Button" onClick={this.handleClean}>Limpar</button> 
                                             </div>
                                         </div>
@@ -330,21 +363,7 @@ class Example extends React.Component {
                                     </ListGroup>
                                 </div> 
                                 <div> 
-                                    <Pagination>
-                                        <button className="FormField__Pagination__First" onClick={ event => this.setPage(event,1,0)}>{'<<'}</button>
-                                        <button className="FormField__Pagination" onClick={event => this.setPage(event,this.state.page,-1)}>{'<'}</button>
-                                        <button className="FormField__Pagination" onClick={event => this.setPage(event,1,0)}>1</button>
-                                        <button className="FormField__Pagination">...</button>
-
-                                        <button className="FormField__Pagination" onClick={event => this.setPage(event,this.state.page,-1)}>{this.prevPage()}</button>
-                                        <button className="FormField__Pagination__Page">{this.state.page}</button>
-                                        <button className="FormField__Pagination" onClick={event => this.setPage(event,this.state.page,1)}>{this.nextPage()}</button>
-
-                                        <button className="FormField__Pagination">...</button>
-                                        <button className="FormField__Pagination" onClick={event => this.setPage(event,this.state.maxPages,0)}>{this.state.maxPages}</button>
-                                        <button className="FormField__Pagination" onClick={event => this.setPage(event,this.state.page,1)}>{'>'}</button>
-                                        <button className="FormField__Pagination__Last" onClick={event => this.setPage(event,this.state.maxPages,0)}>{'>>'}</button>
-                                    </Pagination>
+                                    {this.paginacao()}
                                 </div>  
                             {/* </form>  */}
                         </div>

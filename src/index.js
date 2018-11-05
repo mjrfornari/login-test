@@ -6,14 +6,15 @@ import App from './App';
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
-if (('serviceWorker' in navigator) && (window.location.pathname === '/macropecas/')) {
-  console.log(window.location)
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('sw.js')
-    .then(function(){
-      console.log('ServiceWorker registered');
-    });
-  })
+if (navigator.serviceWorker.controller) {
+  console.log('[PWA Builder] active service worker found, no need to register')
+} else {
+  //Register the ServiceWorker
+  navigator.serviceWorker.register('service-worker.js', {
+    scope: './'
+  }).then(function(reg) {
+    console.log('Service worker has been registered for scope:'+ reg.scope);
+  });
 }
 
 
