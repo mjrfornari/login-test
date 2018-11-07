@@ -26,6 +26,7 @@
     "react-dropdown": "^1.6.2",
     "react-icons-kit": "^1.1.7",
     "react-json-grid": "^1.0.31",
+    "react-list-select": "^0.4.0",
     "react-live-clock": "^2.0.3",
     "react-loading": "^2.0.3",
     "react-loading-animation": "^1.4.0",

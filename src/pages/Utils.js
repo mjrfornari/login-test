@@ -21,7 +21,7 @@ export function savingItem(show, phase, funcao){
 				<Modal.Dialog className="Modal" >
 					<Modal.Body className="ModalBg">    
 						<div className="Saved">
-							<ReactLoading type='spin' color='#649764' height={'80px'} width={'80px'} className="Loading"/>
+							<ReactLoading type='spin' color='var(--cor-1)' height={'80px'} width={'80px'} className="Loading"/>
 							<p className='ItemMsg'>Salvando registro...</p>
 						</div> 
 					</Modal.Body>
@@ -37,8 +37,45 @@ export function savingItem(show, phase, funcao){
 				<Modal.Dialog className="Modal" >
 					<Modal.Body className="ModalBg">    
 					<div className="Saved">
-						<SvgIcon size={80} icon={check} style={{ color: '#649764', margin: '15px 15px 15px 15px' }}/>
+						<SvgIcon size={80} icon={check} style={{ color: 'var(--cor-1)', margin: '15px 15px 15px 15px' }}/>
 						<p className='ItemMsg'>Registro salvo!</p>
+					</div>
+					</Modal.Body>
+					<Modal.Footer className="ModalBg">
+						<Button className="FormField__Button mr-20" onClick={() => {funcao()}}>Ok</Button>
+					</Modal.Footer>
+				</Modal.Dialog>
+			</div>
+		)		
+	}
+}
+
+
+export function syncLoading(show, phase, funcao, texto, textopronto){
+	if (phase === 1){
+		return (
+			<div style={show}>
+				<Modal.Dialog className="Modal" >
+					<Modal.Body className="ModalBg">    
+						<div className="Saved">
+							<ReactLoading type='spin' color='var(--cor-1)' height={'80px'} width={'80px'} className="Loading"/>
+							<p className='ItemMsg'>{texto}</p>
+						</div> 
+					</Modal.Body>
+					<Modal.Footer className="ModalBg">
+						<Button className="FormField__ButtonDisabled mr-20">Ok</Button>
+					</Modal.Footer>
+				</Modal.Dialog>
+			</div>
+		)
+	} else {
+		return(
+			<div style={show}>
+				<Modal.Dialog className="Modal" >
+					<Modal.Body className="ModalBg">    
+					<div className="Saved">
+						<SvgIcon size={80} icon={check} style={{ color: 'var(--cor-1)', margin: '15px 15px 15px 15px' }}/>
+						<p className='ItemMsg'>{textopronto}</p>
 					</div>
 					</Modal.Body>
 					<Modal.Footer className="ModalBg">
@@ -131,6 +168,16 @@ export function now(aux){
     let month = now.getMonth()+1<10 ? '0'+now.getMonth()+1 : now.getMonth()+1
     let day = now.getDate()<10 ? '0'+now.getDate() : now.getDate()
     return year+'-'+month+'-'+day
+}
+
+export function date2str(data){
+    let date = new Date(data)
+    let year = date.getFullYear()
+    let month = date.getMonth()+1<10 ? '0'+date.getMonth()+1 : date.getMonth()+1
+    let day = date.getDate()<10 ? '0'+date.getDate() : date.getDate()
+    let hour = date.getHours()<10 ? '0'+date.getHours() : date.getHours()
+    let min = date.getMinutes()<10 ? '0'+date.getMinutes() : date.getMinutes()
+    return (day+'/'+month+'/'+year+' às '+hour+':'+min)
 }
 
 
@@ -384,11 +431,6 @@ export function deleteData(tabela, item,id) {
 }
   
 
-
-
-export function makeData(tabela) {
-
-}
 
 
 
@@ -857,13 +899,13 @@ export function syncData(user, callback){
                     return db.put(newRead);
                   }).then(function(response) {
                     console.log('Read updated!')
-                    alert('Sincronizado!')
+                    // alert('Sincronizado!')
                     callback()
                   }).catch(function (err) {
                     if (err.name === 'not_found') {
                       db.put(read).then(function (response) {
                           console.log('Read created!')
-                          alert('Sincronizado!')
+                          // alert('Sincronizado!')
                           callback()
                       }).catch(function (err) {
                         console.log(err);

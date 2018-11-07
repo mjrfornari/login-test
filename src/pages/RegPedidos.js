@@ -9,7 +9,7 @@ import { ic_home } from 'react-icons-kit/md/ic_home'
 import { ic_add_shopping_cart } from 'react-icons-kit/md/ic_add_shopping_cart';
 import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
-import {ic_sync} from 'react-icons-kit/md/ic_sync'
+import {ic_settings} from 'react-icons-kit/md/ic_settings'
 import {ListGroup, ListGroupItem, Modal, Button} from 'react-bootstrap'
 import {check} from 'react-icons-kit/metrize/check'
 import { Radio } from 'semantic-ui-react'
@@ -47,6 +47,7 @@ class Example extends React.Component {
         append: false,
         isLoading: true,
         id: 0,
+        mostraFK_CPG: false,
         ok: false,
         mostraModal: false,
         mostraTotal: false,
@@ -75,7 +76,9 @@ class Example extends React.Component {
     this.handleSave = this.handleSave.bind(this);
     this.appBar = this.appBar.bind(this);
     this.saving = this.saving.bind(this);
+    this.toggle = this.toggle.bind(this);
     this.itens = this.itens.bind(this);
+    this.listarCpgs = this.listarCpgs.bind(this);
     this.createSons = this.createSons.bind(this)
     this.willShow = this.willShow.bind(this)
     this.loading = this.loading.bind(this)
@@ -124,7 +127,7 @@ class Example extends React.Component {
         if (ok === false){
             return (list)
         } else {
-            return (<ReactLoading type='spokes' color='green' height={'3%'} width={'3%'} className='Loading'/>)
+            return (<ReactLoading type='spokes' color='var(--cor-1)' height={'3%'} width={'3%'} className='Loading'/>)
         }
     }
 
@@ -134,7 +137,7 @@ class Example extends React.Component {
             return(
                 <div className='App__Aside'>
                         <div>   
-                            <SideNav highlightColor='var(--cor-letra)' highlightBgColor='var(--cor-2)' defaultSelected='pedidos'
+                            <SideNav highlightColor='var(--cor-letra)' highlightBgColor='var(--cor-menu)' defaultSelected='pedidos'
                                         onItemSelection={ (id, parent) => {
                                             if (id==='exit'){  
                                                 localStorage.setItem("logou", false);    
@@ -158,13 +161,13 @@ class Example extends React.Component {
                                     <NavText className='BarText'> Pedidos </NavText>
                                 </Nav>
                                 <Nav id='sync'>
-                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_sync}/></NavIcon>
-                                    <NavText className='BarText'> Sincronização </NavText>
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_settings}/></NavIcon>
+                                    <NavText className='BarText'> Sistema </NavText>
                                 </Nav>
                                 <Nav id='exit'>
                                     <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_exit_to_app}/></NavIcon>
                                     <NavText className='BarText'> Sair </NavText>
-                                </Nav>     
+                                </Nav>   
                             </SideNav>
                         </div>
                         </div>
@@ -261,6 +264,7 @@ class Example extends React.Component {
                                             display : element.NOME,
                                             value : element.NOME,
                                             codigo : element.PK_CPG,
+                                            label: element.NOME,
                                             desconto : element.DESCONTO
                                         }
 
@@ -268,6 +272,7 @@ class Example extends React.Component {
                                     }
                                     listCondPags.push({value: element.NOME, display: element.NOME, codigo : element.PK_CPG, desconto: element.DESCONTO})
                                 }); 
+                                listCondPags.sort((a,b) => (a.display > b.display) ? 1 : ((b.display > a.display) ? -1 : 0)); 
                                 this.setState({cond_pags: listCondPags, descontoLog: listDescontoLog, cidades:listCidades, clientes: listClientes, produtos: listProdutos, st_icms: listSt_icms})
                             } else {alert('Pedido já sincronizado. Edição bloqueada.')
                             this.setState({isLoading: false, ok: true})
@@ -314,8 +319,9 @@ class Example extends React.Component {
                         }); 
 
                         Data.data.cond_pag.forEach((element, elementid) => {
-                            listCondPags.push({value: element.NOME, display: element.NOME, codigo : element.PK_CPG, desconto: element.DESCONTO})
+                            listCondPags.push({value: element.NOME, label: element.NOME, display: element.NOME, codigo : element.PK_CPG, desconto: element.DESCONTO})
                         }); 
+                        listCondPags.sort((a,b) => (a.display > b.display) ? 1 : ((b.display > a.display) ? -1 : 0));
                         this.setState({cond_pags: listCondPags, descontoLog: listDescontoLog, cidades: listCidades, clientes: listClientes, produtos: listProdutos, st_icms: listSt_icms})
                 
                     })
@@ -575,6 +581,30 @@ class Example extends React.Component {
         return Number(preco)
     }
 
+
+    listarCpgs(item, id){
+        // console.log(Number(this.state.now.FK_CPG), Number(item.codigo))
+        // return(
+        //    <div key={id}><input type="radio" value="MALE" name="gender"/>{item.display}</div>
+        // )
+        return item.display
+    }
+
+    toggle(e){
+        // e.preventDefault();
+        let cpgs = this.state.cond_pags
+        let cpg = cpgs.filter((value)=>{
+            return value.codigo === Number(e.target.id)
+        })
+        let ped = this.state.now
+        ped.FK_CPG = Number(e.target.id)
+        console.log(ped)
+        console.log(cpg[0])
+        this.setState({cond_pag: cpg[0], now: ped})
+    }
+
+    
+
     salvaComplete(selecionado, nomefk, tablename, idItem){
         let reg = this.state.now
         if (nomefk === 'FK_CLI'){
@@ -616,14 +646,21 @@ class Example extends React.Component {
 
     }
 
-    autocomplete(table, reg, tablename, nomefk){
+    autocomplete(table, reg, tablename, nomefk, button){
         return(
                                     <Downshift 
                                         onChange={selection => {
                                             this.salvaComplete(selection, nomefk, tablename)
+                                            this.setState({['mostra'+nomefk]: false})
                                         }}
+                                        // onStateChange={(changes) => {
+                                        //     this.setState({ ['mostra'+nomefk]: changes.isOpen });
+                                        // }}
                                         itemToString={item => (item ? item.display : '')}
                                         selectedItem={reg}
+                                        isOpen={this.state['mostra'+nomefk]}
+                                       
+                                        // onSelect={()=>{}}
                                         // inputValue={reg.display}
                                         
                                     >
@@ -638,7 +675,8 @@ class Example extends React.Component {
                                         selectedItem,
                                         }) => (
                                         <div>
-                                            <input className="FormField__Input" {...getInputProps()} />
+                                            <input className={button ? "CompleteButton": "FormField__Input"} {...getInputProps()} onFocus={(e)=> {e.preventDefault();this.setState({['mostra'+nomefk]: button})}} onBlur={(e)=> {e.preventDefault();this.setState({['mostra'+nomefk]: false})}}/>
+                                            {button ? (<button className="ButtonComplete" onClick={(e)=>{e.preventDefault();let estado = this.state['mostra'+nomefk]; this.setState({['mostra'+nomefk]: !estado})}}>{this.state['mostra'+nomefk] ? "-":"+"}</button>) : null}
                                             <ul {...getMenuProps()} className={isOpen ? "FormField__Complete" : ""}>
                                             {isOpen
                                                 ? table
@@ -651,7 +689,7 @@ class Example extends React.Component {
                                                         index,
                                                         item,
                                                         style: {
-                                                            backgroundImage: (selectedItem === item) || (highlightedIndex === index) ? 'var(--cor-2)' : 'var(--cor-1)',
+                                                            backgroundColor: (selectedItem === item) || (highlightedIndex === index) ? 'var(--cor-2)' : 'var(--cor-1)',
                                                             color:'var(--cor-letra)',
                                                             fontWeight: selectedItem === item ? 'bold' : 'normal',
                                                         },
@@ -690,7 +728,7 @@ class Example extends React.Component {
 
     closeModal(e){
         e.preventDefault();
-        this.setState({mostraModal: false, mostraTotal: false, itemAdded: 'ItemAdded-hide', editIte: {CODIGOPRO: '', QUANTIDADE: 0,VALOR: '', TOTAL: '', DESCONTO1: '', DESCONTO2: '', id:0}, produto: {display: '', OBS_PROMOCIONAL:'',codigo:'', value: '', ST_ICMS: 0, IPI: 0}})
+        this.setState({mostraModal: false, mostraTotal: false, itemAdded: 'ItemAdded-hide', editIte: {CODIGOPRO: '', QUANTIDADE: 0,VALOR: '', TOTAL: '', DESCONTO1: '', DESCONTO2: '', id:0, VALOR_STICMS:0, VALOR_IPI:0, IPI:0, PERC_STICMS:0}, produto: {display: '', OBS_PROMOCIONAL:'',codigo:'', value: '', VALOR_STICMS:0, VALOR_IPI:0, IPI:0, PERC_STICMS:0}})
     }
 
     saveModal(e, id){
@@ -766,22 +804,21 @@ class Example extends React.Component {
         let bar = this.appBar(this.state.show);
         let clientes = []
         let produtos = []
-        
+        let cpgs = []
         let mapItens = this.state.now.itens;
         let listItens = []
         if (typeof mapItens !== 'undefined'){
-            listItens = mapItens.map(this.createSons)}
-        else listItens = (<ListGroupItem className="FormField__Grid">Nenhum item.</ListGroupItem>)
-        let cpgs = []
+            listItens = mapItens.map(this.createSons)
+        } else listItens = (<ListGroupItem className="FormField__Grid">Nenhum item.</ListGroupItem>)
         if (typeof this.state.clientes === 'undefined'){
             clientes = []
-        } else { clientes = this.state.clientes}
-        if (typeof this.state.produtos === 'undefined'){
-            produtos = []
-        } else { produtos = this.state.produtos}
+        } else { clientes = this.state.clientes }
         if (typeof this.state.cond_pags === 'undefined'){
             cpgs = []
-        } else { cpgs = this.state.cond_pags}
+        } else { cpgs = this.state.cond_pags }
+        if (typeof this.state.produtos === 'undefined'){
+            produtos = []
+        } else { produtos = this.state.produtos }
         let logou = localStorage.getItem("logou");
         if (logou === "true") {
             return (     
@@ -921,7 +958,7 @@ class Example extends React.Component {
 
                                         </Modal.Body>
                                         <Modal.Footer className="ModalBg">
-                                            <div className={this.state.itemAdded}><SvgIcon size={80} icon={check} style={{ color: '#649764', margin: '15px 15px 15px 15px' }}/><p className='ItemMsg'>Item adicionado com sucesso!</p></div>
+                                            <div className={this.state.itemAdded}><SvgIcon size={80} icon={check} style={{ color: 'var(--cor-1)', margin: '15px 15px 15px 15px' }}/><p className='ItemMsg'>Item adicionado com sucesso!</p></div>
                                             <Button className="FormField__Button mr-20" onClick={this.closeModal}>Fechar</Button>
                                             <Button className="FormField__Button mr-20" onClick={event => this.saveModal(event, this.state.editIte.id)}>Salvar</Button>
                                         </Modal.Footer>
@@ -942,7 +979,7 @@ class Example extends React.Component {
                                         <label className="FormField__Label" htmlFor="FK_CLI">Cliente</label>
                                         {this.autocomplete(clientes, this.state.cliente, 'cliente', 'FK_CLI')}
                                         <label className="FormField__Label" htmlFor="FK_CPG">Condição de Pagamento</label>
-                                        {this.autocomplete(cpgs, this.state.cond_pag, 'cond_pag', 'FK_CPG')}
+                                        {this.autocomplete(cpgs, this.state.cond_pag, 'cond_pag', 'FK_CPG',true)}
                                     </div>    
                                     <div className="FormField">
                                         <label className="FormField__Label" htmlFor="OBSERVACAO">OBSERVAÇÃO</label>

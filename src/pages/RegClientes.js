@@ -9,7 +9,7 @@ import { ic_home } from 'react-icons-kit/md/ic_home'
 import { ic_add_shopping_cart } from 'react-icons-kit/md/ic_add_shopping_cart';
 import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
-import {ic_sync} from 'react-icons-kit/md/ic_sync'
+import {ic_settings} from 'react-icons-kit/md/ic_settings'
 import { readTable, editData, appendData, geraInput, removeAcento, savingItem } from "./Utils";
 import {ic_keyboard_arrow_left} from 'react-icons-kit/md/ic_keyboard_arrow_left'
 import {ic_keyboard_arrow_right} from 'react-icons-kit/md/ic_keyboard_arrow_right'
@@ -65,7 +65,7 @@ class Example extends React.Component {
             return(
                 <div className='App__Aside'>
                         <div>   
-                            <SideNav highlightColor='var(--cor-letra)' highlightBgColor='var(--cor-2)' defaultSelected='clientes'
+                            <SideNav highlightColor='var(--cor-letra)' highlightBgColor='var(--cor-menu)' defaultSelected='clientes'
                                         onItemSelection={ (id, parent) => {
                                             if (id==='exit'){  
                                                 localStorage.setItem("logou", false);    
@@ -89,8 +89,8 @@ class Example extends React.Component {
                                     <NavText className='BarText'> Pedidos </NavText>
                                 </Nav>
                                 <Nav id='sync'>
-                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_sync}/></NavIcon>
-                                    <NavText className='BarText'> Sincronização </NavText>
+                                    <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_settings}/></NavIcon>
+                                    <NavText className='BarText'> Sistema </NavText>
                                 </Nav>
                                 <Nav id='exit'>
                                     <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_exit_to_app}/></NavIcon>

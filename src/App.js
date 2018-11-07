@@ -20,30 +20,24 @@ class App extends Component {
         return (
         <Router>
             <Switch>  
-                
-
-                    <Route exact path="/macropecas" component={EntrarForm}>
-                    </Route>
-                    <Route path="/macropecas/home" component={Menu}>
-                    </Route>
-                    <Route path="/macropecas/clientes/registro" component={RegClientes}>
-                    </Route>
-                    <Route exact path="/macropecas/clientes" component={Clientes}>
-                    </Route>
-                    <Route path="/macropecas/pedidos/registro" component={RegPedidos}>
-                    </Route>
-                    <Route exact path="/macropecas/pedidos" component={Pedidos}>
-                    </Route>
-                    <Route path="/macropecas/produtos" component={Produtos}>
-                    </Route>
-                    <Route path="/macropecas/sync" component={Sync}>
-                    </Route>
-                    <Route component={Menu}>
-                    </Route>
-
-
-
-                
+                <Route exact path="/macropecas" component={EntrarForm}>
+                </Route>
+                <Route path="/macropecas/home" component={Menu}>
+                </Route>
+                <Route path="/macropecas/clientes/registro" component={RegClientes}>
+                </Route>
+                <Route exact path="/macropecas/clientes" component={Clientes}>
+                </Route>
+                <Route path="/macropecas/pedidos/registro" component={RegPedidos}>
+                </Route>
+                <Route exact path="/macropecas/pedidos" component={Pedidos}>
+                </Route>
+                <Route path="/macropecas/produtos" component={Produtos}>
+                </Route>
+                <Route path="/macropecas/sync" component={Sync}>
+                </Route>
+                <Route component={Menu}>
+                </Route>
             </Switch>
         </Router>
         );
