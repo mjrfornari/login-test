@@ -13,6 +13,7 @@ import { syncData, createToFirebird, updateToFirebird, syncLoading, date2str  } 
 import Clock from 'react-live-clock';
 import ReactLoading from 'react-loading';
 import { Offline, Online } from "react-detect-offline";
+// import { pedirPermissaoParaReceberNotificacoes } from '../push-notification';
 // import { ic_exit_to_app } from "react-icons-kit/md/ic_exit_to_app";
 
 // const db = new PouchDB('macropecas')
@@ -87,9 +88,11 @@ class Example extends React.Component {
         
     }
 
+    
+
     handleTeste(e){
-      e.preventDefault();  
-      fetch('http://187.44.93.73:8080/login/12345678912345/555').then(r => r.json()).then(r => {console.log(r)})
+        e.preventDefault();
+        navigator.serviceWorker.getRegistration().then(function(reg){reg.showNotification('Teste')})
     }
 
     hideBar(){
@@ -167,6 +170,9 @@ class Example extends React.Component {
                                         {this.atualizando(this.state.sync)}
                                     </div>                                    
                                 </div>
+                                {/* <button onClick={(e)=>{
+                                    e.preventDefault();
+                                    pedirPermissaoParaReceberNotificacoes()}}>Clique aqui para receber notificações</button> */}
                             </Online>
                         </div>
 

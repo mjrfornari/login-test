@@ -10,6 +10,10 @@
 // To learn more about the benefits of this model and instructions on how to
 // opt-in, read http://bit.ly/CRA-PWA.
 
+
+
+
+
 const isLocalhost = Boolean(
   window.location.hostname === 'localhost' ||
     // [::1] is the IPv6 localhost address.
@@ -45,6 +49,7 @@ export function register(config) {
             'This web app is being served cache-first by a service ' +
               'worker. To learn more, visit http://bit.ly/CRA-PWA'
           );
+          
         });
       } else {
         // Is not localhost. Just register service worker
@@ -53,6 +58,16 @@ export function register(config) {
     });
   }
 }
+
+
+window.addEventListener('push', function(event) {
+
+    var myNotif = event.data.json();
+    const promiseChain = window.registration.showNotification(myNotif.title);
+
+    event.waitUntil(promiseChain);
+});
+
 
 function registerValidSW(swUrl, config) {
   navigator.serviceWorker

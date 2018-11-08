@@ -1,10 +1,11 @@
 {
   "name": "Macropeças Web - © Delphus",
   "short_name": "Macropeças",
-  "start_url": ".",
+  "start_url": "/macropecas/",
   "display": "standalone",
   "background_color": "#4b804f",
   "theme_color": "#4f7885",
+  "gcm_sender_id": "103953800507",
   "icons": [
     {
       "src": "windows10/Square71x71Logo.scale-400.png",
