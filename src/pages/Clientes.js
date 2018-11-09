@@ -30,6 +30,7 @@ import {ic_keyboard_arrow_right} from 'react-icons-kit/md/ic_keyboard_arrow_righ
 
 
 
+
 class Example extends React.Component {
     constructor(props, context) {
         super(props, context);
@@ -111,6 +112,7 @@ class Example extends React.Component {
                         if (this.state.iddetailed === id){
                             return   (
                             <ListGroupItem header={item.RAZAO_SOCIAL} href="#" key={id} className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
+                            Sincronizado: {(item.PK_CLI>0) ? 'Sim' : 'Não' }<br/>
                             Nome Fantasia: {item.NOME_FANTASIA}<br/>
                             CNPJ: {mascaraCNPJ(item.CNPJ)}<br/>
                             Inscrição Estadual: {item.INSCRICAO_ESTADUAL}
@@ -118,7 +120,7 @@ class Example extends React.Component {
                                 Endereço: {item.ENDERECO}<br/>
                                 Nº: {item.NUMERO}<br/>
                                 Bairro: {item.BAIRRO}<br/>
-                                Cidade: {item.FK_CID}<br/>
+                                Cidade: {item.CIDADE}<br/>
                                 CEP: {item.CEP}
                             </li>
                             <li className='box'>
@@ -134,6 +136,7 @@ class Example extends React.Component {
                         } else {
                             return (
                                 <ListGroupItem header={item.RAZAO_SOCIAL} href="#" key={id} className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
+                                Sincronizado: {(item.PK_CLI>0) ? 'Sim' : 'Não' }<br/>
                                 Nome Fantasia: {item.NOME_FANTASIA}<br/>
                                 CNPJ: {mascaraCNPJ(item.CNPJ)}<br/>
                                 <LinkContainer to={"/macropecas/clientes/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
@@ -143,6 +146,7 @@ class Example extends React.Component {
                     } else {
                         return (
                             <ListGroupItem header={item.RAZAO_SOCIAL} href="#" key={id} className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
+                            Sincronizado: {(item.PK_CLI>0) ? 'Sim' : 'Não' }<br/>
                             Nome Fantasia: {item.NOME_FANTASIA}<br/>
                             CNPJ: {mascaraCNPJ(item.CNPJ)}<br/>
                             <LinkContainer to={"/macropecas/clientes/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>

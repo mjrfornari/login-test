@@ -14,6 +14,7 @@ import { readTable, editData, appendData, geraInput, removeAcento, savingItem } 
 import {ic_keyboard_arrow_left} from 'react-icons-kit/md/ic_keyboard_arrow_left'
 import {ic_keyboard_arrow_right} from 'react-icons-kit/md/ic_keyboard_arrow_right'
 import {ic_search} from 'react-icons-kit/md/ic_search'
+import Downshift from 'downshift';
 
 
 
@@ -27,6 +28,8 @@ class Example extends React.Component {
     super(props, context);
     this.state = {
         clientes  : [],
+        cidades: [],
+        cidade : {display: '', value: '', codigo: ''},
         show: false,
         now : {PK_CLI: 0, RAZAO_SOCIAL: '', NOME_FANTASIA: '', CNPJ: '', FONE1: '', CODIGO_REPRESENTADA:'', CIDADE:'', BAIRRO:'', ENDEREÇO: '', CEP: '', NUMERO:'', FONE2:'', DDD1:'', DDD2:'', INSCRICAO_ESTADUAL:'', INSCRICAO_MUNICIPAL:'', SUFRAMA:'', EMAIL:'', EMAIL_FINANCEIRO:''},
         append: false,
@@ -44,6 +47,8 @@ class Example extends React.Component {
     this.hideShow = this.hideShow.bind(this);
     this.handleBar = this.handleBar.bind(this);
     this.appBar = this.appBar.bind(this);
+    this.itens = this.itens.bind(this);
+    this.salvaComplete = this.salvaComplete.bind(this)
     this.enviaCEP = this.enviaCEP.bind(this);
     this.saving = this.saving.bind(this);
   }
@@ -58,6 +63,14 @@ class Example extends React.Component {
 
     saving(){
         this.setState({savingShow: {display: 'none'}})
+    }
+
+    itens(a,b){
+        if (a===b){
+            return '✓ '+a.value
+        } else {
+            return a.value
+        }
     }
 
     appBar(mostra){
@@ -128,22 +141,118 @@ class Example extends React.Component {
         let pathname = this.props.location.pathname
         if (pathname.includes('clientes')) {           
             if (this.state.isLoading === true) {
-                if (this.props.location.pathname !== '/macropecas/clientes/registro') {
-                    let ID = this.props.location.pathname.replace('/macropecas/clientes/registro/','');
-                    readTable(Data => { this.setState({clientes: Data.data.clientes, isLoading: true})
+                readTable(Data => { this.setState({clientes: Data.data.clientes, isLoading: true})
+                    if (this.props.location.pathname !== '/macropecas/clientes/registro') {
+                        let ID = this.props.location.pathname.replace('/macropecas/clientes/registro/','');  
                         this.setState({now: Data.data.clientes[ID], id: ID, isLoading: false})  
-                    // Data.data.clientes.forEach(element => {
-                    //         if (element.PK_CLI == ID){
-                    //             this.setState({now: element, isLoading: false})
-                    //         }
-                    //     });
-                
-                    })
-                } else {
-                this.setState({append: true, isLoading: false})
-                }
+                        if (Number(Data.data.clientes[ID].PK_CLI) === 0){
+                            let listCidades = []
+                            Data.data.cidades.forEach((element, elementid) => {
+                                if (element.PK_CID === Data.data.clientes[ID].FK_CID){
+                                    let cid = {
+                                        display : element.NOMECIDADE+' ('+element.UF+')',
+                                        value : element.NOMECIDADE+' ('+element.UF+')',
+                                        codigo : element.PK_CID
+                                    }
+
+                                    this.setState({cidade: cid})
+                                }
+                                listCidades.push({
+                                    display : element.NOMECIDADE+' ('+element.UF+')',
+                                    value : element.NOMECIDADE+' ('+element.UF+')',
+                                    codigo : element.PK_CID
+                                })
+                            }); 
+
+                            this.setState({cidades:listCidades.sort((a,b)=>{if (a.display>b.display) {return 1}; if (a.display<b.display) {return -1}; return 0})})
+                        } else {alert('Cliente já sincronizado. Edição bloqueada.')
+                            this.setState({isLoading: false, ok: true})
+                            this.props.history.push('/macropecas/clientes')}
+                    } else {
+                        let listCidades = []
+                        Data.data.cidades.forEach((element, elementid) => {
+                            listCidades.push({
+                                display : element.NOMECIDADE+' ('+element.UF+')',
+                                value : element.NOMECIDADE+' ('+element.UF+')',
+                                codigo : element.PK_CID
+                            })
+                        }); 
+
+                        this.setState({append: true, isLoading: false, cidades:listCidades.sort((a,b)=>{if (a.display>b.display) {return 1}; if (a.display<b.display) {return -1}; return 0})})
+                    }
+                })
             }
         }
+    }
+
+    salvaComplete(selecionado, nomefk, tablename, idItem){
+        let reg = this.state.now
+        if (nomefk === 'FK_CID'){
+            reg[nomefk] = selecionado.codigo
+            reg.CIDADE = selecionado.display
+            this.setState({now: reg, [tablename]: selecionado})
+        }
+    }
+
+
+    autocomplete(table, reg, tablename, nomefk, button){
+        return(
+                                    <Downshift 
+                                        onChange={selection => {
+                                            this.salvaComplete(selection, nomefk, tablename)
+                                            this.setState({['mostra'+nomefk]: false})
+                                        }}
+                                        // onStateChange={(changes) => {
+                                        //     this.setState({ ['mostra'+nomefk]: changes.isOpen });
+                                        // }}
+                                        itemToString={item => (item ? item.display : '')}
+                                        selectedItem={reg}
+                                        isOpen={this.state['mostra'+nomefk]}
+                                       
+                                        // onSelect={()=>{}}
+                                        // inputValue={reg.display}
+                                        
+                                    >
+                                        {({
+                                        getInputProps,
+                                        getItemProps,
+                                        getLabelProps,
+                                        getMenuProps,
+                                        isOpen,
+                                        inputValue,
+                                        highlightedIndex,
+                                        selectedItem,
+                                        }) => (
+                                        <div>
+                                            <input className={button ? "CompleteButton": "FormField__Input"} {...getInputProps()} onFocus={(e)=> {e.preventDefault();this.setState({['mostra'+nomefk]: button})}} onBlur={(e)=> {e.preventDefault();this.setState({['mostra'+nomefk]: false})}}/>
+                                            {button ? (<button className="ButtonComplete" onClick={(e)=>{e.preventDefault();let estado = this.state['mostra'+nomefk]; this.setState({['mostra'+nomefk]: !estado})}}>{this.state['mostra'+nomefk] ? "-":"+"}</button>) : null}
+                                            <ul {...getMenuProps()} className={isOpen ? "FormField__Complete" : ""}>
+                                            {isOpen
+                                                ? table
+                                                    .filter(item => !inputValue.toUpperCase() || item.value.includes(inputValue.toUpperCase()))
+                                                    .slice(0,10)
+                                                    .map((item, index) => {return(
+                                                    <li className="FormField__List"
+                                                        {...getItemProps({
+                                                        key: index,
+                                                        index,
+                                                        item,
+                                                        style: {
+                                                            backgroundColor: (selectedItem === item) || (highlightedIndex === index) ? 'var(--cor-2)' : 'var(--cor-1)',
+                                                            color:'var(--cor-letra)',
+                                                            fontWeight: selectedItem === item ? 'bold' : 'normal',
+                                                        },
+                                                        })}
+                                                    >
+                                                        <p className='FormField__List__Text'>{this.itens(item,selectedItem)}</p>
+                                                    </li>
+                                                    )})
+                                                : null}
+                                            </ul>
+                                        </div>
+                                        )}
+                                    </Downshift>
+        )
     }
 
   
@@ -192,21 +301,49 @@ class Example extends React.Component {
         if (this.state.now.CEP.length >= 8){
             let cep = this.state.now.CEP
             fetch('https://viacep.com.br/ws/'+cep.replace(/[^\d]/, '')+'/json/').then(r => r.json()).then(r => {
-                console.log(r)
-                let bairro = removeAcento(r.bairro).toUpperCase()
-                let logradouro = removeAcento(r.logradouro).toUpperCase()
-                let localidade = removeAcento(r.localidade).toUpperCase()
-                let registro = this.state.now
-                registro.CIDADE = localidade
-                registro.BAIRRO = bairro
-                registro.ENDERECO = logradouro
-                registro.NUMERO = ''
-                this.setState({now: registro})
+                if (r.erro !== true){
+                    console.log(r)
+                    let bairro = removeAcento(r.bairro).toUpperCase()
+                    let logradouro = removeAcento(r.logradouro).toUpperCase()
+                    let localidade = removeAcento(r.localidade).toUpperCase()
+                    let uf = removeAcento(r.uf).toUpperCase()
+                    let registro = this.state.now
+                    let cid = this.state.cidade
+                    let cidades = this.state.cidades.filter((value) => {return (value.display === localidade+' ('+uf+')')})
+                    if (typeof cidades[0] !== 'undefined'){
+                        cid = cidades[0]
+                    } else {
+                        cid.display = localidade+' ('+uf+') - CIDADE NÃO CADASTRADA'
+                        cid.value = localidade+' ('+uf+') - CIDADE NÃO CADASTRADA'
+                        cid.codigo = null
+                    }
+                    registro.CIDADE = cid.display
+                    registro.BAIRRO = bairro
+                    registro.ENDERECO = logradouro
+                    registro.NUMERO = ''
+                    this.setState({now: registro, cidade: cid})
+                } else {
+                    alert('CEP inválido!')
+                    let cid = this.state.cidade
+                    let registro = this.state.now
+                    cid.display = 'OUTROS (RS)'
+                    cid.value = 'OUTROS (RS)'
+                    cid.codigo = 179
+                    registro.CIDADE = ''
+                    registro.BAIRRO = ''
+                    registro.ENDERECO = ''
+                    registro.NUMERO = ''
+                    this.setState({now: registro, cidade: cid})
+                }
             })
         }
     }
 
  render() {
+    let cidades = []
+    if (typeof this.state.cidades === 'undefined'){
+        cidades = []
+    } else { cidades = this.state.cidades }
     let bar = this.appBar(this.state.show);
     let logou = localStorage.getItem("logou");
     if (logou === "true") {
@@ -251,7 +388,11 @@ class Example extends React.Component {
                                     {geraInput('ENDERECO','LOGRADOURO',this.state.now.ENDERECO || '', this.handleChange)}
                                     {geraInput('NUMERO','Nº',this.state.now.NUMERO || '', this.handleChange, '100px')}
                                     {geraInput('BAIRRO','BAIRRO',this.state.now.BAIRRO || '', this.handleChange)}
-                                    {geraInput('CIDADE','CIDADE',this.state.now.CIDADE || '', this.handleChange)}
+                                    {/* {geraInput('CIDADE','CIDADE',this.state.now.CIDADE || '', this.handleChange)} */}
+                                    <div className="FormField">
+                                        <label className="FormField__Label" htmlFor="CIDADE">CIDADE</label>
+                                        {this.autocomplete(cidades, this.state.cidade, 'cidade', 'FK_CID')}
+                                    </div>
                                 </div>
                                 CONTATO
                                 <div className='box_inverted'>

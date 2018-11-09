@@ -83,8 +83,8 @@ class Example extends React.Component {
                 Descrição: {item.DESCRICAOPRO}<br/>
                 Quantidade: {item.QUANTIDADE}<br/>
                 IPI: {item.IPI+'%'}<br/>
-                Valor: {'R$ '+item.VALOR}<br/>
-                Valor ICMS: {'R$ '+(item.VALOR_STICMS||'0.00')}<br/>
+                Valor: {'R$ '+item.VALOR.toFixed(2)}<br/>
+                Valor ICMS: {'R$ '+(item.VALOR_STICMS ? item.VALOR_STICMS.toFixed(2) : '0.00')}<br/>
             </ListGroupItem>
         )
     }
@@ -149,16 +149,16 @@ class Example extends React.Component {
                         listItens = item.itens.map(this.createSons)}
                     else listItens = (<ListGroupItem className="FormField__Grid">Nenhum item.</ListGroupItem>)
                     return   (
-                        <ListGroupItem header={item.NUMPED ? 'Nº Pedido: '+item.NUMPED:''} href="#" key={id} className="FormField__GridDetailed" onClick={() => {this.masterDetail(id)}}>
+                        <ListGroupItem header={item.NUMPED ? 'Nº Pedido Bosch: '+item.NUMPED:''} href="#" key={id} className="FormField__GridDetailed" onClick={() => {this.masterDetail(id)}}>
                         Sincronizado: {(item.PK_PED>0) ? 'Sim' : 'Não' }<br/>
                         Tipo: {(item.ORCAMENTO==='N') ? 'Pedido' : 'Orçamento' }<br/>
                         Data: {garanteDate(item.DATA)}<br/>
                         Cliente: {item.RAZAO_SOCIAL}<br/>
                         Condição de Pagamento: {item.NOMECPG}<br/>
-                        Valor: {'R$ '+item.VALOR_INFORMADO}<br/>
-                        Valor Produtos: {'R$ '+item.VALOR_CALCULADO}<br/>
-                        Valor Ipi: {'R$ '+item.VALOR_IPI}<br/>
-                        Valor ST ICMS: {'R$ '+item.VALOR_ST}<br/>
+                        Valor: {'R$ '+item.VALOR_INFORMADO.toFixed(2)}<br/>
+                        Valor Produtos: {'R$ '+item.VALOR_CALCULADO.toFixed(2)}<br/>
+                        Valor Ipi: {'R$ '+item.VALOR_IPI.toFixed(2)}<br/>
+                        Valor ST ICMS: {'R$ '+item.VALOR_ST.toFixed(2)}<br/>
                         Código: {item.PK_PED}<br/>
                         <div>
                             Itens:
@@ -180,7 +180,7 @@ class Example extends React.Component {
                         Data: {garanteDate(item.DATA)}<br/>
                         Cliente: {item.RAZAO_SOCIAL}<br/>
                         Condição de Pagamento: {item.NOMECPG}<br/>
-                        Valor: {'R$ '+item.VALOR_INFORMADO}<br/>
+                        Valor: {'R$ '+item.VALOR_INFORMADO.toFixed(2)}<br/>
                         <LinkContainer to={"/macropecas/pedidos/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
                         <button className={item.PK_PED>0 ? "Grid__Button__Hide" : "Grid__Button"} id={id} onClick={this.handleExcluir}>Excluir</button> 
                         </ListGroupItem>
@@ -194,7 +194,7 @@ class Example extends React.Component {
                     Data: {garanteDate(item.DATA)}<br/>
                     Cliente: {item.RAZAO_SOCIAL}<br/>
                     Condição de Pagamento: {item.NOMECPG}<br/>
-                    Valor: {'R$ '+item.VALOR_INFORMADO}<br/>
+                    Valor: {'R$ '+item.VALOR_INFORMADO.toFixed(2)}<br/>
                     <LinkContainer to={"/macropecas/pedidos/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
                     <button className={item.PK_PED>0 ? "Grid__Button__Hide" : "Grid__Button"} id={id} onClick={this.handleExcluir}>Excluir</button> 
                     </ListGroupItem>

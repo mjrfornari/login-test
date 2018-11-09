@@ -9,7 +9,8 @@ import "../App.css";
 import PouchDB from 'pouchdb';
 
 // const server = 'http://187.44.93.73:8080';
-const server = 'https://macropecasweb.sytes.net:8080/api';
+
+const server = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname === "") ? 'http://localhost:3001/api': 'https://macropecasweb.sytes.net:8080/api';
 const db = new PouchDB('macropecas', {auto_compaction: true});
 
 
@@ -576,7 +577,7 @@ export function createToFirebird(callback) {
             values = values+", "+usuario
             console.log(fields)
             console.log(values)
-            // criaItem('clientes',fields, values)
+            criaItem('clientes',fields, values)
             db.get('update').then(function(doc) {
               let newUpdate = {
                 _id: 'update',
@@ -813,6 +814,8 @@ export function updateToFirebird(callback) {
 
 }
 
+
+
 export function test(user){
   fetch(server+'/pedidos/'+user).then(ped => ped.json()).then(ped => {
     console.log(ped)
@@ -855,7 +858,16 @@ export function syncData(user, callback){
                       descontolog: desc
                     }
                   }
-                  console.log(st)
+                  result.data.clientes.forEach(function (element, index)  {
+                    if ( Number(element.FK_CID) > 0 ) {
+                      let cid = result.data.cidades.filter((value) => { return value.PK_CID === element.FK_CID})
+                      element.CIDADE = cid[0].NOMECIDADE+' ('+cid[0].UF+')'
+                      if (cid[0].NOMECIDADE === 'OUTROS'){
+                        console.log(cid[0])
+                      }
+                    }
+                  })
+                  
 
                   db.get('base').then(function(doc) {
                     let newResult = {

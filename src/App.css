@@ -9,7 +9,7 @@
 
   /********************************************** DEFAULT GREEN ***********************************************/
  
-    /*--cor-1: #649764;
+    --cor-1: #649764;
     --cor-2: rgba(0, 0, 0, 0.2);
     --cor-3: #306639c0;
     --cor-menu: rgb(255, 255, 255, 0.2);
@@ -18,7 +18,7 @@
     --cor-fundo: #304c55;
     --cor-placeholder: rgb(214, 214, 214);
     --background: linear-gradient(to bottom, #304c55, #245053, #1d524d, #225441, #305533) !important;
-    --background-menu: linear-gradient(to bottom, #4f7885, #3d7c81, #327f76, #398065, #4b804f) !important; */
+    --background-menu: linear-gradient(to bottom, #4f7885, #3d7c81, #327f76, #398065, #4b804f) !important;
 
   /*********************************************** DARK THEME ************************************************/
 
@@ -33,14 +33,14 @@
 
   /*********************************************** LIGHT THEME ***********************************************/
 
-    --cor-1: #CAD3C8;
+    /* --cor-1: #CAD3C8;
     --cor-2: rgb(225, 230, 224, 0.918);
     --cor-3: rgba(223, 233, 221, 0.384);
     --cor-letra: #353b48;
     --cor-letra-disble: #707888;
     --cor-fundo:white;  
     --cor-menu: rgba(255, 255, 255, 0.493);
-    --cor-placeholder: rgb(214, 214, 214);
+    --cor-placeholder: rgb(214, 214, 214); */
      /* --cor-fundo:#f1f2f6;*/
 
   /**************************************** SOME GRADIENT BACKGROUNDS ****************************************/  
