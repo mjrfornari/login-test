@@ -13,6 +13,7 @@ import {ListGroup, ListGroupItem, Pagination} from 'react-bootstrap'
 import {LinkContainer} from 'react-router-bootstrap'
 import { readTable, deleteData, garanteDate, now} from "./Utils";
 import {plus} from 'react-icons-kit/fa/plus'
+import Dropdown from 'react-dropdown'
 import {ic_keyboard_arrow_left} from 'react-icons-kit/md/ic_keyboard_arrow_left'
 import {ic_keyboard_arrow_right} from 'react-icons-kit/md/ic_keyboard_arrow_right'
 
@@ -37,7 +38,9 @@ class Example extends React.Component {
             filter:  {
                 RAZAO_SOCIAL: '',
                 DATA_MIN: now(-30),
-                DATA_MAX: now(0)
+                DATA_MAX: now(0),
+                STATUS: '',
+                TIPO: ''
             },
             filtered: [],
             detailed: false,
@@ -56,6 +59,8 @@ class Example extends React.Component {
         this.hideShow = this.hideShow.bind(this);
         this.handleBar = this.handleBar.bind(this);
         this.appBar = this.appBar.bind(this);
+        this.filtroStatus = this.filtroStatus.bind(this);
+        this.filtroTipo = this.filtroTipo.bind(this);
         this.setPage = this.setPage.bind(this);
         this.calcPages = this.calcPages.bind(this);
         this.masterDetail = this.masterDetail.bind(this)
@@ -149,7 +154,8 @@ class Example extends React.Component {
                         listItens = item.itens.map(this.createSons)}
                     else listItens = (<ListGroupItem className="FormField__Grid">Nenhum item.</ListGroupItem>)
                     return   (
-                        <ListGroupItem header={item.NUMPED ? 'Nº Pedido Bosch: '+item.NUMPED:''} href="#" key={id} className="FormField__GridDetailed" onClick={() => {this.masterDetail(id)}}>
+                        <ListGroupItem header={item.NUMPED ? 'Nº Pedido Bosch: '+item.NUMPED:'Nº Pedido Bosch: 0'} href="#" key={id} className="FormField__GridDetailed" onClick={() => {this.masterDetail(id)}}>
+                        Nº Web: {item.NUMWEB || 0}<br/>
                         Sincronizado: {(item.PK_PED>0) ? 'Sim' : 'Não' }<br/>
                         Tipo: {(item.ORCAMENTO==='N') ? 'Pedido' : 'Orçamento' }<br/>
                         Data: {garanteDate(item.DATA)}<br/>
@@ -159,7 +165,6 @@ class Example extends React.Component {
                         Valor Produtos: {'R$ '+item.VALOR_CALCULADO.toFixed(2)}<br/>
                         Valor Ipi: {'R$ '+item.VALOR_IPI.toFixed(2)}<br/>
                         Valor ST ICMS: {'R$ '+item.VALOR_ST.toFixed(2)}<br/>
-                        Código: {item.PK_PED}<br/>
                         <div>
                             Itens:
                             <LinkContainer to={"/macropecas/pedidos/registro/"+id}>
@@ -169,12 +174,14 @@ class Example extends React.Component {
                             </LinkContainer>  
                         </div>
                         <LinkContainer to={"/macropecas/pedidos/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
+                        <LinkContainer to={"/macropecas/pedidos/registro/r"+id}><button className="Grid__Button">Replicar</button></LinkContainer>
                         <button className={item.PK_PED>0 ? "Grid__Button__Hide" : "Grid__Button"} id={id} onClick={this.handleExcluir}>Excluir</button> 
                         </ListGroupItem>
                     )
                 } else {
                     return (
-                        <ListGroupItem header={item.NUMPED ? 'Nº Pedido: '+item.NUMPED:''} href="#" key={id} className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
+                        <ListGroupItem header={item.NUMPED ? 'Nº Pedido Bosch: '+item.NUMPED:'Nº Pedido Bosch: 0'} href="#" key={id} className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
+                        Nº Web: {item.NUMWEB || 0}<br/>
                         Sincronizado: {(item.PK_PED>0) ? 'Sim' : 'Não' }<br/>
                         Tipo: {(item.ORCAMENTO==='N') ? 'Pedido' : 'Orçamento' }<br/>
                         Data: {garanteDate(item.DATA)}<br/>
@@ -182,13 +189,15 @@ class Example extends React.Component {
                         Condição de Pagamento: {item.NOMECPG}<br/>
                         Valor: {'R$ '+item.VALOR_INFORMADO.toFixed(2)}<br/>
                         <LinkContainer to={"/macropecas/pedidos/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
+                        <LinkContainer to={"/macropecas/pedidos/registro/r"+id}><button className="Grid__Button">Replicar</button></LinkContainer>
                         <button className={item.PK_PED>0 ? "Grid__Button__Hide" : "Grid__Button"} id={id} onClick={this.handleExcluir}>Excluir</button> 
                         </ListGroupItem>
                     )
                 }
             } else {
                 return (
-                    <ListGroupItem header={item.NUMPED ? 'Nº Pedido: '+item.NUMPED:''} href="#" key={id} className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
+                    <ListGroupItem header={item.NUMPED ? 'Nº Pedido Bosch: '+item.NUMPED:'Nº Pedido Bosch: 0'} href="#" key={id} className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
+                    Nº Web: {item.NUMWEB || 0}<br/>
                     Sincronizado: {(item.PK_PED>0) ? 'Sim' : 'Não' }<br/>
                     Tipo: {(item.ORCAMENTO==='N') ? 'Pedido' : 'Orçamento' }<br/>
                     Data: {garanteDate(item.DATA)}<br/>
@@ -196,6 +205,7 @@ class Example extends React.Component {
                     Condição de Pagamento: {item.NOMECPG}<br/>
                     Valor: {'R$ '+item.VALOR_INFORMADO.toFixed(2)}<br/>
                     <LinkContainer to={"/macropecas/pedidos/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
+                    <LinkContainer to={"/macropecas/pedidos/registro/r"+id}><button className="Grid__Button">Replicar</button></LinkContainer>
                     <button className={item.PK_PED>0 ? "Grid__Button__Hide" : "Grid__Button"} id={id} onClick={this.handleExcluir}>Excluir</button> 
                     </ListGroupItem>
                 )
@@ -293,13 +303,15 @@ class Example extends React.Component {
         let dados = this.state.pedidos
         let filtro = this.state.filter
         let filtrados = []
-
-        let datamax = new Date (filtro.DATA_MAX)
-        let datamin = new Date (filtro.DATA_MIN)
+        let datamax = new Date (filtro.DATA_MAX+' 23:59')
+        let datamin = new Date (filtro.DATA_MIN+' 00:00')
         dados.forEach(element => {
             let data = new Date (element.DATA)
             let maior = true
             let menor = true
+            // console.log(data)
+            // console.log(datamax)
+            // console.log(datamin)
             if (!isNaN(datamax.getTime())) {
                 if (data > datamax){
                     maior = false
@@ -314,6 +326,17 @@ class Example extends React.Component {
                         filtrados.push(element)
             }
         });
+        if (filtro.STATUS === 'S' || filtro.STATUS === 'N'){
+            filtrados = filtrados.filter((value) => {if (filtro.STATUS === 'S') { console.log(value.PK_PED, filtro.STATUS, '>0'); return value.PK_PED > 0} else {console.log(value.PK_PED, filtro.STATUS, '=0'); return Number(value.PK_PED)===0}})
+        } 
+        if (filtro.TIPO === 'O' || filtro.TIPO === 'P'){
+            filtrados = filtrados.filter((value) => {if (filtro.TIPO === 'O') {return value.ORCAMENTO==='S'} else {return value.ORCAMENTO==='N'}})
+        } 
+        filtrados = filtrados.sort((a,b)=>{ 
+            if (a.DATA>b.DATA) {return 1} 
+            if (a.DATA<b.DATA) {return -1} 
+            return 0
+        })
         this.setState({filtered: filtrados}) 
     }
 
@@ -355,11 +378,25 @@ class Example extends React.Component {
         this.setState({maxPages: x})
     }
 
+    filtroStatus(e){
+        let filtro = this.state.filter
+        filtro.STATUS = e.value
+        this.setState({filter: filtro})
+    }
+
+    filtroTipo(e){
+        let filtro = this.state.filter
+        filtro.TIPO = e.value
+        this.setState({filter: filtro})
+    }
+
     render() {
         let Data = this.state.filtered
         let listData = Data.map(this.createItems)
         let logou = localStorage.getItem("logou");
         let bar = this.appBar(this.state.show);
+        const statussinc = [{ value: '', label: 'Todos' }, { value: 'N', label: 'Não Sincronizados' }, { value: 'S', label: 'Sincronizados' }]
+        const tipos = [{ value: '', label: 'Todos' }, { value: 'O' , label: 'Orçamentos' }, { value: 'P' , label: 'Pedidos' }]
         if (logou === "true") {
         return (     
                 <div className="App">
@@ -380,8 +417,12 @@ class Example extends React.Component {
                                                 <input type="text" id="RAZAO_SOCIAL" className="FormFilter__Input" 
                                                 name="RAZAO_SOCIAL" value={this.state.filter.RAZAO_SOCIAL || ''} onChange={this.handleChange}/>
                                                 <label className="FormFilter__Label">PERÍODO</label>
-                                                <input id="DATA_MIN" name="DATA_MIN" className="FormFilter__Date" type="date" value={this.state.filter.DATA_MIN || ''} onChange={this.handleChange}></input>
-                                                <input id="DATA_MAX" name="DATA_MAX" className="FormFilter__Date" type="date" value={this.state.filter.DATA_MAX || ''} onChange={this.handleChange}></input>
+                                                <input id="DATA_MIN" name="DATA_MIN" className={this.state.show ? 'FormFilter__Date__Show' : 'FormFilter__Date'} type="date" value={this.state.filter.DATA_MIN || ''} onChange={this.handleChange}></input>
+                                                <input id="DATA_MAX" name="DATA_MAX" className={this.state.show ? 'FormFilter__Date__Show' : 'FormFilter__Date'} type="date" value={this.state.filter.DATA_MAX || ''} onChange={this.handleChange}></input>
+                                                <label className="FormFilter__Label">Status Sincronização:</label>
+                                                <Dropdown options={statussinc} name="STATUS" value={this.state.filter.STATUS} onChange={this.filtroStatus} className="FormField__Dropdown__Filter" placeholder="Todos" />
+                                                <label className="FormFilter__Label">Tipo:</label>
+                                                <Dropdown options={tipos} name="TIPO" value={this.state.filter.TIPO} onChange={this.filtroTipo} className="FormField__Dropdown__Filter" placeholder="Todos" />
                                                 <div>
                                                     <button className="FormField__Button" onClick={this.handleRefresh}>Pesquisar</button>  
                                                     <button className="FormField__Button" onClick={this.handleClean}>Limpar</button> 

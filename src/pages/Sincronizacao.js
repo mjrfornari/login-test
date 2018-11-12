@@ -68,20 +68,37 @@ class Example extends React.Component {
         this.setState({savingShow: {display: 'none'}})
     }
 
+    componentDidMount(){
+
+    }
+
+
+    componentWillMount(){
+        
+    }
+
     updating(){
         window.location.reload(true)
     }
 
+
     handleSync (e) {
         
         e.preventDefault(); 
-        this.setState({sync: true, savingPhase: 1, savingShow:{}}) 
-        createToFirebird(() => {   
-            updateToFirebird(() => { 
-                syncData(localStorage.getItem('macropecas'), ()=> {this.setState({sync: false, savingPhase: 2, savingShow:{}})
-                localStorage.setItem("macrosync", new Date())})
-            })
+        navigator.getBattery().then(battery => {
+            if ((battery.level*100) >= 30) {
+                if (navigator.connection.type !== 'cellular'){
+                    this.setState({sync: true, savingPhase: 1, savingShow:{}}) 
+                    createToFirebird(() => {   
+                        updateToFirebird(() => { 
+                            syncData(localStorage.getItem('macropecas'), ()=> {this.setState({sync: false, savingPhase: 2, savingShow:{}})
+                            localStorage.setItem("macrosync", new Date())})
+                        })
+                    })
+                } else {alert('Não foi possível iniciar a sincronização.\nMotivo: Conecte à uma rede Wi-Fi!')}
+            } else {alert('Não foi possível iniciar a sincronização.\nMotivo: Bateria abaixo de 30%!')}
         })
+        
         // createToFirebird(() => {
         //     updateToFirebird(() => {console.log('A')})
         // })
@@ -173,6 +190,7 @@ class Example extends React.Component {
                                 {/* <button onClick={(e)=>{
                                     e.preventDefault();
                                     pedirPermissaoParaReceberNotificacoes()}}>Clique aqui para receber notificações</button> */}
+                                {/* <button className="add-button">Instalar Aplicativo</button> */}
                             </Online>
                         </div>
 

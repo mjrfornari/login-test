@@ -187,21 +187,37 @@ tr:hover {background-color:var(--cor-2);}
 }
 
 
+.row:after {
+    content: "";
+    display: table;
+    height: 0px;
+    clear: both;
+}
 
+.add-button {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+}
+
+
+.row:after{
+    content: "";
+    display: table;
+    clear: both;
+
+}
 
 .column_left {
     float: left;
     width: 60px;
+    height: 60px;
     text-align: center;
-    transform: translate(0, 40%); 
+    transform: translate(0, 70%); 
 }
 
 /* Clear floats after the columns */
-.row:after {
-    content: "";
-    display: table;
-    clear: both;
-}
+
 
 .ModalShow {
   display: block;  
@@ -305,6 +321,7 @@ tr:hover {background-color:var(--cor-2);}
     margin: 5px 0 5px 0 !important;
   }
 }
+
 
 @media screen and (max-width: 600px) and (orientation: landscape) {
   .App__Aside {
@@ -922,6 +939,8 @@ tr:hover {background-color:var(--cor-2);}
   /* margin-top: 10px; */
 }
 
+
+
 .FormFilter__Date {
   width: 50%;
   border-radius: 25px;
@@ -930,12 +949,28 @@ tr:hover {background-color:var(--cor-2);}
   color: var(--cor-letra);
   outline: none;
   /* border: 2px solid var(--cor-2); */
-  font-size: 1em;
+  font-size: 0.9em;
   font-weight: 300;
   padding: 10px;
   margin-bottom: 10px;
   /* margin-top: 10px; */
 }
+
+.FormFilter__Date__Show {
+  width: 170px;
+  border-radius: 25px;
+  background-color: var(--cor-1);
+  border: none;
+  color: var(--cor-letra);
+  outline: none;
+  /* border: 2px solid var(--cor-2); */
+  font-size: 0.9em;
+  font-weight: 300;
+  padding: 10px;
+  margin-bottom: 10px;
+  display: block;
+}
+
 
 
 .Dropdown-control {
@@ -980,8 +1015,9 @@ tr:hover {background-color:var(--cor-2);}
   
 
   .Dropdown-menu, .Dropdown-title, .Dropdown-control{
-    width: 120px !important;
+    width: 170px !important;
     margin-right: 10px !important;
+    margin-bottom: 10px !important;
   }
 
   .Dropdown-option.is-selected {
@@ -1108,6 +1144,20 @@ tr:hover {background-color:var(--cor-2);}
   border: none;
   outline: none;
   width: 100px;
+  border-radius: 25px;
+  padding: 8px 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 0.9em;
+  font-weight: 400;
+}
+
+.FormField__Button__Add {
+  background-color: var(--cor-1);
+  color: var(--cor-letra);
+  border: none;
+  outline: none;
+  width: 200px;
   border-radius: 25px;
   padding: 8px 10px;
   margin-top: 10px;

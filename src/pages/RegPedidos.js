@@ -203,10 +203,15 @@ class Example extends React.Component {
             if (this.state.isLoading === true) {
                 if (this.props.location.pathname !== '/macropecas/pedidos/registro') {
                     let ID = this.props.location.pathname.replace('/macropecas/pedidos/registro/','');
+                    let replicacao = false;
+                    if (ID.indexOf('r') !== -1){
+                        replicacao = true;
+                        ID = ID.substring(1, ID.lenght);
+                    } 
                     readTable(Data => { 
                         if (typeof Data.data.pedidos[ID].PK_PED !== 'undefined'){
-                            if (Number(Data.data.pedidos[ID].PK_PED) === 0){
-                                this.setState({pedidos: Data.data.pedidos, isLoading: true})
+                            if (((Number(Data.data.pedidos[ID].PK_PED) === 0 && Data.data.pedidos[ID].ORCAMENTO === 'N') || Data.data.pedidos[ID].ORCAMENTO === 'S') || replicacao === true){
+                                // this.setState({pedidos: Data.data.pedidos, isLoading: true})
                                 this.setState({now: Data.data.pedidos[ID], id: ID, isLoading: false}) 
                                 let listClientes = []
                                 let listCondPags = []
@@ -274,6 +279,38 @@ class Example extends React.Component {
                                 }); 
                                 listCondPags.sort((a,b) => (a.display > b.display) ? 1 : ((b.display > a.display) ? -1 : 0)); 
                                 this.setState({cond_pags: listCondPags, descontoLog: listDescontoLog, cidades:listCidades, clientes: listClientes, produtos: listProdutos, st_icms: listSt_icms})
+                                let ped = this.state.now
+                                console.log(ped.itens[0])
+                                ped.itens.forEach((item, itemid)=>{
+                                    // console.log(item)
+                                    let produtos = this.state.produtos
+                                    let produto = produtos.filter((value)=>{return value.codigo === item.FK_PRO})
+                                    // console.log(produto)
+                                    let preco = this.precoUnit(this.state.cliente, produto[0], true)
+                                    preco = this.aplicaDescontos(preco)
+                                    item.VALOR = preco
+                                    let precodscto = this.descontosDigitados(preco)
+                                    item.IPI = produto[0].IPI
+                                    let percSt = this.pegaStIcms(this.state.cliente, produto[0])
+                                    produto[0].ST_ICMS = percSt
+                                    item.PERC_STICMS = percSt
+                                    item.VALOR_STICMS = (percSt * (precodscto/100)).toFixed(2)
+                                    item.VALOR_STICMS = Number(item.VALOR_STICMS)
+                                    item.VALOR_IPI = (produto[0].IPI * (precodscto/100)).toFixed(2)
+                                    item.VALOR_IPI = Number(item.VALOR_IPI)
+                                    item.TOTAL = ((precodscto + item.VALOR_IPI + item.VALOR_STICMS)*item.QUANTIDADE).toFixed(2)
+                                    console.log(item.Total)
+                                    item.TOTAL = Number(item.TOTAL)
+                                    
+                                })
+                                if (replicacao){
+                                    ped.NUMPED=0;
+                                    ped.NUMWEB=0;
+                                    ped.PK_PED=0;
+                                }
+                                this.setState({ now : ped, append: replicacao })
+                                
+                            
                             } else {alert('Pedido já sincronizado. Edição bloqueada.')
                             this.setState({isLoading: false, ok: true})
                             this.props.history.push('/macropecas/pedidos')}
@@ -281,7 +318,8 @@ class Example extends React.Component {
                         }
                     })
                     } else {
-                    readTable(Data => { this.setState({pedidos: Data.data.pedidos, isLoading: false})
+                    readTable(Data => { 
+                        // this.setState({pedidos: Data.data.pedidos, isLoading: false})
                         let listClientes = []
                         let listCondPags = []
                         let listProdutos = []
@@ -378,7 +416,9 @@ class Example extends React.Component {
     handleSave (e) {
         e.preventDefault();
         // console.log('a')
-        this.setState({savingPhase: 1, savingShow:{}})
+        let ped = this.state.now
+        ped.DATA = new Date();
+        this.setState({savingPhase: 1, savingShow:{}, now: ped})
         if (this.state.ok ===false){
             if (this.state.append === true) {
                 appendData('pedidos', this.state.now, res => {this.setState({savingPhase: 2, savingShow:{}})})
@@ -538,7 +578,7 @@ class Example extends React.Component {
         return preco
     }
 
-    precoUnit(cliente, produto){
+    precoUnit(cliente, produto, recalculando){
         let preco = 0
         let regiao = this.pegaRegiao(cliente)
         if (new Date(this.state.now.DATA) > new Date(produto.DATA_VALID_PROMO)) {
@@ -550,9 +590,9 @@ class Example extends React.Component {
         }
         if ( preco > 0 ) {
             return preco
-        } else if (produto.codigo > 0) {
+        } else if (produto.codigo > 0 && recalculando !== true) {
             alert('Preço Unitário não foi encontrado! Verifique no menu "Produtos"')
-            return 0.00
+            return 0
         }
     }
 
@@ -577,7 +617,7 @@ class Example extends React.Component {
     }
 
     descontosDigitados(preco){
-        preco = (preco * (1-(this.state.editIte.DESCONTO1/100)) * (1-(this.state.editIte.DESCONTO2/100)) * (1-(this.state.editIte.DESCONTO3/100))).toFixed(2)
+        preco = (preco * (1-((this.state.editIte.DESCONTO1||0)/100)) * (1-((this.state.editIte.DESCONTO2||0)/100)) * (1-((this.state.editIte.DESCONTO3||0)/100))).toFixed(2)
         return Number(preco)
     }
 
@@ -658,7 +698,7 @@ class Example extends React.Component {
                                         // }}
                                         itemToString={item => (item ? item.display : '')}
                                         selectedItem={reg}
-                                        isOpen={this.state['mostra'+nomefk]}
+                                        isOpen={button && this.state['mostra'+nomefk]}
                                        
                                         // onSelect={()=>{}}
                                         // inputValue={reg.display}
@@ -885,7 +925,7 @@ class Example extends React.Component {
                                             <div className="FormField">
                                                 <label className="FormField__Label" htmlFor="OBS_PROMOCIONAL">OBSERVAÇÃO PROMOCIONAL</label>
                                                 <textarea id="OBS_PROMOCIONAL" className="FormField__Input__OBS" 
-                                                name="OBS_PROMOCIONAL" value={this.state.produto.OBS_PROMOCIONAL} tabIndex="-1" readOnly/>
+                                                name="OBS_PROMOCIONAL" value={this.state.produto.OBS_PROMOCIONAL||''} tabIndex="-1" readOnly/>
                                             </div>
 
 
@@ -901,12 +941,12 @@ class Example extends React.Component {
                                                     <div style={{display:'flex'}}>
                                                         <div style={{width: '45%', display:'inline'}}>
                                                             <input type="number" data-number-to-fixed="2" id="DESCONTO1" className="FormField__InputUn"  style={{margin: '0px 5px 0px 0px', display:'inline-block' }} 
-                                                            name="DESCONTO1" value={(this.state.editIte.DESCONTO1)} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
+                                                            name="DESCONTO1" value={(this.state.editIte.DESCONTO1||0)} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
                                                             <input type="text" value="%" readOnly tabIndex='-1' className="FormField__Un" style={{margin: '0px 5px 0px 0px', display:'inline-block' }}></input>
                                                         </div>
                                                         <div style={{width: '45%', display:'inline'}}>
                                                             <input type="number" id="DESCONTO2" className="FormField__InputUn"  style={{margin: '0px 5px 0px 0px'}}
-                                                            name="DESCONTO2" value={(this.state.editIte.DESCONTO2)} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
+                                                            name="DESCONTO2" value={(this.state.editIte.DESCONTO2||0)} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
                                                         <input type="text" value="%" readOnly tabIndex='-1' className="FormField__Un" style={{margin: '0px 5px 0px 0px', display:'inline-block' }}></input>
                                                         </div>
                                                     </div>
@@ -920,7 +960,7 @@ class Example extends React.Component {
                                                     <div style={{display:'flex'}}>
                                                         <div style={{width: '45%', display:'inline'}}>
                                                             <input type="number" data-number-to-fixed="2" id="DESCONTO3" className="FormField__InputUn"  style={{margin: '0px 5px 0px 0px', display:'inline-block' }} 
-                                                            name="DESCONTO3" value={(this.state.editIte.DESCONTO3)} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
+                                                            name="DESCONTO3" value={(this.state.editIte.DESCONTO3||0)} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
                                                             <input type="text" value="%" readOnly tabIndex='-1' className="FormField__Un" style={{margin: '0px 5px 0px 0px', display:'inline-block' }}></input>
                                                         </div>
                                                     </div>
@@ -1001,6 +1041,8 @@ class Example extends React.Component {
                                         <textarea id="OBSERVACAO" className="FormField__Input__OBS" 
                                         name="OBSERVACAO" value={this.state.now.OBSERVACAO || ''} onChange={this.handleChange}/>
                                     </div>
+                                    <button className="FormField__Button__Add" onClick={this.willShow}>+ Adicionar Item</button>
+
                                     <div>
                                         ITENS:
                                         <ListGroup>

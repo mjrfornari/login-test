@@ -3,6 +3,7 @@ import ReactLoading from 'react-loading';
 import {Modal, Button} from 'react-bootstrap'
 import SvgIcon from 'react-icons-kit';
 import {check} from 'react-icons-kit/metrize/check'
+import md5 from 'md5';
 // import namor from "namor";
 // import { render } from "react-dom";
 import "../App.css";
@@ -10,10 +11,13 @@ import PouchDB from 'pouchdb';
 
 // const server = 'http://187.44.93.73:8080';
 
-const server = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname === "") ? 'http://localhost:3001/api': 'https://macropecasweb.sytes.net:8080/api';
+export const server = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname === "") ? 'http://localhost:3001/api': 'https://macropecasweb.sytes.net:8080/api';
 const db = new PouchDB('macropecas', {auto_compaction: true});
 
-
+export function cryptmd5(text){
+  let crypted = md5(text).slice(0,20)
+  return crypted
+}
 
 export function savingItem(show, phase, funcao){
 	if (phase === 1){

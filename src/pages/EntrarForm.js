@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import {server, cryptmd5} from './Utils'
+
 // import { Link, Router, Route, Redirect } from 'react-router-dom';
 // import {browserHistory} from 'react-router';
 // import axios from 'axios';
@@ -24,8 +26,9 @@ class EntrarForm extends Component {
 
     handleSubmit (e) {
         e.preventDefault();
+        
         if ((this.state.user!=='') && (this.state.password!=='')){
-            fetch('https://macropecasweb.sytes.net:8080/api/login/'+this.state.user+'/'+this.state.password).then(r => r.json()).then(r => {
+            fetch(server+'/login/'+this.state.user+'/'+cryptmd5(this.state.password)).then(r => r.json()).then(r => {
                 this.logado=false;
             
                 if (Object.keys(r).length > 0){
