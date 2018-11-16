@@ -1,3 +1,4 @@
+/*jshint loopfunc:true */
 import React from "react";
 import ReactLoading from 'react-loading';
 import {Modal, Button} from 'react-bootstrap'
@@ -377,8 +378,7 @@ export function includeDelete(tabela,item, id){
 }
 
 export function deleteData(tabela, item,id) {
-
-  
+  console.log(tabela, item, id)
   readTable(Data => { 
        
         let read = Data
@@ -388,12 +388,48 @@ export function deleteData(tabela, item,id) {
           data:  Data.data,
           _rev: doc._rev
         }
-        newRead.data[tabela].splice(id, 1)
-        item[0].read = id;
-        includeDelete(tabela, item[0], id)
+        console.log('oi')
+        if (tabela !== 'itepedidos'){
+          newRead.data[tabela].splice(id, 1)
+          item[0].read = id;
+          includeDelete(tabela, item[0], id)
+        } else {
+          console.log('tchau')
+          newRead.data.pedidos.itens.splice(id, 1)
+        }
+        
+
+
         return db.put(newRead)
       }).then(function(response) {
         console.log('Read updated!')
+        console.log(item, 'AAAAAAAAAAAAAAAAAAAAAA')
+        if (((typeof item[0].PK_PED !== 'undefined') && (item[0].PK_PED>0)) || ((typeof item[0].PK_IPE !== 'undefined') && (item[0].PK_IPE>0))){
+          deleteTable(Data => {
+            let del = Data
+            db.get('delete').then(function(doc) {
+              let newDelete = {
+                _id: 'delete',
+                data:  Data.data,
+                _rev: doc._rev
+              }
+              newDelete.data[tabela].push(item[0])
+              console.log(newDelete.data)
+              return db.put(newDelete)
+            }).then(function(response) {
+              console.log('Delete updated!')
+            }).catch(function (err) {
+              if (err.name === 'not_found') {
+                db.put(del).then(function (response) {
+                    console.log('Delete Created!')
+                }).catch(function (err) {
+                  console.log(err);
+                });
+              }
+            })
+
+          })
+        }
       }).catch(function (err) {
         if (err.name === 'not_found') {
           db.put(read).then(function (response) {
@@ -402,7 +438,8 @@ export function deleteData(tabela, item,id) {
             console.log(err);
           });
         }
-  });})
+    });
+  })
 
   // createTable(Data => { 
        
@@ -483,6 +520,53 @@ export function updateTable(callback){
 }
 
 
+
+export function deleteToFirebird(callback){
+  let newDelete = {
+        _id: 'delete',
+        data:  [],
+        _rev: 0
+    }
+    let pedidos = []
+    let itepedidos = []
+    setTimeout(function() {
+      db.get('delete').then(function(doc) { 
+          newDelete._rev = doc._rev
+          pedidos = doc.data.pedidos || []
+          itepedidos = doc.data.itepedidos || []
+          const deletes = []
+          pedidos.forEach((element, index) => {
+            if (typeof element.PK_PED !== 'undefined'){
+              // element.itens.forEach((element, index) => {
+              //   deleteItem('itepedidos', 'PK_IPE', element.PK_IPE)
+              // })
+              deletes.push(deleteItem('pedidos_venda', 'PK_PED', element.PK_PED))
+              
+            }
+          })
+          itepedidos.forEach((element, index) => {
+            if (typeof element.PK_IPE !== 'undefined'){
+              deletes.push(deleteItem('itens_ped_venda', 'PK_IPE', element.PK_IPE))
+            }
+          })
+          Promise.all(deletes).then(res => {
+            console.log(res)
+          })
+          return db.put(newDelete)
+      }).then(function(response) {
+          console.log('Delete sended!')
+          callback()
+      }).catch(function(err){
+          console.log(err)
+          callback()
+      })
+
+  }, 500)
+
+
+
+}
+
 // function geraPk(nomepk, callback) {
 //   return fetch(server+'/gerapk/'+nomepk).then(r => r.json()).then(r => {callback(r)})
 // }
@@ -522,6 +606,10 @@ function criaItem(table, fields, values,callback) {
   return fetch(server+'/criaitem/'+table+'/'+fields+'/'+values).then(r => console.log(r))
 }
 
+function deleteItem(table, pkname, pk, callback) {
+  return fetch(server+'/deletaitem/'+table+'/'+pkname+'/'+pk).then(r => console.log(r))
+}
+
 function atualizaItem(table, fieldsnvalues, where,callback) {
   return fetch(server+'/atualizaitem/'+table+'/'+fieldsnvalues+'/'+where).then(r => console.log(r))
 }
@@ -552,8 +640,8 @@ export function createToFirebird(callback) {
 
         return Promise.all(geraPkListPormisePedidos)
     }).then(data => {
-        const geraPkListPormisePedidos = data.map((element, index) => geraPk('NUMWEB').then(Data => ( { ...element, NUMWEB: Data[0].VALOR })))
-        console.log(data)
+        const geraPkListPormisePedidos = data.map((element, index) => geraPk('NUMWEB').then(Data => ( { ...element, NUMWEB: Data[0].VALOR+1+index })))
+        // console.log(data)
         return Promise.all(geraPkListPormisePedidos)
     }).then(data => {
         let itens = []
@@ -564,10 +652,10 @@ export function createToFirebird(callback) {
           })
         })
         const geraPkListPormiseItePedidos = itens.map((element, index) => geraPk('PK_IPE').then(Data => ( { ...element, PK_IPE: Data[0].VALOR })))
-        console.log(itens)
+        // console.log(itens)
         return Promise.all(geraPkListPormiseItePedidos)
     }).then(data => {
-        console.log(data)
+        // console.log(data)
         itepedidos = data
     }).then(function(response) {
           // console.log('Read updated with new pks!')
@@ -579,8 +667,8 @@ export function createToFirebird(callback) {
             fields = fields+", FK_VEN"
             let usuario = localStorage.getItem("macropecas")
             values = values+", "+usuario
-            console.log(fields)
-            console.log(values)
+            // console.log(fields)
+            // console.log(values)
             criaItem('clientes',fields, values)
             db.get('update').then(function(doc) {
               let newUpdate = {
@@ -606,7 +694,7 @@ export function createToFirebird(callback) {
                 icreated.itens = []
                 icreated.RAZAO_SOCIAL = []
                 icreated.NOMECPG = []
-                console.log(icreated.VALOR_CALCULADO)
+                // console.log(icreated.VALOR_CALCULADO)
                 let dataped = icreated.DATA
                 icreated.DATA = dateSql(dataped)
                 let propscreated = JSON.stringify(Object.getOwnPropertyNames(icreated))
@@ -616,8 +704,8 @@ export function createToFirebird(callback) {
                 fields = fields+", FK_VEN"
                 let usuario = localStorage.getItem("macropecas")
                 values = values+", "+usuario
-                console.log(fields)
-                console.log(values)
+                // console.log(fields)
+                // console.log(values)
                 criaItem('pedidos_venda',fields, values)
                 db.get('update').then(function(doc) {
                   let newUpdate = {
@@ -630,7 +718,7 @@ export function createToFirebird(callback) {
                         if (Number(icreated.read) === Number(iupdated.read)){
                           iupdated['PK_PED']=icreated['PK_PED']
                           iupdated['NUMWEB']=icreated['NUMWEB']
-                          console.log(icreated.PK_PED+' ** '+icreated.NUMWEB)
+                          // console.log(icreated.PK_PED+' ** '+icreated.NUMWEB)
                           iupdated.itens.forEach(function (iupdatedson, idupdatedson) {
                             iupdatedson.FK_PED = icreated['PK_PED']
                           })
@@ -652,10 +740,10 @@ export function createToFirebird(callback) {
                     icreated.VALOR_IPI =[]
                     let propscreated = JSON.stringify(Object.getOwnPropertyNames(icreated))
                     let valuescreated = JSON.stringify(Object.values(icreated))
-                    let fields = propscreated.split('"').join("").split('[').join("").split(']').join("").split(',DESCRICAOPRO').join("").split('CODIGOPRO,').join("").split(',id').join("").split(',VALOR_IPI').join("").split(',OBS_PROMOCIONAL').join("").split(',TOTAL').join("")
-                    let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",").split(",'%$#'").join("").split("'%$#',").join("")
-                    console.log(fields)
-                    console.log(values)
+                    let fields = propscreated.split('"').join("").split('[').join("").split(']').join("").split(',DESCRICAOPRO').join("").split('CODIGOPRO,').join("").split(',id').join("").split(',VALOR_IPI').join("").split(',OBS_PROMOCIONAL').join("").split(',TOTAL').join("").split(',mostraModal').join("")
+                    let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",").split(",'%$#'").join("").split("'%$#',").join("").split(',true,').join("").split(',false,').join("")
+                    // console.log(fields)
+                    // console.log(values)
                     criaItem('itens_ped_venda',fields, values)
                     db.get('update').then(function(doc) {
                       let newUpdate = {
@@ -687,10 +775,11 @@ export function createToFirebird(callback) {
               })
 
     }).then(function(response) {
+        callback()
     }).catch(function(err){
         console.log(err)
+        callback()
     })
-  callback()
   }, 500)
 
   console.log('Create sended!')
@@ -760,6 +849,7 @@ export function updateToFirebird(callback) {
                 let valuesson = valuesupdatedson.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",").split(",'%$#'").join("").split("'%$#',").join("")
                 if (typeof iupdatedson.PK_IPE === 'undefined'){
                   geraPk('PK_IPE').then(res => {
+                    console.log(res)
                     fieldsson=fieldsson+',PK_IPE'
                     valuesson=valuesson+','+res[0].VALOR})
                   .then(res =>{
@@ -806,11 +896,11 @@ export function updateToFirebird(callback) {
           })
 
     }).then(function(response) {
-
+        callback()
     }).catch(function(err){
         console.log(err)
+        callback()
     })
-    callback()
     }, 1000)
 
     console.log('Update sended!')
@@ -827,12 +917,17 @@ export function test(user){
 }
 
 
+export function concatData(base, add){
+  base = base.concat(add)
+  return base
+}
+
+
 export function syncData(user, callback){
-    
+
     setTimeout(function() {
     let pegaPedidos = []
     fetch(server+'/pedidos/'+user).then(ped => ped.json()).then(ped => {
-      console.log(ped)
       ped.forEach(function(pedido, idpedido){
         ped[idpedido].itens=[];
         fetch(server+'/itepedidos/'+pedido.PK_PED).then(r => r.json()).then(r => {            
@@ -844,98 +939,102 @@ export function syncData(user, callback){
       })
       pegaPedidos = ped
     }).then(ped => {
+      // alert('Pedidos e itepedidos ok!')
       fetch(server+'/sticms').then(st => st.json()).then(st => {
-        fetch(server+'/produtos').then(pro => pro.json()).then(pro => {
-          fetch(server+'/clientes/'+user).then(r => r.json()).then(r => {
-            fetch(server+'/cpg').then(rcpg => rcpg.json()).then(rcpg => {
-              fetch(server+'/cidades').then(cid => cid.json()).then(cid => {
-                fetch(server+'/descontolog').then(desc => desc.json()).then(desc => {  
-                  let result = {
-                    _id: 'base',
-                    data: {
-                      clientes: r,
-                      pedidos: pegaPedidos,
-                      produtos: pro,
-                      st_icms: st,
-                      cond_pag: rcpg,
-                      cidades: cid,
-                      descontolog: desc
-                    }
-                  }
-                  result.data.clientes.forEach(function (element, index)  {
-                    if ( Number(element.FK_CID) > 0 ) {
-                      let cid = result.data.cidades.filter((value) => { return value.PK_CID === element.FK_CID})
-                      element.CIDADE = cid[0].NOMECIDADE+' ('+cid[0].UF+')'
-                      if (cid[0].NOMECIDADE === 'OUTROS'){
-                        console.log(cid[0])
-                      }
-                    }
-                  })
-                  
+        const stPromises = []
+        let nSt = st[0].COUNT
+        let xSt = 0
+        do {
+          stPromises.push(
+            fetch(`${server}/sticms?first=5000&skip=${xSt}`).then(res => res.json())
+          )
+          xSt = xSt + 5000;
+        } while (nSt > xSt)
 
-                  db.get('base').then(function(doc) {
-                    let newResult = {
-                      _id: 'base',
-                      data:  result.data,
-                      _rev: doc._rev
-                    }     
-                    return db.put(newResult);
-                  }).then(function(response) {
-                    console.log('Base updated!')
-                    
-                  }).catch(function (err) {
-                    if (err.name === 'not_found') {
-                      db.put(result).then(function (response) {
-                          console.log('Base created!')
-                      }).catch(function (err) {
-                        console.log(err);
-                      });
-                    }
-                  });
+        Promise.all(stPromises).then(res => {
+          let sticms = []
+          res.forEach((element, id)=>{
+            sticms = sticms.concat(element)
+          })
+      // alert('st!')
+          fetch(server+'/produtos').then(pro => pro.json()).then(pro => {
+              const productsPromises = []
+              let nPro = pro[0].COUNT
+              let xPro = 0
+              do {
+                productsPromises.push(
+                  fetch(`${server}/produtos?first=5000&skip=${xPro}`).then(res => res.json())
+                )
+                xPro = xPro + 5000
+              } while (nPro > xPro)
 
-                  let read = {
-                    _id: 'read',
-                    data: {
-                      clientes: r,
-                      pedidos: pegaPedidos,
-                      produtos: pro,
-                      st_icms: st,
-                      cond_pag: rcpg,
-                      cidades: cid,
-                      descontolog: desc
-                    }     
-                  }
+              Promise.all(productsPromises).then(res => {
+                let prod = []
+                res.forEach((element, id)=>{
+                  prod = prod.concat(element)
+                })
+                fetch(server+'/clientes/'+user).then(r => r.json()).then(r => {
+                  // alert('Clientes ok!')
+                  fetch(server+'/cpg').then(rcpg => rcpg.json()).then(rcpg => {
+                    // alert('Cpg ok!')
+                    fetch(server+'/cidades').then(cid => cid.json()).then(cid => {
+                      // alert('Cidades ok!')
+                      fetch(server+'/descontolog').then(desc => desc.json()).then(desc => {  
+                        // alert('Desconto Log ok!')
 
-                  db.get('read').then(function(doc) {
-                    let newRead = {
-                      _id: 'read',
-                      data:  result.data,
-                      _rev: doc._rev
-                    }     
-                    return db.put(newRead);
-                  }).then(function(response) {
-                    console.log('Read updated!')
-                    // alert('Sincronizado!')
-                    callback()
-                  }).catch(function (err) {
-                    if (err.name === 'not_found') {
-                      db.put(read).then(function (response) {
-                          console.log('Read created!')
+                        r.forEach(function (element, index)  {
+                          if ( Number(element.FK_CID) > 0 ) {
+                            let pegaCidade = cid.filter((value) => { return value.PK_CID === element.FK_CID})
+                            element.CIDADE = pegaCidade[0].NOMECIDADE+' ('+pegaCidade[0].UF+')'
+                          }
+                        })
+
+
+
+                        let read = {
+                          _id: 'read',
+                          data: {
+                            clientes: r,
+                            pedidos: pegaPedidos,
+                            produtos: prod,
+                            st_icms: sticms,
+                            cond_pag: rcpg,
+                            cidades: cid,
+                            descontolog: desc
+                          }     
+                        }
+
+                        db.get('read').then(function(doc) {
+                          let newRead = {
+                            _id: 'read',
+                            data:  read.data,
+                            _rev: doc._rev
+                          }     
+                          return db.put(newRead);
+                        }).then(function(response) {
+                          console.log('Read updated!')
                           // alert('Sincronizado!')
                           callback()
-                      }).catch(function (err) {
-                        console.log(err);
-                      });
-                    }
-                  });
+                        }).catch(function (err) {
+                          if (err.name === 'not_found') {
+                            db.put(read).then(function (response) {
+                                console.log('Read created!')
+                                // alert('Sincronizado!')
+                                callback()
+                            }).catch(function (err) {
+                              console.log(err);
+                            });
+                          }
+                        });
+                      })
+                    }) 
+                  })
                 })
-              }) 
+              })
             })
           })
         })
       })
-    })
-
 
     let create = {
         _id: 'create',

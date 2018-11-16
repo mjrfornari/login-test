@@ -11,7 +11,7 @@ import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_settings} from 'react-icons-kit/md/ic_settings'
 import {ListGroup, ListGroupItem, Pagination} from 'react-bootstrap'
 import {LinkContainer} from 'react-router-bootstrap'
-import { readTable, deleteData, garanteDate, now} from "./Utils";
+import { readTable, deleteData, garanteDate, now, date2str} from "./Utils";
 import {plus} from 'react-icons-kit/fa/plus'
 import Dropdown from 'react-dropdown'
 import {ic_keyboard_arrow_left} from 'react-icons-kit/md/ic_keyboard_arrow_left'
@@ -69,7 +69,13 @@ class Example extends React.Component {
     }
 
     componentDidMount(){
-        readTable(Data => {this.setState({pedidos: Data.data.pedidos, filtered: []})})      
+        readTable(Data => {
+            let pedidosread = Data.data.pedidos
+            pedidosread.forEach((item, index)=>{
+                item.READ = index
+            })
+            this.setState({pedidos: pedidosread, filtered: []})
+        })      
     }
     
 
@@ -126,6 +132,7 @@ class Example extends React.Component {
     }
 
     paginacao(){
+        console.log('Paginação:',this.state.maxPages, this.state.pedidos.length)
         if (this.state.maxPages>1){
             return (
                 <Pagination>
@@ -154,59 +161,62 @@ class Example extends React.Component {
                         listItens = item.itens.map(this.createSons)}
                     else listItens = (<ListGroupItem className="FormField__Grid">Nenhum item.</ListGroupItem>)
                     return   (
-                        <ListGroupItem header={item.NUMPED ? 'Nº Pedido Bosch: '+item.NUMPED:'Nº Pedido Bosch: 0'} href="#" key={id} className="FormField__GridDetailed" onClick={() => {this.masterDetail(id)}}>
-                        Nº Web: {item.NUMWEB || 0}<br/>
-                        Sincronizado: {(item.PK_PED>0) ? 'Sim' : 'Não' }<br/>
-                        Tipo: {(item.ORCAMENTO==='N') ? 'Pedido' : 'Orçamento' }<br/>
-                        Data: {garanteDate(item.DATA)}<br/>
-                        Cliente: {item.RAZAO_SOCIAL}<br/>
-                        Condição de Pagamento: {item.NOMECPG}<br/>
-                        Valor: {'R$ '+item.VALOR_INFORMADO.toFixed(2)}<br/>
-                        Valor Produtos: {'R$ '+item.VALOR_CALCULADO.toFixed(2)}<br/>
-                        Valor Ipi: {'R$ '+item.VALOR_IPI.toFixed(2)}<br/>
-                        Valor ST ICMS: {'R$ '+item.VALOR_ST.toFixed(2)}<br/>
-                        <div>
-                            Itens:
-                            <LinkContainer to={"/macropecas/pedidos/registro/"+id}>
-                                <ListGroup>
-                                    {listItens}
-                                </ListGroup>
-                            </LinkContainer>  
-                        </div>
-                        <LinkContainer to={"/macropecas/pedidos/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
-                        <LinkContainer to={"/macropecas/pedidos/registro/r"+id}><button className="Grid__Button">Replicar</button></LinkContainer>
-                        <button className={item.PK_PED>0 ? "Grid__Button__Hide" : "Grid__Button"} id={id} onClick={this.handleExcluir}>Excluir</button> 
+                        <ListGroupItem href="#" key={item.READ} className="FormField__GridDetailed" onClick={() => {this.masterDetail(id)}}>
+                            Cliente: {item.RAZAO_SOCIAL}<br/>
+                            {garanteDate(item.DATA)}<br/>
+                            Condição de Pagamento: {item.NOMECPG}<br/>
+                            {item.NUMPED ? 'Nº Bosch: '+item.NUMPED:'Nº Bosch: 0'}<br/>
+                            Nº Web: {item.NUMWEB || 0}<br/>
+                            Tipo: {(item.ORCAMENTO==='N') ? 'Pedido' : 'Orçamento' }<br/>
+                            Valor: {'R$ '+item.VALOR_INFORMADO.toFixed(2)}<br/>
+                            Enviado para Macropeças: {(item.PK_PED>0) ? 'Sim' : 'Não' }<br/>
+                            Valor Produtos: {'R$ '+item.VALOR_CALCULADO.toFixed(2)}<br/>
+                            Valor Ipi: {'R$ '+item.VALOR_IPI.toFixed(2)}<br/>
+                            Valor ST ICMS: {'R$ '+item.VALOR_ST.toFixed(2)}<br/>
+                            <div>
+                                Itens:
+                                <LinkContainer to={"/macropecas/pedidos/registro/"+item.READ}>
+                                    <ListGroup>
+                                        {listItens}
+                                    </ListGroup>
+                                </LinkContainer>  
+                            </div>
+                            <LinkContainer to={"/macropecas/pedidos/registro/"+item.READ}><button className="Grid__Button">Editar</button></LinkContainer>
+                            <LinkContainer to={"/macropecas/pedidos/registro/r"+item.READ}><button className="Grid__Button">Replicar</button></LinkContainer>
+                            <button className={((Number(item.PK_PED) === 0 && item.ORCAMENTO === 'N') || item.ORCAMENTO === 'S') ? "Grid__Button" : "Grid__Button__Hide"} id={item.READ} onClick={this.handleExcluir}>Excluir</button> 
                         </ListGroupItem>
                     )
                 } else {
                     return (
-                        <ListGroupItem header={item.NUMPED ? 'Nº Pedido Bosch: '+item.NUMPED:'Nº Pedido Bosch: 0'} href="#" key={id} className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
-                        Nº Web: {item.NUMWEB || 0}<br/>
-                        Sincronizado: {(item.PK_PED>0) ? 'Sim' : 'Não' }<br/>
-                        Tipo: {(item.ORCAMENTO==='N') ? 'Pedido' : 'Orçamento' }<br/>
-                        Data: {garanteDate(item.DATA)}<br/>
-                        Cliente: {item.RAZAO_SOCIAL}<br/>
-                        Condição de Pagamento: {item.NOMECPG}<br/>
-                        Valor: {'R$ '+item.VALOR_INFORMADO.toFixed(2)}<br/>
-                        <LinkContainer to={"/macropecas/pedidos/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
-                        <LinkContainer to={"/macropecas/pedidos/registro/r"+id}><button className="Grid__Button">Replicar</button></LinkContainer>
-                        <button className={item.PK_PED>0 ? "Grid__Button__Hide" : "Grid__Button"} id={id} onClick={this.handleExcluir}>Excluir</button> 
+                       <ListGroupItem href="#" key={item.READ} className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
+                            Cliente: {item.RAZAO_SOCIAL}<br/>
+                            {garanteDate(item.DATA)}<br/>
+                            Condição de Pagamento: {item.NOMECPG}<br/>
+                            {item.NUMPED ? 'Nº Bosch: '+item.NUMPED:'Nº Bosch: 0'}<br/>
+                            Nº Web: {item.NUMWEB || 0}<br/>
+                            Tipo: {(item.ORCAMENTO==='N') ? 'Pedido' : 'Orçamento' }<br/>
+                            Valor: {'R$ '+item.VALOR_INFORMADO.toFixed(2)}<br/>
+                            Enviado para Macropeças: {(item.PK_PED>0) ? 'Sim' : 'Não' }<br/>
+                            <LinkContainer to={"/macropecas/pedidos/registro/"+item.READ}><button className="Grid__Button">Editar</button></LinkContainer>
+                            <LinkContainer to={"/macropecas/pedidos/registro/r"+item.READ}><button className="Grid__Button">Replicar</button></LinkContainer>
+                            <button className={((Number(item.PK_PED) === 0 && item.ORCAMENTO === 'N') || item.ORCAMENTO === 'S') ? "Grid__Button" : "Grid__Button__Hide"} id={item.READ} onClick={this.handleExcluir}>Excluir</button> 
                         </ListGroupItem>
                     )
                 }
             } else {
                 return (
-                    <ListGroupItem header={item.NUMPED ? 'Nº Pedido Bosch: '+item.NUMPED:'Nº Pedido Bosch: 0'} href="#" key={id} className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
-                    Nº Web: {item.NUMWEB || 0}<br/>
-                    Sincronizado: {(item.PK_PED>0) ? 'Sim' : 'Não' }<br/>
-                    Tipo: {(item.ORCAMENTO==='N') ? 'Pedido' : 'Orçamento' }<br/>
-                    Data: {garanteDate(item.DATA)}<br/>
-                    Cliente: {item.RAZAO_SOCIAL}<br/>
-                    Condição de Pagamento: {item.NOMECPG}<br/>
-                    Valor: {'R$ '+item.VALOR_INFORMADO.toFixed(2)}<br/>
-                    <LinkContainer to={"/macropecas/pedidos/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
-                    <LinkContainer to={"/macropecas/pedidos/registro/r"+id}><button className="Grid__Button">Replicar</button></LinkContainer>
-                    <button className={item.PK_PED>0 ? "Grid__Button__Hide" : "Grid__Button"} id={id} onClick={this.handleExcluir}>Excluir</button> 
+                    <ListGroupItem href="#" key={item.READ} className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
+                        Cliente: {item.RAZAO_SOCIAL}<br/>
+                        {garanteDate(item.DATA)}<br/>
+                        Condição de Pagamento: {item.NOMECPG}<br/>
+                        {item.NUMPED ? 'Nº Bosch: '+item.NUMPED:'Nº Bosch: 0'}<br/>
+                        Nº Web: {item.NUMWEB || 0}<br/>
+                        Tipo: {(item.ORCAMENTO==='N') ? 'Pedido' : 'Orçamento' }<br/>
+                        Valor: {'R$ '+item.VALOR_INFORMADO.toFixed(2)}<br/>
+                        Enviado para Macropeças: {(item.PK_PED>0) ? 'Sim' : 'Não' }<br/>
+                        <LinkContainer to={"/macropecas/pedidos/registro/"+item.READ}><button className="Grid__Button">Editar</button></LinkContainer>
+                        <LinkContainer to={"/macropecas/pedidos/registro/r"+item.READ}><button className="Grid__Button">Replicar</button></LinkContainer>
+                        <button className={((Number(item.PK_PED) === 0 && item.ORCAMENTO === 'N') || item.ORCAMENTO === 'S') ? "Grid__Button" : "Grid__Button__Hide"} id={item.READ} onClick={this.handleExcluir}>Excluir</button> 
                     </ListGroupItem>
                 )
             }
@@ -337,6 +347,7 @@ class Example extends React.Component {
             if (a.DATA<b.DATA) {return -1} 
             return 0
         })
+        this.calcPages(Object.keys(filtrados).length)
         this.setState({filtered: filtrados}) 
     }
 
@@ -406,6 +417,7 @@ class Example extends React.Component {
                             <div className="FormTitle">
                                 <Clock format={'DD/MM/YYYY - HH:mm'} ticking={true}/> 
                                 <br/>
+                                Última sincronização: {localStorage.getItem("macrosync") ? date2str(localStorage.getItem("macrosync")) : 'Nunca sincronizado.'}<br/>
                                 <h1 className="FormTitle__Link--Active">Pedidos</h1>
                             </div>
                             {/* <form className="FormFields">   */}

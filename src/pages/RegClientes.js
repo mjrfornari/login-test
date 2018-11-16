@@ -10,7 +10,7 @@ import { ic_add_shopping_cart } from 'react-icons-kit/md/ic_add_shopping_cart';
 import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_settings} from 'react-icons-kit/md/ic_settings'
-import { readTable, editData, appendData, geraInput, removeAcento, savingItem } from "./Utils";
+import { readTable, editData, appendData, geraInput, removeAcento, savingItem, date2str } from "./Utils";
 import {ic_keyboard_arrow_left} from 'react-icons-kit/md/ic_keyboard_arrow_left'
 import {ic_keyboard_arrow_right} from 'react-icons-kit/md/ic_keyboard_arrow_right'
 import {ic_search} from 'react-icons-kit/md/ic_search'
@@ -355,6 +355,7 @@ class Example extends React.Component {
                                 <div className="FormTitle">
                                     <Clock format={'DD/MM/YYYY - HH:mm'} ticking={true}/> 
                                     <br/>
+                                    Última sincronização: {localStorage.getItem("macrosync") ? date2str(localStorage.getItem("macrosync")) : 'Nunca sincronizado.'}<br/>
                                     <h1 className="FormTitle__Link--Active">Registro de Clientes</h1>
                                 </div>
                                 {geraInput('PK_CLI','CÓDIGO',this.state.now.PK_CLI || '', ()=>{})}

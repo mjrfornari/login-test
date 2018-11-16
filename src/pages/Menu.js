@@ -10,6 +10,7 @@ import { ic_add_shopping_cart } from 'react-icons-kit/md/ic_add_shopping_cart';
 import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_settings} from 'react-icons-kit/md/ic_settings'
+import { date2str } from "./Utils";
 // Import React Table
 // import ReactTable from "react-table";
 import "react-table/react-table.css";
@@ -87,6 +88,7 @@ class Example extends React.Component {
                         <div className="FormTitle"> 
                             <Clock format={'DD/MM/YYYY - HH:mm'} ticking={true}/> 
                             <br/>
+                            Última sincronização: {localStorage.getItem("macrosync") ? date2str(localStorage.getItem("macrosync")) : 'Nunca sincronizado.'}<br/>
                             <h1 className="FormTitle__Link--Active">Bem vindo!</h1>
                         </div>
                         <div className="FormField">

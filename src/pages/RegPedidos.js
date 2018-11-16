@@ -16,7 +16,7 @@ import { Radio } from 'semantic-ui-react'
 import ReactLoading from 'react-loading';
 // import PouchDB from "pouchdb"
 import {plus} from 'react-icons-kit/fa/plus'
-import { readTable, editData, appendData, savingItem } from "./Utils";
+import { readTable, editData, appendData, savingItem, date2str, deleteData } from "./Utils";
 import {ic_keyboard_arrow_left} from 'react-icons-kit/md/ic_keyboard_arrow_left'
 import {ic_keyboard_arrow_right} from 'react-icons-kit/md/ic_keyboard_arrow_right'
 import Downshift from 'downshift';
@@ -87,6 +87,7 @@ class Example extends React.Component {
     this.pegaStIcms = this.pegaStIcms.bind(this)
     this.aplicaDescontos = this.aplicaDescontos.bind(this)
     this.descontosDigitados = this.descontosDigitados.bind(this)
+    this.handleExcluir = this.handleExcluir.bind(this)
   }
   
     saveBtn(ok) {
@@ -116,12 +117,33 @@ class Example extends React.Component {
                     IPI: {item.IPI+'%'}<br/>
                     Valor: {'R$ '+item.VALOR}<br/>
                     Valor ICMS: {'R$ '+(item.VALOR_STICMS||'0.00')}<br/>
+                    <button className={((Number(item.PK_IPE) === 0 && this.state.now.ORCAMENTO === 'N') || this.state.now.ORCAMENTO === 'S') ? "Grid__Button" : "Grid__Button__Hide"} id={id} onClick={this.handleExcluir}>Excluir</button>
                 </div>
             </div>
+            
             </ListGroupItem>
         )
     }
 
+
+    handleExcluir(e) {
+        e.stopPropagation();
+        e.preventDefault()
+        let table = this.state.now.itens
+        // console.log(this.state.clientes[e.target.id])
+        let result = window.confirm('Confirma a exclusão do item?')
+        if (result) {
+            // console.log(table)
+            let removed = table.splice(e.target.id, 1)
+            let pedido = this.state.now
+            pedido.itens = table
+            removed[0].id = e.target.id
+            let del = this.state.deleted || []
+            del.push(removed[0])
+            this.setState({now: pedido, deleted: del})
+            
+        }
+    }
 
     loading(ok, list) {
         if (ok === false){
@@ -212,7 +234,14 @@ class Example extends React.Component {
                         if (typeof Data.data.pedidos[ID].PK_PED !== 'undefined'){
                             if (((Number(Data.data.pedidos[ID].PK_PED) === 0 && Data.data.pedidos[ID].ORCAMENTO === 'N') || Data.data.pedidos[ID].ORCAMENTO === 'S') || replicacao === true){
                                 // this.setState({pedidos: Data.data.pedidos, isLoading: true})
-                                this.setState({now: Data.data.pedidos[ID], id: ID, isLoading: false}) 
+                                let pedidos = Data.data.pedidos
+                                pedidos[ID].WEB='S'
+                                // .sort((a,b)=>{ 
+                                //     if (a.DATA>b.DATA) {return 1} 
+                                //     if (a.DATA<b.DATA) {return -1} 
+                                //     return 0
+                                // })
+                                this.setState({now: pedidos[ID], id: ID, isLoading: false}) 
                                 let listClientes = []
                                 let listCondPags = []
                                 let listProdutos = []
@@ -304,9 +333,19 @@ class Example extends React.Component {
                                     
                                 })
                                 if (replicacao){
-                                    ped.NUMPED=0;
+                                    ped.NUMORC=null;
+                                    ped.NUMPED=null;
                                     ped.NUMWEB=0;
+                                    ped.NRO_MACROPECAS=null;
                                     ped.PK_PED=0;
+                                    ped.FK_REP=1;
+                                    ped.STATUS='A';
+                                    ped.ENVIADO='N';
+                                    delete ped.DATA_ENVIO;
+                                    
+                                    ped.itens.forEach((item, index)=>{
+                                        item.PK_IPE=0;
+                                    })
                                 }
                                 this.setState({ now : ped, append: replicacao })
                                 
@@ -416,6 +455,14 @@ class Example extends React.Component {
     handleSave (e) {
         e.preventDefault();
         // console.log('a')
+        if (typeof this.state.deleted !== 'undefined') {
+            
+            this.state.deleted.forEach((element, index)=>{
+                console.log(element)
+                deleteData('itepedidos', element, element.id)
+            })
+            
+        }
         let ped = this.state.now
         ped.DATA = new Date();
         this.setState({savingPhase: 1, savingShow:{}, now: ped})
@@ -806,6 +853,7 @@ class Example extends React.Component {
     }
 
     willShow(e){
+        
         e.preventDefault(); 
         let cliente = this.state.now.FK_CLI || 0
         let cpg = this.state.now.FK_CPG || 0
@@ -843,6 +891,7 @@ class Example extends React.Component {
 
     render() {
         let bar = this.appBar(this.state.show);
+        console.log(this.state.now)
         let clientes = []
         let produtos = []
         let cpgs = []
@@ -1023,6 +1072,7 @@ class Example extends React.Component {
                                     <div className="FormTitle">
                                         <Clock format={'DD/MM/YYYY - HH:mm'} ticking={true}/> 
                                         <br/>
+                                        Última sincronização: {localStorage.getItem("macrosync") ? date2str(localStorage.getItem("macrosync")) : 'Nunca sincronizado.'}<br/>
                                         <h1 className="FormTitle__Link--Active">Registro de Pedidos</h1>
                                     </div>
                                     <form className="FormFields" onSubmit={this.handleSubmit}>

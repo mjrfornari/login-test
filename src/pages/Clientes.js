@@ -12,7 +12,7 @@ import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ListGroup, ListGroupItem, Pagination} from 'react-bootstrap'
 import {LinkContainer} from 'react-router-bootstrap'
 // import PouchDB from "pouchdb"
-import { readTable, deleteData, mascaraCNPJ } from "./Utils";
+import { readTable, deleteData, mascaraCNPJ, date2str } from "./Utils";
 import {plus} from 'react-icons-kit/fa/plus'
 import {ic_keyboard_arrow_left} from 'react-icons-kit/md/ic_keyboard_arrow_left'
 import {ic_keyboard_arrow_right} from 'react-icons-kit/md/ic_keyboard_arrow_right'
@@ -331,6 +331,7 @@ class Example extends React.Component {
                             <div className="FormTitle">
                                 <Clock format={'DD/MM/YYYY - HH:mm'} ticking={true}/> 
                                 <br/>
+                                Última sincronização: {localStorage.getItem("macrosync") ? date2str(localStorage.getItem("macrosync")) : 'Nunca sincronizado.'}<br/>
                                 <h1 className="FormTitle__Link--Active">Clientes</h1>
                             </div>
                             {/* <form className="FormFields">   */}

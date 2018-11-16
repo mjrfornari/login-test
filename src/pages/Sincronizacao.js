@@ -9,7 +9,7 @@ import { ic_add_shopping_cart } from 'react-icons-kit/md/ic_add_shopping_cart';
 import { ic_settings } from 'react-icons-kit/md/ic_settings'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_exit_to_app} from 'react-icons-kit/md/ic_exit_to_app'
-import { syncData, createToFirebird, updateToFirebird, syncLoading, date2str  } from "./Utils";
+import { syncData, createToFirebird, updateToFirebird, syncLoading, date2str, deleteToFirebird  } from "./Utils";
 import Clock from 'react-live-clock';
 import ReactLoading from 'react-loading';
 import { Offline, Online } from "react-detect-offline";
@@ -38,6 +38,7 @@ class Example extends React.Component {
     this.handleSync = this.handleSync.bind(this);
     this.handleTeste = this.handleTeste.bind(this);
     this.saving = this.saving.bind(this);
+    this.sendEmail = this.sendEmail.bind(this);
   }
 
     sincronizando(ok) {
@@ -86,13 +87,15 @@ class Example extends React.Component {
         
         e.preventDefault(); 
         navigator.getBattery().then(battery => {
-            if ((battery.level*100) >= 30) {
+            if ((battery.level*100) >= 0) {
                 if (navigator.connection.type !== 'cellular'){
                     this.setState({sync: true, savingPhase: 1, savingShow:{}}) 
-                    createToFirebird(() => {   
-                        updateToFirebird(() => { 
-                            syncData(localStorage.getItem('macropecas'), ()=> {this.setState({sync: false, savingPhase: 2, savingShow:{}})
-                            localStorage.setItem("macrosync", new Date())})
+                    deleteToFirebird(() => {
+                        createToFirebird(() => {   
+                            updateToFirebird(() => { 
+                                syncData(localStorage.getItem('macropecas'), ()=> {this.setState({sync: false, savingPhase: 2, savingShow:{}})
+                                localStorage.setItem("macrosync", new Date())})
+                            })
                         })
                     })
                 } else {alert('Não foi possível iniciar a sincronização.\nMotivo: Conecte à uma rede Wi-Fi!')}
@@ -116,6 +119,18 @@ class Example extends React.Component {
         if (this.state.sync === true){
             return 'App__Aside__Hide'
         } else return 'App__Aside'
+    }
+
+    sendEmail(text) {
+
+        let message = {}
+        message.from = text 
+        message.emailId = 'marcos@delphus.inf.br'
+        message.subject = 'Teste'
+        var email = message.emailId;
+        var subject = message.subject;
+        var emailBody = 'Oi '+message.from;
+        document.location = "mailto:"+email+"?subject="+subject+"&body="+emailBody;
     }
 
   render() {
@@ -193,6 +208,9 @@ class Example extends React.Component {
                                 {/* <button className="add-button">Instalar Aplicativo</button> */}
                             </Online>
                         </div>
+                        
+
+
 
                         {syncLoading(this.state.savingShow, this.state.savingPhase, this.saving, 'Sincronizando...', 'Sincronização realizada com sucesso!')}
                         {syncLoading(this.state.updatingShow, this.state.updatingPhase, this.updating, 'Atualizando...', 'Atualização realizada com sucesso!')}
