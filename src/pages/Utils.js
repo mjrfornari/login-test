@@ -20,6 +20,62 @@ export function cryptmd5(text){
   return crypted
 }
 
+
+export function validarCNPJ(cnpj) {
+ 
+    cnpj = cnpj.replace(/[^\d]+/g,'');
+    console.log('Etapa 1', cnpj)
+ 
+    if(cnpj === '') return false;
+     
+    if (cnpj.length !== 14)
+        return false;
+ 
+    // Elimina CNPJs invalidos conhecidos
+    if (cnpj === "00000000000000" || 
+        cnpj === "11111111111111" || 
+        cnpj === "22222222222222" || 
+        cnpj === "33333333333333" || 
+        cnpj === "44444444444444" || 
+        cnpj === "55555555555555" || 
+        cnpj === "66666666666666" || 
+        cnpj === "77777777777777" || 
+        cnpj === "88888888888888" || 
+        cnpj === "99999999999999")
+        return false;
+         
+    // Valida DVs
+    var tamanho = cnpj.length - 2
+    var numeros = cnpj.substring(0,tamanho);
+    var digitos = cnpj.substring(tamanho);
+    var soma = 0;
+    var pos = tamanho - 7;
+    for (let i = tamanho; i >= 1; i--) {
+      soma += numeros.charAt(tamanho - i) * pos--;
+      if (pos < 2)
+            pos = 9;
+    }
+    var resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+    if (resultado !== Number(digitos.charAt(0)))
+        return false;
+         
+    tamanho = tamanho + 1;
+    numeros = cnpj.substring(0,tamanho);
+    soma = 0;
+    pos = tamanho - 7;
+    for (let i = tamanho; i >= 1; i--) {
+      soma += numeros.charAt(tamanho - i) * pos--;
+      if (pos < 2)
+            pos = 9;
+    }
+    resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+    if (resultado !== Number(digitos.charAt(1)))
+          return false;
+           
+    return true;
+    
+}
+
 export function savingItem(show, phase, funcao){
 	if (phase === 1){
 		return (
@@ -112,7 +168,7 @@ export function geraInput(fieldname, displayname, value, funcao, tamanho){
     return (
       <div className="FormField">
         <label className="FormField__Label" htmlFor={fieldname}>{displayname}</label>
-        <input type="text" id={fieldname} className="FormField__Input" style={{width : tamanho}}
+        <input autocomplete="off" type="text" id={fieldname} className="FormField__Input" style={{width : tamanho}}
         name={fieldname} value={value || ''} onChange={(event) => funcao(event)}/>
       </div>
     )
@@ -120,7 +176,7 @@ export function geraInput(fieldname, displayname, value, funcao, tamanho){
     return (
       <div className="FormField">
         <label className="FormField__Label" htmlFor={fieldname}>{displayname}</label>
-        <input type="text" id={fieldname} className="FormField__Input" 
+        <input autocomplete="off" type="text" id={fieldname} className="FormField__Input" 
         name={fieldname} value={value || ''} onChange={(event) => funcao(event)}/>
       </div>
     )
@@ -188,55 +244,116 @@ export function date2str(data){
 
 
 export function editData(tabela, item, id, callback) {
-  return readTable(Data => { 
-    let read = Data
-    return db.get('read').then(function(doc) {
-      let newRead = {
-        _id: 'read',
-        data:  Data.data,
-        _rev: doc._rev
-     }     
-     newRead.data[tabela][id] = item  
-     return db.put(newRead)
-    }).then(function(response) {
-      console.log('Read updated!')  
-      updateTable(Data => {
-        let update = Data
-        db.get('update').then(function(doc) {
-          let newUpdate = {
-            _id: 'update',
-            data:  Data.data,
-            _rev: doc._rev
-          } 
-          item.read = id
-          newUpdate.data[tabela].push(item)
-          return db.put(newUpdate)
+  console.log(id)
+  if ((tabela === 'pedidos') && ((Number(item.PK_PED) === 0) || (typeof item.PK_PED === 'undefined'))) {
+    return readTable(Data => { 
+      let read = Data
+      return db.get('read').then(function(doc) {
+        let newRead = {
+          _id: 'read',
+          data:  Data.data,
+          _rev: doc._rev
+      }     
+      newRead.data[tabela][id] = item  
+      return db.put(newRead)
+      }).then(function(response) {
+        console.log('Read updated!')
+
+        createTable(Data => {
+          console.log('create')
+          let create = Data
+          db.get('create').then(function(doc) {
+            let newCreate = {
+              _id: 'create',
+              data:  Data.data,
+              _rev: doc._rev
+            }
+            newCreate.data[tabela].forEach( (reg, ind) => {
+              console.log(reg, id)
+              if (Number(reg.read) === Number(id)) {
+                console.log('alterou')
+                newCreate.data[tabela][ind] = item
+              }
+            })
+            return db.put(newCreate)
         }).then(function(response) {
-          console.log('Update updated!')
-        //   alert('Registro alterado com sucesso!') 
+          console.log('Create updated!')
+        //   alert('Registro incluído com sucesso!') 
           callback('Button')
         }).catch(function (err) {
           if (err.name === 'not_found') {
-            db.put(update).then(function (response) {
-              console.log('Update Created!')
-            //   alert('Registro alterado com sucesso!') 
-              callback('Button')
+            db.put(create).then(function (response) {
+                console.log('Create Created!')
+                // alert('Registro incluído com sucesso!') 
+                callback('Button')
             }).catch(function (err) {
               console.log(err);
             });
           }
-        });
-      })
-    }).catch(function (err) {
-      if (err.name === 'not_found') {
-        db.put(read).then(function (response) {
-            console.log('Read Created!')
-        }).catch(function (err) {
-          console.log(err);
-        });
-      }
-    });
-  })
+        });})
+ 
+      }).catch(function (err) {
+        if (err.name === 'not_found') {
+          db.put(read).then(function (response) {
+              console.log('Read Created!')
+          }).catch(function (err) {
+            console.log(err);
+          });
+        }
+      });
+    })
+  
+  } else {
+    return readTable(Data => { 
+      let read = Data
+      return db.get('read').then(function(doc) {
+        let newRead = {
+          _id: 'read',
+          data:  Data.data,
+          _rev: doc._rev
+        }     
+      newRead.data[tabela][id] = item  
+      return db.put(newRead)
+      }).then(function(response) {
+        console.log('Read updated!')  
+        updateTable(Data => {
+          let update = Data
+          db.get('update').then(function(doc) {
+            let newUpdate = {
+              _id: 'update',
+              data:  Data.data,
+              _rev: doc._rev
+            } 
+            item.read = id
+            newUpdate.data[tabela].push(item)
+            return db.put(newUpdate)
+          }).then(function(response) {
+            console.log('Update updated!')
+          //   alert('Registro alterado com sucesso!') 
+            callback('Button')
+          }).catch(function (err) {
+            if (err.name === 'not_found') {
+              db.put(update).then(function (response) {
+                console.log('Update Created!')
+              //   alert('Registro alterado com sucesso!') 
+                callback('Button')
+              }).catch(function (err) {
+                console.log(err);
+              });
+            }
+          });
+        })
+      }).catch(function (err) {
+        if (err.name === 'not_found') {
+          db.put(read).then(function (response) {
+              console.log('Read Created!')
+          }).catch(function (err) {
+            console.log(err);
+          });
+        }
+      });
+    })
+  }
 }
 
 export function appendData(tabela, item, callback) {
@@ -300,7 +417,7 @@ export function appendData(tabela, item, callback) {
 }
 
 
-export function includeDelete(tabela,item, id){
+export function includeDelete(tabela,item, id, idpedidos){
   createTable(Data => {
     let create = Data
     db.get('create').then(function(doc) {
@@ -310,20 +427,38 @@ export function includeDelete(tabela,item, id){
         _rev: doc._rev
       }
       let table = newCreate
-      table.data[tabela].forEach(function (element, index)  {
-        console.log(element)
-        console.log(id)
-        console.log('*********')
-        if (Number(element.read) === Number(id)) {
-            newCreate.data[tabela].splice(index,1)
-        } 
-      });
-      table = newCreate
-      table.data[tabela].forEach(function (element, index)  {
-        if (Number(element.read) > Number(id)) {
-            newCreate.data[tabela][index].read -= 1               
-        }  
-      });
+      if (tabela === 'itens_ped_venda') {
+        table.data.pedidos[idpedidos].itens.forEach(function (element, index)  {
+          console.log(element)
+          console.log(id)
+          console.log('*********')
+          if (Number(element.read) === Number(id)) {
+              newCreate.data.pedidos[idpedidos].itens[index].splice(index,1)
+          } 
+        });
+        table = newCreate
+        table.data.pedidos[idpedidos].itens.forEach(function (element, index)  {
+          if (Number(element.read) > Number(id)) {
+              newCreate.data.pedidos[idpedidos].itens[index].read -= 1               
+          }  
+        });
+
+      } else {
+        table.data[tabela].forEach(function (element, index)  {
+          console.log(element)
+          console.log(id)
+          console.log('*********')
+          if (Number(element.read) === Number(id)) {
+              newCreate.data[tabela].splice(index,1)
+          } 
+        });
+        table = newCreate
+        table.data[tabela].forEach(function (element, index)  {
+          if (Number(element.read) > Number(id)) {
+              newCreate.data[tabela][index].read -= 1               
+          }  
+        });
+      }
       return db.put(newCreate)
   }).then(function(response) {
     console.log('Create updated!')
@@ -349,17 +484,32 @@ export function includeDelete(tabela,item, id){
         _rev: doc._rev
       }
       let table = newUpdate
-      table.data[tabela].forEach(function (element, index)  {
-        if (Number(element.read) === Number(id)) {
-            newUpdate.data[tabela].splice(index,1)
-        } 
-      });
-      table = newUpdate
-      table.data[tabela].forEach(function (element, index)  {
-        if (Number(element.read) > Number(id)) {
-            newUpdate.data[tabela][index].read -= 1               
-        }  
-      });
+      if (tabela === 'itens_ped_venda') {
+        table.data.pedidos[idpedidos].itens.forEach(function (element, index)  {
+          if (Number(element.read) === Number(id)) {
+              newUpdate.data.pedidos[idpedidos].itens[index].splice(index,1)
+          } 
+        });
+        table = newUpdate
+        table.data.pedidos[idpedidos].itens.forEach(function (element, index)  {
+          if (Number(element.read) > Number(id)) {
+              newUpdate.data.pedidos[idpedidos].itens[index].read -= 1               
+          }  
+        });
+
+      } else {
+        table.data[tabela].forEach(function (element, index)  {
+          if (Number(element.read) === Number(id)) {
+              newUpdate.data[tabela].splice(index,1)
+          } 
+        });
+        table = newUpdate
+        table.data[tabela].forEach(function (element, index)  {
+          if (Number(element.read) > Number(id)) {
+              newUpdate.data[tabela][index].read -= 1               
+          }  
+        });
+      }
       return db.put(newUpdate)
   }).then(function(response) {
     console.log('Update updated!')
@@ -377,69 +527,82 @@ export function includeDelete(tabela,item, id){
 
 }
 
-export function deleteData(tabela, item,id) {
-  console.log(tabela, item, id)
-  readTable(Data => { 
-       
-        let read = Data
-        db.get('read').then(function(doc) {
-        let newRead = {
-          _id: 'read',
-          data:  Data.data,
-          _rev: doc._rev
-        }
-        console.log('oi')
-        if (tabela !== 'itepedidos'){
-          newRead.data[tabela].splice(id, 1)
-          item[0].read = id;
-          includeDelete(tabela, item[0], id)
-        } else {
-          console.log('tchau')
-          newRead.data.pedidos.itens.splice(id, 1)
-        }
-        
+export function deleteData(tabela, item,id, idpedidos, callback) {
+  return new Promise ((resolve) => {
+    console.log(tabela, item, id, idpedidos)
+    readTable(Data => { 
+          
+          let read = Data
+          db.get('read').then(function(doc) {
+          let newRead = {
+            _id: 'read',
+            data:  Data.data,
+            _rev: doc._rev
+          }
+          // console.log('oi')
+          if (tabela !== 'itepedidos'){
+            newRead.data[tabela].splice(id, 1)
+            item[0].read = id;
+            includeDelete(tabela, item[0], id)
+          } else {
+            // console.log('tchau')
+            newRead.data.pedidos[idpedidos].itens.splice(id, 1)
+            includeDelete(tabela, item[0], id, idpedidos)
+          }
 
+          return db.put(newRead)
+        }).then(function(response) {
+          
+          console.log('Read updated!')
+          console.log(item, 'AAAAAAAAAAAAAAAAAAAAAA')
+          if (((typeof item[0].PK_PED !== 'undefined') && (item[0].PK_PED>0)) || ((typeof item[0].PK_IPE !== 'undefined') && (item[0].PK_IPE>0))){
+            
+            deleteTable(Data => {
+              
+              let del = Data
+              db.get('delete').then(function(doc) {
+                let newDelete = {
+                  _id: 'delete',
+                  data:  del.data,
+                  _rev: doc._rev
+                }
 
-        return db.put(newRead)
-      }).then(function(response) {
-        console.log('Read updated!')
-        console.log(item, 'AAAAAAAAAAAAAAAAAAAAAA')
-        if (((typeof item[0].PK_PED !== 'undefined') && (item[0].PK_PED>0)) || ((typeof item[0].PK_IPE !== 'undefined') && (item[0].PK_IPE>0))){
-          deleteTable(Data => {
-            let del = Data
-            db.get('delete').then(function(doc) {
-              let newDelete = {
-                _id: 'delete',
-                data:  Data.data,
-                _rev: doc._rev
-              }
-              newDelete.data[tabela].push(item[0])
-              console.log(newDelete.data)
-              return db.put(newDelete)
-            }).then(function(response) {
-              console.log('Delete updated!')
-            }).catch(function (err) {
-              if (err.name === 'not_found') {
-                db.put(del).then(function (response) {
-                    console.log('Delete Created!')
-                }).catch(function (err) {
-                  console.log(err);
-                });
-              }
+                newDelete.data[tabela].push(item[0])
+                console.log(newDelete.data)
+                return db.put(newDelete)
+              }).then(function(response) {
+                console.log('Delete updated!')
+                resolve()
+              }).catch(function (err) {
+                if (err.name === 'not_found') {
+                  db.put(del).then(function (response) {
+                      // callback()
+                      console.log('Delete Created!')
+                      resolve()
+                  }).catch(function (err) {
+                    console.log(err);
+                    resolve()
+                  });
+                }
+              })
+
             })
-
-          })
-        }
-      }).catch(function (err) {
-        if (err.name === 'not_found') {
-          db.put(read).then(function (response) {
-              console.log('Read Created!')
-          }).catch(function (err) {
-            console.log(err);
-          });
-        }
-    });
+          } else {resolve()}
+        }).catch(function (err) {
+          // callback()
+          if (err.name === 'not_found') {
+            db.put(read).then(function (response) {
+                console.log('Read Created!')
+                resolve()
+            }).catch(function (err) {
+              console.log(err);
+              resolve()
+            });
+          }
+      });
+    })
   })
+
 
   // createTable(Data => { 
        
@@ -522,6 +685,7 @@ export function updateTable(callback){
 
 
 export function deleteToFirebird(callback){
+  console.log('entrou no delete')
   let newDelete = {
         _id: 'delete',
         data:  [],
@@ -531,6 +695,7 @@ export function deleteToFirebird(callback){
     let itepedidos = []
     setTimeout(function() {
       db.get('delete').then(function(doc) { 
+          console.log('chamou delete to firebird')
           newDelete._rev = doc._rev
           pedidos = doc.data.pedidos || []
           itepedidos = doc.data.itepedidos || []
@@ -544,13 +709,14 @@ export function deleteToFirebird(callback){
               
             }
           })
+          console.log(itepedidos)
           itepedidos.forEach((element, index) => {
             if (typeof element.PK_IPE !== 'undefined'){
               deletes.push(deleteItem('itens_ped_venda', 'PK_IPE', element.PK_IPE))
             }
           })
           Promise.all(deletes).then(res => {
-            console.log(res)
+            // console.log(res)
           })
           return db.put(newDelete)
       }).then(function(response) {
@@ -617,6 +783,7 @@ function atualizaItem(table, fieldsnvalues, where,callback) {
 
 
 export function createToFirebird(callback) {
+  return new Promise((resolve)=>{
     let newCreate = {
         _id: 'create',
         data:  [],
@@ -657,49 +824,71 @@ export function createToFirebird(callback) {
     }).then(data => {
         // console.log(data)
         itepedidos = data
+        var newUpdate = {}
+        return db.get('update').then(function(doc) {
+              newUpdate = {
+                _id: 'update',
+                data:  doc.data,
+                _rev: doc._rev
+              }
+              console.log('esse:', newUpdate)
+              return newUpdate
+        }).then(function(response) {
+          return response
+          // console.log('Update updated!')
+
+        })
+        
     }).then(function(response) {
           // console.log('Read updated with new pks!')
+          let newUpdate = response
           newCreate.data.clientes.forEach(function (icreated, idcreate)  {
+            icreated.CIDADE = []
             let propscreated = JSON.stringify(Object.getOwnPropertyNames(icreated))
             let valuescreated = JSON.stringify(Object.values(icreated))
-            let fields = propscreated.split('"').join("").split('[').join("").split(']').join("")
-            let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("")
+            let fields = propscreated.split('"').join("").split('[').join("").split(']').join("").split('CIDADE,').join("")
+            let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split("''").join("NULL")
             fields = fields+", FK_VEN"
             let usuario = localStorage.getItem("macropecas")
             values = values+", "+usuario
             // console.log(fields)
             // console.log(values)
             criaItem('clientes',fields, values)
-            db.get('update').then(function(doc) {
-              let newUpdate = {
-                _id: 'update',
-                data:  doc.data,
-                _rev: doc._rev
-              }
-              newUpdate.data.clientes.forEach(function (iupdated, idupdated) {
-                  if (icreated.read === iupdated.read){
-                    newUpdate.data.clientes[idupdated]['PK_CLI']=icreated['PK_CLI']
-                  }
-              })
-              return db.put(newUpdate)
-            }).then(function(response) {
-              console.log('Update updated!')
-
+            let newUpdate = response
+            newUpdate.data.clientes.forEach(function (iupdated, idupdated) {
+                if (icreated.read === iupdated.read){
+                  newUpdate.data.clientes[idupdated]['PK_CLI']=icreated['PK_CLI']
+                }
             })
+            //   return db.put(newUpdate)
+            // }).then(function(response) {
+            //   console.log('Update updated!')
+            
+            // })
             // newCreate.data.clientes.splice(idcreate,1)
             // console.log(newCreate.data.clientes)
           })
-
-                pedidos.forEach(function (icreated, idcreate)  {
+          return newUpdate
+      }).then(function(response) {
+              let newUpdate = response
+              pedidos.forEach(function (icreated, idcreate)  {
                 icreated.itens = []
                 icreated.RAZAO_SOCIAL = []
                 icreated.NOMECPG = []
+                if (icreated.FK_CLI === 0) {
+                  let cli = newCreate.data.clientes.filter((value)=>{return value.read === icreated.CLIREAD})
+                  console.log(icreated.CLIREAD, cli[0])
+                  icreated.FK_CLI = cli[0].PK_CLI
+                  icreated.CLIREAD = []
+                } else {
+                  icreated.CLIREAD = []
+                }
                 // console.log(icreated.VALOR_CALCULADO)
                 let dataped = icreated.DATA
                 icreated.DATA = dateSql(dataped)
                 let propscreated = JSON.stringify(Object.getOwnPropertyNames(icreated))
                 let valuescreated = JSON.stringify(Object.values(icreated))
-                let fields = propscreated.split('"').join("").split('[').join("").split(']').join("").split('itens,').join("").split('IMPORTADO').join("IMPORTACAO").split(',RAZAO_SOCIAL').join("").split(',NOMECPG').join("")
+                let fields = propscreated.split('"').join("").split('[').join("").split(']').join("").split('itens,').join("").split('IMPORTADO').join("IMPORTACAO").split(',RAZAO_SOCIAL').join("").split(',NOMECPG').join("").split(',CLIREAD').join("")
                 let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",")
                 fields = fields+", FK_VEN"
                 let usuario = localStorage.getItem("macropecas")
@@ -707,12 +896,13 @@ export function createToFirebird(callback) {
                 // console.log(fields)
                 // console.log(values)
                 criaItem('pedidos_venda',fields, values)
-                db.get('update').then(function(doc) {
-                  let newUpdate = {
-                    _id: 'update',
-                    data:  doc.data,
-                    _rev: doc._rev
-                  }
+                
+                // db.get('update').then(function(doc) {
+                //   let newUpdate = {
+                //     _id: 'update',
+                //     data:  doc.data,
+                //     _rev: doc._rev
+                //   }
                   if (typeof newUpdate.data.pedidos !== 'undefined'){
                     newUpdate.data.pedidos.forEach(function (iupdated, idupdated) { 
                         if (Number(icreated.read) === Number(iupdated.read)){
@@ -725,10 +915,12 @@ export function createToFirebird(callback) {
                         }
                     })
                   }
-                  return db.put(newUpdate)
-                }).then(function(response) {
+                })
+              return newUpdate
+      }).then(async function(response) {
                   console.log('Update updated!')
-                  itepedidos.forEach(function (icreated, idcreate)  {
+                  let newUpdate = response
+                  itepedidos.forEach(async function (icreated, idcreate)  {
                     icreated.DESCRICAOPRO = []
                     icreated.CODIGOPRO = '%$#'
                     icreated.OBS_PROMOCIONAL = '%$#'
@@ -745,37 +937,48 @@ export function createToFirebird(callback) {
                     // console.log(fields)
                     // console.log(values)
                     criaItem('itens_ped_venda',fields, values)
-                    db.get('update').then(function(doc) {
-                      let newUpdate = {
-                        _id: 'update',
-                        data:  doc.data,
-                        _rev: doc._rev
-                      }
-                      if (typeof newUpdate.data.pedidos !== 'undefined'){
-                        newUpdate.data.pedidos.forEach(function (iupdated, idupdated) {
-                            if (Number(iupdated.PK_PED) === Number(icreated.FK_PED)){
-                              iupdated.itens.forEach(function (iupdatedson, idupdatedson) {
-                                if (Number(iupdatedson.read) === Number(icreated.read)){
-                                  iupdatedson.PK_IPE = icreated.PK_IPE
-                                }
-                              })
+                    let newUpdate = response
+                    // db.get('update').then(function(doc) {
+                    //   let newUpdate = {
+                    //     _id: 'update',
+                    //     data:  doc.data,
+                    //     _rev: doc._rev
+                    //   }
+                    if (typeof newUpdate.data.pedidos !== 'undefined'){
+                        for(let iupdated of newUpdate.data.pedidos){
+                      // newUpdate.data.pedidos.forEach(function (iupdated, idupdated) {
+                          if (Number(iupdated.PK_PED) === Number(icreated.FK_PED)){
+                            for(let iupdatedson of iupdated.itens) {
+                            // iupdated.itens.forEach(function (iupdatedson, idupdatedson) {
+                              if (Number(iupdatedson.read) === Number(icreated.read)){
+                                iupdatedson.PK_IPE = icreated.PK_IPE
+                              }
                             }
-                        })
+                          // )
+                          }
                       }
+                      // )
+                    }
                       // return db.put(newUpdate)
-                    }).then(function(response) {
-                      console.log('Update updated!')
-                    })
+                    // }).then(function(response) {
+                    //   console.log('Update updated!')
+                      
+                    // })
                     // itepedidos.splice(idcreate,1)
                     // console.log(newCreate.data.clientes)
                   })
-                })
+                  return newUpdate
+                // }).then(function(res) {
+                       
+                  
+                // })
                 // pedidos.splice(idcreate,1)
                 // console.log(newCreate.data.clientes)
-              })
+              // })
 
     }).then(function(response) {
-        callback()
+      db.put(response)
+      callback()
     }).catch(function(err){
         console.log(err)
         callback()
@@ -783,6 +986,7 @@ export function createToFirebird(callback) {
   }, 500)
 
   console.log('Create sended!')
+  }) 
 }
 
 
@@ -1038,18 +1242,30 @@ export function syncData(user, callback){
 
     let create = {
         _id: 'create',
-        data:  {
-          clientes:[],
-          pedidos:[]
-        }       
+        data: {
+          clientes: [],
+          pedidos: [],
+          produtos: [],
+          st_icms: [],
+          cond_pag: [],
+          cidades: [],
+          descontolog: [],
+          itepedidos:[]
+        }      
       }
     db.get('create').then(function(doc) {
       let newCreate = {
         _id: 'create',
-        data:  {
-          clientes:[],
-          pedidos:[]
-        },
+        data: {
+          clientes: [],
+          pedidos: [],
+          produtos: [],
+          st_icms: [],
+          cond_pag: [],
+          cidades: [],
+          descontolog: [],
+          itepedidos:[]
+        },    
         _rev: doc._rev
       } 
 
@@ -1068,18 +1284,30 @@ export function syncData(user, callback){
 
     let update = {
         _id: 'update',
-        data:  {
-          clientes:[],
-          pedidos:[]
-        }       
+        data: {
+          clientes: [],
+          pedidos: [],
+          produtos: [],
+          st_icms: [],
+          cond_pag: [],
+          cidades: [],
+          descontolog: [],
+          itepedidos:[]
+        }     
       }
     db.get('update').then(function(doc) {
       let newUpdate = {
         _id: 'update',
-        data:  {
-          clientes:[],
-          pedidos:[]
-        },
+        data: {
+          clientes: [],
+          pedidos: [],
+          produtos: [],
+          st_icms: [],
+          cond_pag: [],
+          cidades: [],
+          descontolog: [],
+          itepedidos:[]
+        },  
         _rev: doc._rev
       } 
 
@@ -1099,18 +1327,30 @@ export function syncData(user, callback){
 
     let deleted = {
         _id: 'delete',
-        data:  {
-          clientes:[],
-          pedidos:[]
-        }       
+        data: {
+          clientes: [],
+          pedidos: [],
+          produtos: [],
+          st_icms: [],
+          cond_pag: [],
+          cidades: [],
+          descontolog: [],
+          itepedidos:[]
+        }   
       }
     db.get('delete').then(function(doc) {
       let newDeleted = {
         _id: 'delete',
-        data:  {
-          clientes:[],
-          pedidos:[]
-        },
+        data: {
+          clientes: [],
+          pedidos: [],
+          produtos: [],
+          st_icms: [],
+          cond_pag: [],
+          cidades: [],
+          descontolog: [],
+          itepedidos:[]
+        },  
         _rev: doc._rev
       } 
 

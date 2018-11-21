@@ -10,7 +10,7 @@ import { ic_add_shopping_cart } from 'react-icons-kit/md/ic_add_shopping_cart';
 import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_settings} from 'react-icons-kit/md/ic_settings'
-import { readTable, editData, appendData, geraInput, removeAcento, savingItem, date2str } from "./Utils";
+import { readTable, editData, appendData, geraInput, removeAcento, savingItem, date2str, validarCNPJ } from "./Utils";
 import {ic_keyboard_arrow_left} from 'react-icons-kit/md/ic_keyboard_arrow_left'
 import {ic_keyboard_arrow_right} from 'react-icons-kit/md/ic_keyboard_arrow_right'
 import {ic_search} from 'react-icons-kit/md/ic_search'
@@ -31,7 +31,7 @@ class Example extends React.Component {
         cidades: [],
         cidade : {display: '', value: '', codigo: ''},
         show: false,
-        now : {PK_CLI: 0, RAZAO_SOCIAL: '', NOME_FANTASIA: '', CNPJ: '', FONE1: '', CODIGO_REPRESENTADA:'', CIDADE:'', BAIRRO:'', ENDEREÇO: '', CEP: '', NUMERO:'', FONE2:'', DDD1:'', DDD2:'', INSCRICAO_ESTADUAL:'', INSCRICAO_MUNICIPAL:'', SUFRAMA:'', EMAIL:'', EMAIL_FINANCEIRO:''},
+        now : {PK_CLI: 0, RAZAO_SOCIAL: '', NOME_FANTASIA: '', CNPJ: '', FONE1: '', CODIGO_REPRESENTADA:'', CIDADE:'', BAIRRO:'', ENDERECO: '', CEP: '', NUMERO:'', FONE2:'', DDD1:'', DDD2:'', INSCRICAO_ESTADUAL:'', INSCRICAO_MUNICIPAL:'', SUFRAMA:'', EMAIL:'', EMAIL_FINANCEIRO:''},
         append: false,
         isLoading: true,
         id: 0,
@@ -195,6 +195,66 @@ class Example extends React.Component {
     }
 
 
+    // autocomplete(table, reg, tablename, nomefk, button){
+    //     return(
+    //                                 <Downshift 
+    //                                     onChange={selection => {
+    //                                         this.salvaComplete(selection, nomefk, tablename)
+    //                                         this.setState({['mostra'+nomefk]: false})
+    //                                     }}
+    //                                     // onStateChange={(changes) => {
+    //                                     //     this.setState({ ['mostra'+nomefk]: changes.isOpen });
+    //                                     // }}
+    //                                     itemToString={item => (item ? item.display : '')}
+    //                                     selectedItem={reg}
+    //                                     isOpen={this.state['mostra'+nomefk]}
+                                       
+    //                                     // onSelect={()=>{}}
+    //                                     // inputValue={reg.display}
+                                        
+    //                                 >
+    //                                     {({
+    //                                     getInputProps,
+    //                                     getItemProps,
+    //                                     getLabelProps,
+    //                                     getMenuProps,
+    //                                     isOpen,
+    //                                     inputValue,
+    //                                     highlightedIndex,
+    //                                     selectedItem,
+    //                                     }) => (
+    //                                     <div>
+    //                                         <input className={button ? "CompleteButton": "FormField__Input"} {...getInputProps()} onFocus={(e)=> {e.preventDefault();this.setState({['mostra'+nomefk]: button})}} onBlur={(e)=> {e.preventDefault();this.setState({['mostra'+nomefk]: false})}}/>
+    //                                         {button ? (<button className="ButtonComplete" onClick={(e)=>{e.preventDefault();let estado = this.state['mostra'+nomefk]; this.setState({['mostra'+nomefk]: !estado})}}>{this.state['mostra'+nomefk] ? "-":"+"}</button>) : null}
+    //                                         <ul {...getMenuProps()} className={isOpen ? "FormField__Complete" : ""}>
+    //                                         {isOpen
+    //                                             ? table
+    //                                                 .filter(item => !inputValue.toUpperCase() || item.value.includes(inputValue.toUpperCase()))
+    //                                                 .slice(0,10)
+    //                                                 .map((item, index) => {return(
+    //                                                 <li className="FormField__List"
+    //                                                     {...getItemProps({
+    //                                                     key: index,
+    //                                                     index,
+    //                                                     item,
+    //                                                     style: {
+    //                                                         backgroundColor: (selectedItem === item) || (highlightedIndex === index) ? 'var(--cor-2)' : 'var(--cor-1)',
+    //                                                         color:'var(--cor-letra)',
+    //                                                         fontWeight: selectedItem === item ? 'bold' : 'normal',
+    //                                                     },
+    //                                                     })}
+    //                                                 >
+    //                                                     <p className='FormField__List__Text'>{this.itens(item,selectedItem)}</p>
+    //                                                 </li>
+    //                                                 )})
+    //                                             : null}
+    //                                         </ul>
+    //                                     </div>
+    //                                     )}
+    //                                 </Downshift>
+    //     )
+    // }
+
     autocomplete(table, reg, tablename, nomefk, button){
         return(
                                     <Downshift 
@@ -207,7 +267,7 @@ class Example extends React.Component {
                                         // }}
                                         itemToString={item => (item ? item.display : '')}
                                         selectedItem={reg}
-                                        isOpen={this.state['mostra'+nomefk]}
+                                        isOpen={button && this.state['mostra'+nomefk]}
                                        
                                         // onSelect={()=>{}}
                                         // inputValue={reg.display}
@@ -265,10 +325,13 @@ class Example extends React.Component {
             if ( this.state.now.NOME_FANTASIA===''){
                 alert('Informe o Nome Fantasia!')
             } else
-            if ( this.state.now.CNPJ.length !== 14  ){
+            if ( !validarCNPJ(this.state.now.CNPJ)  ){
                 alert('CNPJ inválido!!')
+            } else 
+            if ( (this.state.now.FK_CID === 0) || (typeof this.state.now.FK_CID === 'undefined') ){
+                alert('Informe a cidade!')
             } else {
-            // console.log('a')
+            // console.log('a') 
                 this.setState({savingPhase: 1, savingShow:{}})
                 if (this.state.ok ===false){
                     if (this.state.append === true) {
@@ -362,18 +425,19 @@ class Example extends React.Component {
                                 <form className="FormFields" onSubmit={this.handleSubmit}>
                                 <div className="FormField">
                                     <label className="FormField__Label" htmlFor="RAZAO_SOCIAL">Razão Social</label>
-                                    <input type="text" id="RAZAO_SOCIAL" className="FormField__Input" 
+                                    <input autocomplete="off" type="text" id="RAZAO_SOCIAL" className="FormField__Input" 
                                     name="RAZAO_SOCIAL" value={this.state.now.RAZAO_SOCIAL || ''} onChange={this.handleChange}/>
                                 </div>
                                 <div className="FormField">
                                     <label className="FormField__Label" htmlFor="NOME_FANTASIA">NOME FANTASIA</label>
-                                    <input type="text" id="NOME_FANTASIA" className="FormField__Input" 
+                                    <input autocomplete="off" type="text" id="NOME_FANTASIA" className="FormField__Input" 
                                     name="NOME_FANTASIA" value={this.state.now.NOME_FANTASIA || ''} onChange={this.handleChange}/>
                                 </div>
                                 <div className="FormField">
                                     <label className="FormField__Label" htmlFor="CNPJ">CNPJ</label>
-                                    <input type="text" id="CPNJ" className="FormField__Input" 
-                                    name="CNPJ" value={this.state.now.CNPJ || ''} onChange={this.handleChange}/>
+                                    <input autocomplete="off" type="text" id="CPNJ" className="FormField__Input"
+                                     pattern="\d{14}" maxLength="14" title="Digite somente os números do CNPJ (14 dígitos)"
+                                     name="CNPJ" value={this.state.now.CNPJ || ''} onChange={this.handleChange}/>
                                 </div>
                                 {geraInput('INSCRICAO_ESTADUAL','INSCRIÇÃO ESTADUAL',this.state.now.INSCRICAO_ESTADUAL || '', this.handleChange)}
                                 {geraInput('INSCRICAO_MUNICIPAL','INSCRIÇÃO MUNICIPAL',this.state.now.INSCRICAO_MUNICIPAL || '', this.handleChange)}
@@ -382,7 +446,7 @@ class Example extends React.Component {
                                 <div className='box_inverted'>
                                     <div className="FormField">
                                         <label className="FormField__Label" htmlFor="CEP">CEP</label>
-                                        <input type="text" id="CEP" className="FormField__Input" style={{width: '100px'}}
+                                        <input autocomplete="off" type="text" id="CEP" className="FormField__Input" style={{width: '100px'}}
                                         name="CEP" value={this.state.now.CEP} onChange={this.handleChange}/>
                                         <button id='buscaCEP' className='ButtonIcon' onClick={this.enviaCEP}><SvgIcon style={{transform: 'translate(0%, 30%)'}} size={26} icon={ic_search}/></button>
                                     </div>
@@ -399,16 +463,16 @@ class Example extends React.Component {
                                 <div className='box_inverted'>
                                     <div className="FormField">
                                         <label className="FormField__Label" htmlFor="FONE1">FONE 1</label>
-                                        <input type="text" id="DDD1" className="FormField__Input" style={{width: '60px', margin: '0px 5px 0px 0px'}}
+                                        <input autocomplete="off" type="text" id="DDD1" className="FormField__Input" style={{width: '60px', margin: '0px 5px 0px 0px'}}
                                         name="DDD1" value={this.state.now.DDD1 || ''} onChange={this.handleChange}/>
-                                        <input type="text" id="FONE1" className="FormField__InputTelefone"
+                                        <input autocomplete="off" type="text" id="FONE1" className="FormField__InputTelefone"
                                         name="FONE1" value={this.state.now.FONE1 || ''} onChange={this.handleChange}/>
                                     </div>
                                     <div className="FormField">
                                         <label className="FormField__Label" htmlFor="FONE2">FONE 2</label>
-                                        <input type="text" id="DDD2" className="FormField__Input" style={{width: '60px', margin: '0px 5px 0px 0px'}}
+                                        <input autocomplete="off" type="text" id="DDD2" className="FormField__Input" style={{width: '60px', margin: '0px 5px 0px 0px'}}
                                         name="DDD2" value={this.state.now.DDD2 || ''} onChange={this.handleChange}/>
-                                        <input type="text" id="FONE2" className="FormField__InputTelefone"
+                                        <input autocomplete="off" type="text" id="FONE2" className="FormField__InputTelefone"
                                         name="FONE2" value={this.state.now.FONE1 || ''} onChange={this.handleChange}/>
                                     </div>
                                     {geraInput('EMAIL','EMAIL NFE',this.state.now.EMAIL || '', this.handleChange)}

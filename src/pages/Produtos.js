@@ -55,6 +55,7 @@ class Example extends React.Component {
         this.handleClean = this.handleClean.bind(this);
         this.hideShow = this.hideShow.bind(this);
         this.handleBar = this.handleBar.bind(this);
+        this.applyFilter = this.applyFilter.bind(this);
         this.appBar = this.appBar.bind(this);
         this.setPage = this.setPage.bind(this);
         this.calcPages = this.calcPages.bind(this);
@@ -73,7 +74,17 @@ class Example extends React.Component {
     }
 
     componentDidMount(){
-        readTable(Data => {this.setState({produtos: Data.data.produtos, filtered: []})})      
+        readTable(Data => {this.setState({produtos: Data.data.produtos, filtered: []})
+            let restoreFilter = sessionStorage.getItem("macropFilter");
+            if ((restoreFilter !== '' && restoreFilter !== null) && typeof restoreFilter !== 'undefined') {
+                let restore = JSON.parse(restoreFilter)
+                console.log(restore)
+                if (restore.tela === 'produtos'){
+                    this.setState({filter: restore.filtro})
+                    this.applyFilter();
+                } else {sessionStorage.removeItem('macropFilter')}
+            }      
+        })      
     }
 
 
@@ -269,8 +280,15 @@ class Example extends React.Component {
 
     handleRefresh(e){
         e.preventDefault()
+        this.applyFilter();
+    }
+
+
+    applyFilter(){
         let dados = this.state.produtos
         let filtro = this.state.filter
+        let restoreFilter = {tela: 'produtos', filtro: filtro}
+        sessionStorage.setItem('macropFilter', JSON.stringify(restoreFilter))
         let filtrados = []
         dados.forEach(element => {
             // if (JSON.stringify(element.RAZAO_SOCIAL).toUpperCase().includes(filtro.RAZAO_SOCIAL.toUpperCase())){
@@ -288,10 +306,12 @@ class Example extends React.Component {
 
     handleClean(e){
         // let dados = this.state.produtos
-        let filtro = []
-        filtro.CODIGO_REPRESENTADA = ''
-        filtro.NOME_REPRESENTADA = ''
+        let filtro = {
+            CODIGO_REPRESENTADA: '',
+            NOME_REPRESENTADA: ''
+        }
         let filtrados = []
+        sessionStorage.removeItem('macropFilter')
         this.setState({filtered: filtrados, filter: filtro, page:1, maxPages: 1}) 
     }
 

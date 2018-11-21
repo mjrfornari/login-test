@@ -45,7 +45,7 @@ class Example extends React.Component {
         if (ok === false){
             return (<input type="submit" className="FormField__Button__Center mr-20" value="Sincronizar" onClick={this.handleSync}/>)
         } else {
-            return (<ReactLoading type='spokes' color='var(--cor-1)' height={'5%'} width={'5%'} className='Loading'/>)
+            return (<ReactLoading type='spin' color='var(--cor-1)' height={'5%'} width={'5%'} className='Loading'/>)
         }
     }
 
@@ -61,7 +61,7 @@ class Example extends React.Component {
                 
             }}/>)
         } else {
-            return (<ReactLoading type='spokes' color='var(--cor-1)' height={'5%'} width={'5%'} className='Loading'/>)
+            return (<ReactLoading type='spin' color='var(--cor-1)' height={'5%'} width={'5%'} className='Loading'/>)
         }
     }
 
@@ -83,7 +83,7 @@ class Example extends React.Component {
     }
 
 
-    handleSync (e) {
+    async handleSync (e) {
         
         e.preventDefault(); 
         navigator.getBattery().then(battery => {
@@ -91,7 +91,7 @@ class Example extends React.Component {
                 if (navigator.connection.type !== 'cellular'){
                     this.setState({sync: true, savingPhase: 1, savingShow:{}}) 
                     deleteToFirebird(() => {
-                        createToFirebird(() => {   
+                        createToFirebird(() => {    
                             updateToFirebird(() => { 
                                 syncData(localStorage.getItem('macropecas'), ()=> {this.setState({sync: false, savingPhase: 2, savingShow:{}})
                                 localStorage.setItem("macrosync", new Date())})

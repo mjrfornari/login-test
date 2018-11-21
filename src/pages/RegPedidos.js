@@ -42,7 +42,7 @@ class Example extends React.Component {
         cond_pag: {display: '', value: '', codigo: ''},
         cidades: {},
         cond_pags: [],
-        now : {FK_CLI: 0, NUMPED:null, NUMWEB:0, FK_CPG: 0, PK_PED: 0, OBSERVACAO: '', ORCAMENTO: '', DATA: new Date(), FK_REP: 1, ENVIADO: 'N', IMPORTACAO: 'N', STATUS: 'A', WEB: 'S'},
+        now : {FK_CLI: 0, NUMPED:null, NUMWEB:0, FK_CPG: 0, PK_PED: 0, OBSERVACAO: '', CLIREAD: 0, ORCAMENTO: '', DATA: new Date(), FK_REP: 1, ENVIADO: 'N', IMPORTACAO: 'N', STATUS: 'A', WEB: 'S'},
         editIte: {CODIGOPRO: '', QUANTIDADE: 0, VALOR_STICMS:0, VALOR_IPI:0, IPI:0, PERC_STICMS:0, VALOR: 0, DESCONTO1: 0, DESCONTO2: 0,DESCONTO3: 0, id:0},
         append: false,
         isLoading: true,
@@ -77,7 +77,11 @@ class Example extends React.Component {
     this.appBar = this.appBar.bind(this);
     this.saving = this.saving.bind(this);
     this.toggle = this.toggle.bind(this);
-    this.itens = this.itens.bind(this);
+    // this.delay = this.delay.bind(this)
+    // this.delayedLog = this.delayedLog.bind(this)
+    // this.processArray = this.processArray.bind(this)
+    this.itens = this.itens.bind(this)
+    this.exclude = this.exclude.bind(this);
     this.listarCpgs = this.listarCpgs.bind(this);
     this.createSons = this.createSons.bind(this)
     this.willShow = this.willShow.bind(this)
@@ -117,7 +121,8 @@ class Example extends React.Component {
                     IPI: {item.IPI+'%'}<br/>
                     Valor: {'R$ '+item.VALOR}<br/>
                     Valor ICMS: {'R$ '+(item.VALOR_STICMS||'0.00')}<br/>
-                    <button className={((Number(item.PK_IPE) === 0 && this.state.now.ORCAMENTO === 'N') || this.state.now.ORCAMENTO === 'S') ? "Grid__Button" : "Grid__Button__Hide"} id={id} onClick={this.handleExcluir}>Excluir</button>
+                    <button className="Grid__Button" id={id} onClick={this.willShow}>Editar</button> 
+                    <button className={(((Number(item.PK_IPE) === 0 || typeof item.PK_IPE === 'undefined') && this.state.now.ORCAMENTO === 'N') || this.state.now.ORCAMENTO === 'S') ? "Grid__Button" : "Grid__Button__Hide"} id={id} onClick={this.handleExcluir}>Excluir</button>
                 </div>
             </div>
             
@@ -232,10 +237,9 @@ class Example extends React.Component {
                     } 
                     readTable(Data => { 
                         if (typeof Data.data.pedidos[ID].PK_PED !== 'undefined'){
-                            if (((Number(Data.data.pedidos[ID].PK_PED) === 0 && Data.data.pedidos[ID].ORCAMENTO === 'N') || Data.data.pedidos[ID].ORCAMENTO === 'S') || replicacao === true){
+                            if ((((Number(Data.data.pedidos[ID].PK_PED) === 0 && Data.data.pedidos[ID].ORCAMENTO === 'N') || Data.data.pedidos[ID].ORCAMENTO === 'S') && Data.data.pedidos[ID].WEB === 'S')|| replicacao === true){
                                 // this.setState({pedidos: Data.data.pedidos, isLoading: true})
                                 let pedidos = Data.data.pedidos
-                                pedidos[ID].WEB='S'
                                 // .sort((a,b)=>{ 
                                 //     if (a.DATA>b.DATA) {return 1} 
                                 //     if (a.DATA<b.DATA) {return -1} 
@@ -249,18 +253,19 @@ class Example extends React.Component {
                                 let listCidades = Data.data.cidades;
                                 let listDescontoLog = Data.data.descontolog
                                 Data.data.clientes.forEach((element, elementid) => {
-                                    if (element.PK_CLI === Data.data.pedidos[ID].FK_CLI){
+                                    if ((element.PK_CLI === Data.data.pedidos[ID].FK_CLI) || (elementid === Data.data.pedidos[ID].CLIREAD)){
                                         let cli = {
                                             display : element.RAZAO_SOCIAL,
                                             value : element.CNPJ+' - '+element.RAZAO_SOCIAL,
                                             codigo : element.PK_CLI,
                                             cidade : element.FK_CID,
+                                            read : elementid,
                                             simples_nacional: element.SIMPLESNACIONAL
                                         }
 
                                         this.setState({cliente: cli})
                                     }
-                                    listClientes.push({value: element.CNPJ+' - '+element.RAZAO_SOCIAL, simples_nacional: element.SIMPLESNACIONAL, cidade : element.FK_CID, display: element.RAZAO_SOCIAL, codigo : element.PK_CLI})
+                                    listClientes.push({value: element.CNPJ+' - '+element.RAZAO_SOCIAL, read: elementid, simples_nacional: element.SIMPLESNACIONAL, cidade : element.FK_CID, display: element.RAZAO_SOCIAL, codigo : element.PK_CLI})
                                 }); 
                                 
                                 
@@ -350,9 +355,15 @@ class Example extends React.Component {
                                 this.setState({ now : ped, append: replicacao })
                                 
                             
-                            } else {alert('Pedido já sincronizado. Edição bloqueada.')
-                            this.setState({isLoading: false, ok: true})
-                            this.props.history.push('/macropecas/pedidos')}
+                            } else {
+                                if (Data.data.pedidos[ID].WEB === 'N') {
+                                    alert('Pedido lançado pela Macropeças. Edição bloqueada.')
+                                } else {
+                                    alert('Pedido já sincronizado. Edição bloqueada.')
+                                }
+                                this.setState({isLoading: false, ok: true})
+                                this.props.history.push('/macropecas/pedidos')
+                            }
                             
                         }
                     })
@@ -366,7 +377,7 @@ class Example extends React.Component {
                         let listCidades = Data.data.cidades;
                         let listDescontoLog = Data.data.descontolog
                         Data.data.clientes.forEach((element, elementid) => {
-                            listClientes.push({value: element.CNPJ+' - '+element.RAZAO_SOCIAL, simples_nacional: element.SIMPLESNACIONAL, cidade : element.FK_CID, display: element.RAZAO_SOCIAL, codigo : element.PK_CLI})
+                            listClientes.push({value: element.CNPJ+' - '+element.RAZAO_SOCIAL, read: elementid, simples_nacional: element.SIMPLESNACIONAL, cidade : element.FK_CID, display: element.RAZAO_SOCIAL, codigo : element.PK_CLI})
                         }); 
                         
                         Data.data.st_icms.forEach((element, elementid) => {
@@ -413,7 +424,7 @@ class Example extends React.Component {
         e.preventDefault();
         console.log(this.state.ok)
         if (this.state.ok===false){
-            let cliente = this.state.now.FK_CLI || 0
+            let cliente = this.state.now.FK_CLI || this.state.now.CLIREAD ||0
             let cpg = this.state.now.FK_CPG || 0
             let itens = this.state.now.itens || []
             let tipo = this.state.now.ORCAMENTO || 'A'
@@ -452,20 +463,48 @@ class Example extends React.Component {
         }
     }
 
-    handleSave (e) {
-        e.preventDefault();
-        // console.log('a')
+
+    // delay() {
+    //     return new Promise(resolve => setTimeout(resolve, 300))
+    // }
+
+    // async delayedLog(item) {
+    //     await this.delay();
+    //     console.log(item);
+    // }
+
+    // async processArray(array) {
+    //     for (const item of array) {
+    //         await this.delayedLog(item);
+    //     }
+    //     console.log('Oi')
+    // }
+
+    async exclude(){
+        // const deletes = []
         if (typeof this.state.deleted !== 'undefined') {
+            console.log('DELETED:', this.state.deleted)
+            for(let item of this.state.deleted){
+                console.log('REGPED:',item)
+                let reg = []
+                reg.push(item)
+                await deleteData('itepedidos', reg, item.id, this.state.id)
+            }
             
-            this.state.deleted.forEach((element, index)=>{
-                console.log(element)
-                deleteData('itepedidos', element, element.id)
-            })
-            
-        }
+        }    
+    }
+
+    async handleSave (e) {
+        
+        e.preventDefault();
+        
+        // console.log('a')
         let ped = this.state.now
         ped.DATA = new Date();
         this.setState({savingPhase: 1, savingShow:{}, now: ped})
+        
+
+        await this.exclude()
         if (this.state.ok ===false){
             if (this.state.append === true) {
                 appendData('pedidos', this.state.now, res => {this.setState({savingPhase: 2, savingShow:{}})})
@@ -477,6 +516,8 @@ class Example extends React.Component {
                 this.setState({ok: true, mostraTotal: false})  
             }
         }
+        
+        
 
     }
 
@@ -697,6 +738,8 @@ class Example extends React.Component {
         if (nomefk === 'FK_CLI'){
             reg[nomefk] = selecionado.codigo
             reg.RAZAO_SOCIAL = selecionado.display
+            console.log(selecionado)
+            reg.CLIREAD = selecionado.read
             this.setState({now: reg, [tablename]: selecionado})
         } else if (nomefk === 'FK_CPG') {
             reg[nomefk] = selecionado.codigo
@@ -855,7 +898,8 @@ class Example extends React.Component {
     willShow(e){
         
         e.preventDefault(); 
-        let cliente = this.state.now.FK_CLI || 0
+        let cliente = this.state.now.FK_CLI || this.state.now.CLIREAD || 0
+        console.log(this.state.now.CLIREAD)
         let cpg = this.state.now.FK_CPG || 0
         
         if ( cliente===0 || cpg===0 ) {
@@ -1088,7 +1132,7 @@ class Example extends React.Component {
                                     </div>    
                                     <div className="FormField">
                                         <label className="FormField__Label" htmlFor="OBSERVACAO">OBSERVAÇÃO</label>
-                                        <textarea id="OBSERVACAO" className="FormField__Input__OBS" 
+                                        <textarea autocomplete="off" id="OBSERVACAO" className="FormField__Input__OBS" 
                                         name="OBSERVACAO" value={this.state.now.OBSERVACAO || ''} onChange={this.handleChange}/>
                                     </div>
                                     <button className="FormField__Button__Add" onClick={this.willShow}>+ Adicionar Item</button>

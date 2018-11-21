@@ -59,6 +59,7 @@ class Example extends React.Component {
         this.hideShow = this.hideShow.bind(this);
         this.handleBar = this.handleBar.bind(this);
         this.appBar = this.appBar.bind(this);
+        this.applyFilter = this.applyFilter.bind(this);
         this.setPage = this.setPage.bind(this);
         this.calcPages = this.calcPages.bind(this);
         this.paginacao = this.paginacao.bind(this);
@@ -66,7 +67,18 @@ class Example extends React.Component {
     }
 
     componentDidMount(){
-        readTable(Data => {this.setState({clientes: Data.data.clientes, filtered: []})})      
+        readTable(Data => {this.setState({clientes: Data.data.clientes, filtered: []})
+            let restoreFilter = sessionStorage.getItem("macropFilter");
+            if ((restoreFilter !== '' && restoreFilter !== null) && typeof restoreFilter !== 'undefined') {
+                let restore = JSON.parse(restoreFilter)
+                console.log(restore)
+                if (restore.tela === 'clientes'){
+                    this.setState({filter: restore.filtro})
+                    console.log(this.state.pedidos)
+                    this.applyFilter();
+                } else {sessionStorage.removeItem('macropFilter')}
+            }      
+        })      
     }
   
 
@@ -260,8 +272,14 @@ class Example extends React.Component {
 
     handleRefresh(e){
         e.preventDefault()
+        this.applyFilter()
+    }
+
+    applyFilter(){
         let dados = this.state.clientes
         let filtro = this.state.filter
+        let restoreFilter = {tela: 'clientes', filtro: filtro}
+        sessionStorage.setItem('macropFilter', JSON.stringify(restoreFilter))
         let filtrados = []
         dados.forEach(element => {
             // if (JSON.stringify(element.RAZAO_SOCIAL).toUpperCase().includes(filtro.RAZAO_SOCIAL.toUpperCase())){
@@ -280,10 +298,12 @@ class Example extends React.Component {
 
     handleClean(e){
         // let dados = this.state.clientes
-        let filtro = []
-        filtro.RAZAO_SOCIAL = ''
-        filtro.CNPJ = ''
-        filtro.NOME_FANTASIA = ''
+        let filtro = {
+            RAZAO_SOCIAL: '',
+            CNPJ: '', 
+            NOME_FANTASIA: ''
+        }
+        sessionStorage.removeItem('macropFilter')
         let filtrados = []
         this.setState({filtered: filtrados, filter: filtro, page:1, maxPages: 1}) 
     }
@@ -291,7 +311,7 @@ class Example extends React.Component {
 
     setPage(e,setar, add){
         e.preventDefault();
-        console.log(e.target.type)
+        // console.log(e.target.type)
         if (e.target.type === 'submit'){
             let gotoPage = (setar+add)
             if (gotoPage > this.state.maxPages){
@@ -340,15 +360,15 @@ class Example extends React.Component {
                                     <div className='box_inverted'> 
                                         <div className="FormField">
                                             <label className="FormFilter__Label" htmlFor="RAZAO_SOCIAL">Razão Social</label>
-                                            <input type="text" id="RAZAO_SOCIAL" className="FormFilter__Input" 
+                                            <input autocomplete="off" type="text" id="RAZAO_SOCIAL" className="FormFilter__Input" 
                                             name="RAZAO_SOCIAL" value={this.state.filter.RAZAO_SOCIAL || ''} onChange={this.handleChange}/>
                                             <br/>
                                             <label className="FormFilter__Label" htmlFor="NOME_FANTASIA">Nome Fantasia</label>
-                                            <input type="text" id="NOME_FANTASIA" className="FormFilter__Input" 
+                                            <input autocomplete="off" type="text" id="NOME_FANTASIA" className="FormFilter__Input" 
                                             name="NOME_FANTASIA" value={this.state.filter.NOME_FANTASIA || ''} onChange={this.handleChange}/>
                                             <br/>
                                             <label className="FormFilter__Label" htmlFor="CNPJ">CNPJ</label>
-                                            <input type="text" id="CNPJ" className="FormFilter__Input" 
+                                            <input autocomplete="off" type="text" id="CNPJ" className="FormFilter__Input" 
                                             name="CNPJ" value={this.state.filter.CNPJ || ''} onChange={this.handleChange}/>
                                             <div>
                                                 <button className="FormField__Button" onClick={this.handleRefresh}>Pesquisar</button>  

@@ -186,13 +186,13 @@ tr:hover {background-color:var(--cor-2);}
     
 }
 
-
+/* 
 .row:after {
     content: "";
     display: table;
     height: 0px;
     clear: both;
-}
+} */
 
 .add-button {
   position: absolute;
@@ -201,12 +201,12 @@ tr:hover {background-color:var(--cor-2);}
 }
 
 
-.row:after{
+/* .row:after{
     content: "";
     display: table;
     clear: both;
 
-}
+} */
 
 .column_left {
     float: left;
@@ -214,6 +214,14 @@ tr:hover {background-color:var(--cor-2);}
     height: 60px;
     text-align: center;
     transform: translate(0, 70%); 
+}
+
+.column {
+    /* float: left; */
+    width: calc(90% - 60px);
+
+    text-align: justify;
+
 }
 
 /* Clear floats after the columns */

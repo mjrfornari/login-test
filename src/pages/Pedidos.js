@@ -52,6 +52,7 @@ class Example extends React.Component {
         };
         this.show = false;
         this.handleRefresh = this.handleRefresh.bind(this);
+        this.applyFilter = this.applyFilter.bind(this);
         this.createItems = this.createItems.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleExcluir = this.handleExcluir.bind(this);
@@ -75,7 +76,17 @@ class Example extends React.Component {
                 item.READ = index
             })
             this.setState({pedidos: pedidosread, filtered: []})
-        })      
+            let restoreFilter = sessionStorage.getItem("macropFilter");
+            if ((restoreFilter !== '' && restoreFilter !== null) && typeof restoreFilter !== 'undefined') {
+                let restore = JSON.parse(restoreFilter)
+                console.log(restore)
+                if (restore.tela === 'pedidos'){
+                    this.setState({filter: restore.filtro})
+                    console.log(this.state.pedidos)
+                    this.applyFilter();
+                } else {sessionStorage.removeItem('macropFilter')}
+            }      
+        })
     }
     
 
@@ -310,11 +321,22 @@ class Example extends React.Component {
 
     handleRefresh(e){
         e.preventDefault()
+        this.applyFilter();
+    }
+
+    applyFilter(){
         let dados = this.state.pedidos
+        console.log(dados)
         let filtro = this.state.filter
+        console.log(filtro)
+        // console.log(filtro)
+        let restoreFilter = {tela: 'pedidos', filtro: filtro}
+        sessionStorage.setItem('macropFilter', JSON.stringify(restoreFilter))
+        console.log(filtro)
         let filtrados = []
         let datamax = new Date (filtro.DATA_MAX+' 23:59')
         let datamin = new Date (filtro.DATA_MIN+' 00:00')
+        
         dados.forEach(element => {
             let data = new Date (element.DATA)
             let maior = true
@@ -353,11 +375,16 @@ class Example extends React.Component {
 
     handleClean(e){
         // let dados = this.state.pedidos
-        let filtro = []
-        filtro.RAZAO_SOCIAL = ''
-        filtro.DATA_MIN = now(-30)
-        filtro.DATA_MAX = now(0)
+        let filtro = {
+            RAZAO_SOCIAL: '',
+            DATA_MIN: now(-30),
+            DATA_MAX: now(0),
+            STATUS: '',
+            TIPO: ''
+        }
         let filtrados = []
+        // console.log(filtro)
+        sessionStorage.removeItem('macropFilter')
         this.setState({filtered: filtrados, filter: filtro, page:1, maxPages: 1}) 
     }
 
@@ -424,9 +451,9 @@ class Example extends React.Component {
                                     <div>
                                         Filtro:
                                         <div className='box_inverted'> 
-                                            <div className="FormField">
+                                            <div className="FormField" autocomplete="off">
                                                 <label className="FormFilter__Label" htmlFor="RAZAO_SOCIAL">Razão Social</label>
-                                                <input type="text" id="RAZAO_SOCIAL" className="FormFilter__Input" 
+                                                <input autocomplete="off" type="text" id="RAZAO_SOCIAL" className="FormFilter__Input" 
                                                 name="RAZAO_SOCIAL" value={this.state.filter.RAZAO_SOCIAL || ''} onChange={this.handleChange}/>
                                                 <label className="FormFilter__Label">PERÍODO</label>
                                                 <input id="DATA_MIN" name="DATA_MIN" className={this.state.show ? 'FormFilter__Date__Show' : 'FormFilter__Date'} type="date" value={this.state.filter.DATA_MIN || ''} onChange={this.handleChange}></input>
