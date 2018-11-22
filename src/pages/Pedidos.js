@@ -339,8 +339,8 @@ class Example extends React.Component {
         let datamin = new Date(filtro.DATA_MIN+'T00:00:00')
         
         dados.forEach(element => {
-            let data = new Date (element.DATA)
-
+            let data = new Date (element.DATA.split('T')[0]+'T12:00:00')
+            console.log(element.DATA)
             let maior = true
             let menor = true
             // console.log(data)
