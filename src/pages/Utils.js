@@ -848,9 +848,9 @@ export function createToFirebird(callback) {
             let valuescreated = JSON.stringify(Object.values(icreated))
             let fields = propscreated.split('"').join("").split('[').join("").split(']').join("").split('CIDADE,').join("")
             let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split("''").join("NULL")
-            fields = fields+", FK_VEN"
+            fields = fields+",FK_VEN"
             let usuario = localStorage.getItem("macropecas")
-            values = values+", "+usuario
+            values = values+","+usuario
             // console.log(fields)
             // console.log(values)
             criaItem('clientes',fields, values)
@@ -889,10 +889,10 @@ export function createToFirebird(callback) {
                 let propscreated = JSON.stringify(Object.getOwnPropertyNames(icreated))
                 let valuescreated = JSON.stringify(Object.values(icreated))
                 let fields = propscreated.split('"').join("").split('[').join("").split(']').join("").split('itens,').join("").split('IMPORTADO').join("IMPORTACAO").split(',RAZAO_SOCIAL').join("").split(',NOMECPG').join("").split(',CLIREAD').join("")
-                let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",")
-                fields = fields+", FK_VEN"
+                let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",").split("''").join("null")
+                fields = fields+",FK_VEN"
                 let usuario = localStorage.getItem("macropecas")
-                values = values+", "+usuario
+                values = values+","+usuario
                 // console.log(fields)
                 // console.log(values)
                 criaItem('pedidos_venda',fields, values)
@@ -933,7 +933,7 @@ export function createToFirebird(callback) {
                     let propscreated = JSON.stringify(Object.getOwnPropertyNames(icreated))
                     let valuescreated = JSON.stringify(Object.values(icreated))
                     let fields = propscreated.split('"').join("").split('[').join("").split(']').join("").split(',DESCRICAOPRO').join("").split('CODIGOPRO,').join("").split(',id').join("").split(',VALOR_IPI').join("").split(',OBS_PROMOCIONAL').join("").split(',TOTAL').join("").split(',mostraModal').join("")
-                    let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",").split(",'%$#'").join("").split("'%$#',").join("").split(',true,').join("").split(',false,').join("")
+                    let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",").split(",'%$#'").join("").split("'%$#',").join("").split(',true,').join("").split(',false,').join("").split("''").join("null")
                     // console.log(fields)
                     // console.log(values)
                     criaItem('itens_ped_venda',fields, values)
@@ -1050,7 +1050,7 @@ export function updateToFirebird(callback) {
                 let propsupdatedson = JSON.stringify(Object.getOwnPropertyNames(iupdatedson))
                 let valuesupdatedson = JSON.stringify(Object.values(iupdatedson))
                 let fieldsson = propsupdatedson.split('"').join("").split('[').join("").split(']').join("").split(',DESCRICAOPRO').join("").split(',mostraModal').join("").split('CODIGOPRO,').join("").split(',id').join("").split(',VALOR_IPI').join("").split(',OBS_PROMOCIONAL').join("").split(',TOTAL').join("")
-                let valuesson = valuesupdatedson.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",").split(",'%$#'").join("").split("'%$#',").join("")
+                let valuesson = valuesupdatedson.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",").split(",'%$#'").join("").split("'%$#',").join("").split("''").join("null")
                 if (typeof iupdatedson.PK_IPE === 'undefined'){
                   geraPk('PK_IPE').then(res => {
                     console.log(res)
@@ -1079,7 +1079,7 @@ export function updateToFirebird(callback) {
               let propsupdated = JSON.stringify(Object.getOwnPropertyNames(iupdated))
               let valuesupdated = JSON.stringify(Object.values(iupdated))
               let fields = propsupdated.split('"').join("").split('[').join("").split(']').join("").split('itens,').join("").split('IMPORTADO').join("IMPORTACAO").split(',RAZAO_SOCIAL').join("").split(',NOMECPG').join("")
-              let values = valuesupdated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",")
+              let values = valuesupdated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",").split("''").join("null")
 
               const xSplited = fields.split(',')
               const ySplited = values.split(',')

@@ -16,6 +16,7 @@ import {plus} from 'react-icons-kit/fa/plus'
 import Dropdown from 'react-dropdown'
 import {ic_keyboard_arrow_left} from 'react-icons-kit/md/ic_keyboard_arrow_left'
 import {ic_keyboard_arrow_right} from 'react-icons-kit/md/ic_keyboard_arrow_right'
+import moment from 'moment'
 
 
 
@@ -334,25 +335,26 @@ class Example extends React.Component {
         sessionStorage.setItem('macropFilter', JSON.stringify(restoreFilter))
         console.log(filtro)
         let filtrados = []
-        let datamax = new Date (filtro.DATA_MAX+' 23:59')
-        let datamin = new Date (filtro.DATA_MIN+' 00:00')
+        let datamax = new Date(filtro.DATA_MAX+'T23:59:59')
+        let datamin = new Date(filtro.DATA_MIN+'T00:00:00')
         
         dados.forEach(element => {
             let data = new Date (element.DATA)
+
             let maior = true
             let menor = true
             // console.log(data)
             // console.log(datamax)
             // console.log(datamin)
             if (!isNaN(datamax.getTime())) {
-                if (data > datamax){
-                    maior = false
-                }
+                if (moment(data).isSameOrBefore(datamax)){
+                    maior = true
+                } else maior = false
             }
             if (!isNaN(datamin.getTime())) {
-                if (data < datamin){
-                    menor = false
-                }
+                if (moment(data).isSameOrAfter(datamin)){
+                    menor = true
+                } else menor = false
             }
             if (JSON.stringify(element.RAZAO_SOCIAL).toUpperCase().includes(filtro.RAZAO_SOCIAL.toUpperCase()) && maior && menor){
                         filtrados.push(element)

@@ -12,6 +12,8 @@
     "long": "^4.0.0",
     "lorem-ipsum": "^1.0.6",
     "md5": "^2.2.1",
+    "moment": "^2.22.2",
+    "moment-timezone": "^0.5.23",
     "namor": "^1.0.1",
     "net": "^1.0.2",
     "node-firebird": "^0.8.6",

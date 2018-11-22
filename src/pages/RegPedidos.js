@@ -858,7 +858,7 @@ class Example extends React.Component {
 
     closeModal(e){
         e.preventDefault();
-        this.setState({mostraModal: false, mostraTotal: false, itemAdded: 'ItemAdded-hide', editIte: {CODIGOPRO: '', QUANTIDADE: 0,VALOR: '', TOTAL: '', DESCONTO1: '', DESCONTO3: '', DESCONTO2: '', id:0, VALOR_STICMS:0, VALOR_IPI:0, IPI:0, PERC_STICMS:0}, produto: {display: '', OBS_PROMOCIONAL:'',codigo:'', value: '', VALOR_STICMS:0, VALOR_IPI:0, IPI:0, PERC_STICMS:0}})
+        this.setState({mostraModal: false, mostraTotal: false, itemAdded: 'ItemAdded-hide', editIte: {CODIGOPRO: '', QUANTIDADE: 0,VALOR: '', TOTAL: '', DESCONTO1: 0, DESCONTO3: 0, DESCONTO2: 0, id:0, VALOR_STICMS:0, VALOR_IPI:0, IPI:0, PERC_STICMS:0}, produto: {display: '', OBS_PROMOCIONAL:'',codigo:'', value: '', VALOR_STICMS:0, VALOR_IPI:0, IPI:0, PERC_STICMS:0}})
     }
 
     saveModal(e, id){
