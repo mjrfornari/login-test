@@ -11,7 +11,7 @@ import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_settings} from 'react-icons-kit/md/ic_settings'
 import {ListGroup, ListGroupItem, Pagination} from 'react-bootstrap'
 import {LinkContainer} from 'react-router-bootstrap'
-import { readTable, deleteData, garanteDate, now, date2str} from "./Utils";
+import { readTable, deleteData, garanteDate, now, date2str, deletingItem } from "./Utils";
 import {plus} from 'react-icons-kit/fa/plus'
 import Dropdown from 'react-dropdown'
 import {ic_keyboard_arrow_left} from 'react-icons-kit/md/ic_keyboard_arrow_left'
@@ -47,6 +47,8 @@ class Example extends React.Component {
             detailed: false,
             iddetailed: 0,
             op: 'r',
+            deletingShow: {display: 'none'},
+            deletingPhase: 1,
             page: 1,
             inputPage: 1,
             maxPages: 1
@@ -67,6 +69,7 @@ class Example extends React.Component {
         this.calcPages = this.calcPages.bind(this);
         this.masterDetail = this.masterDetail.bind(this)
         this.paginacao = this.paginacao.bind(this)
+        this.deleting = this.deleting.bind(this)
 
     }
 
@@ -112,16 +115,24 @@ class Example extends React.Component {
         )
     }
 
+    deleting(){
+        this.setState({deletingShow: {display: 'none'}})
+    }
+
     handleExcluir(e) {
         e.preventDefault()
         let table = this.state.pedidos
         // console.log(this.state.clientes[e.target.id])
         let result = window.confirm('Confirma a exclusão do pedido?')
         if (result) {
+            this.setState({deletingPhase: 1, deletingShow:{}})
             let removed = table.splice(e.target.id, 1)
-            this.handleClean()
             this.setState({pedidos: table, iddetailed:0, detailed:false})
-            deleteData('pedidos',removed, e.target.id)
+            this.applyFilter()
+            deleteData('pedidos',removed, e.target.id).then((res) => {
+                this.setState({deletingPhase: 2, deletingShow:{}})
+            })
+            
         }
     }
 
@@ -340,7 +351,6 @@ class Example extends React.Component {
         
         dados.forEach(element => {
             let data = new Date (element.DATA.split('T')[0]+'T12:00:00')
-            console.log(element.DATA)
             let maior = true
             let menor = true
             // console.log(data)
@@ -475,6 +485,7 @@ class Example extends React.Component {
                                     
                                     <br/>
                                     {this.hideShow()}
+                                    {deletingItem(this.state.deletingShow, this.state.deletingPhase, this.deleting)}
                                     <LinkContainer to={"/macropecas/pedidos/registro"}><button className="FormField__Button__Fix" onClick={this.handleShow}><SvgIcon className='FormField__Icon__Fix' size={24} icon={plus}/></button></LinkContainer>                       
                                 </div>
                                 <div>                    

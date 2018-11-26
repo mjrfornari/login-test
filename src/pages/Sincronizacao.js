@@ -9,6 +9,7 @@ import { ic_add_shopping_cart } from 'react-icons-kit/md/ic_add_shopping_cart';
 import { ic_settings } from 'react-icons-kit/md/ic_settings'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_exit_to_app} from 'react-icons-kit/md/ic_exit_to_app'
+import { teste , newCreate, newUpdate, newDelete} from "./SyncUtils"
 import { syncData, createToFirebird, updateToFirebird, syncLoading, date2str, deleteToFirebird  } from "./Utils";
 import Clock from 'react-live-clock';
 import ReactLoading from 'react-loading';
@@ -83,7 +84,7 @@ class Example extends React.Component {
     }
 
 
-    async handleSync (e) {
+    handleSync (e) {
         
         e.preventDefault(); 
         navigator.getBattery().then(battery => {
@@ -112,7 +113,7 @@ class Example extends React.Component {
 
     handleTeste(e){
         e.preventDefault();
-        navigator.serviceWorker.getRegistration().then(function(reg){reg.showNotification('Teste')})
+        teste()
     }
 
     hideBar(){
@@ -202,9 +203,11 @@ class Example extends React.Component {
                                         {this.atualizando(this.state.sync)}
                                     </div>                                    
                                 </div>
-                                {/* <button onClick={(e)=>{
-                                    e.preventDefault();
-                                    pedirPermissaoParaReceberNotificacoes()}}>Clique aqui para receber notificações</button> */}
+                                <button onClick={this.handleTeste}>Teste</button>
+                                <br/>
+                                <button onClick={async (e) => {e.preventDefault(); await newCreate('teste', 'testando, testador', "'TESTE', 'JOAO'", 'PK_TES')}}>Create</button>
+                                <button onClick={async (e) => {e.preventDefault(); await newUpdate('teste', {pk_tes: 122, teste: 'testando', nome: 'gege' }, 'PK_TES', 2)}}>Update</button>
+                                <button onClick={async (e) => {e.preventDefault(); await newDelete('teste',  'PK_TES', 1)}}>Delete</button>
                                 {/* <button className="add-button">Instalar Aplicativo</button> */}
                             </Online>
                         </div>

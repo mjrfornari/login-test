@@ -113,6 +113,43 @@ export function savingItem(show, phase, funcao){
 }
 
 
+export function deletingItem(show, phase, funcao){
+	if (phase === 1){
+		return (
+			<div style={show}>
+				<Modal.Dialog className="Modal" >
+					<Modal.Body className="ModalBg">    
+						<div className="Saved">
+							<ReactLoading type='spin' color='var(--cor-1)' height={'80px'} width={'80px'} className="Loading"/>
+							<p className='ItemMsg'>Excluindo registro...</p>
+						</div> 
+					</Modal.Body>
+					<Modal.Footer className="ModalBg">
+						<Button className="FormField__ButtonDisabled mr-20">Ok</Button>
+					</Modal.Footer>
+				</Modal.Dialog>
+			</div>
+		)
+	} else {
+		return(
+			<div style={show}>
+				<Modal.Dialog className="Modal" >
+					<Modal.Body className="ModalBg">    
+					<div className="Saved">
+						<SvgIcon size={80} icon={check} style={{ color: 'var(--cor-1)', margin: '15px 15px 15px 15px' }}/>
+						<p className='ItemMsg'>Registro excluído!</p>
+					</div>
+					</Modal.Body>
+					<Modal.Footer className="ModalBg">
+						<Button className="FormField__Button mr-20" onClick={() => {funcao()}}>Ok</Button>
+					</Modal.Footer>
+				</Modal.Dialog>
+			</div>
+		)		
+	}
+}
+
+
 export function syncLoading(show, phase, funcao, texto, textopronto){
 	if (phase === 1){
 		return (
@@ -889,7 +926,7 @@ export function createToFirebird(callback) {
                 let propscreated = JSON.stringify(Object.getOwnPropertyNames(icreated))
                 let valuescreated = JSON.stringify(Object.values(icreated))
                 let fields = propscreated.split('"').join("").split('[').join("").split(']').join("").split('itens,').join("").split('IMPORTADO').join("IMPORTACAO").split(',RAZAO_SOCIAL').join("").split(',NOMECPG').join("").split(',CLIREAD').join("")
-                let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",").split("''").join("null")
+                let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",").split("''").join("null").split(',,').join(",")
                 fields = fields+",FK_VEN"
                 let usuario = localStorage.getItem("macropecas")
                 values = values+","+usuario
@@ -932,8 +969,8 @@ export function createToFirebird(callback) {
                     icreated.VALOR_IPI =[]
                     let propscreated = JSON.stringify(Object.getOwnPropertyNames(icreated))
                     let valuescreated = JSON.stringify(Object.values(icreated))
-                    let fields = propscreated.split('"').join("").split('[').join("").split(']').join("").split(',DESCRICAOPRO').join("").split('CODIGOPRO,').join("").split(',id').join("").split(',VALOR_IPI').join("").split(',OBS_PROMOCIONAL').join("").split(',TOTAL').join("").split(',mostraModal').join("")
-                    let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",").split(",'%$#'").join("").split("'%$#',").join("").split(',true,').join("").split(',false,').join("").split("''").join("null")
+                    let fields = propscreated.split('"').join("").split('[').join("").split(']').join("").split(',DESCRICAOPRO').join("").split(',CODIGOPRO').join("").split(',id').join("").split(',VALOR_IPI').join("").split(',OBS_PROMOCIONAL').join("").split(',TOTAL').join("").split(',mostraModal').join("")
+                    let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",").split(",'%$#'").join("").split("'%$#',").join("").split(',true,').join("").split(',false,').join("").split("''").join("null").split(',,').join(",")
                     // console.log(fields)
                     // console.log(values)
                     criaItem('itens_ped_venda',fields, values)
