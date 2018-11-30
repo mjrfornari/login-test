@@ -35,7 +35,6 @@ class EntrarForm extends Component {
                 if (Object.keys(r).length > 0){
                     if (r[0]["PK_VEN"] !== '') {
                         this.logado=true
-                        alert('logou')
                         this.props.history.push('/macropecas/home') 
                         localStorage.setItem("macropecas", r[0]["PK_VEN"]);                  
                     }
