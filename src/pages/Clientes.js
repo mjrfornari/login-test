@@ -360,15 +360,15 @@ class Example extends React.Component {
                                     <div className='box_inverted'> 
                                         <div className="FormField">
                                             <label className="FormFilter__Label" htmlFor="RAZAO_SOCIAL">Razão Social</label>
-                                            <input autocomplete="off" type="text" id="RAZAO_SOCIAL" className="FormFilter__Input" 
+                                            <input autoComplete="off" type="text" id="RAZAO_SOCIAL" className="FormFilter__Input" 
                                             name="RAZAO_SOCIAL" value={this.state.filter.RAZAO_SOCIAL || ''} onChange={this.handleChange}/>
                                             <br/>
                                             <label className="FormFilter__Label" htmlFor="NOME_FANTASIA">Nome Fantasia</label>
-                                            <input autocomplete="off" type="text" id="NOME_FANTASIA" className="FormFilter__Input" 
+                                            <input autoComplete="off" type="text" id="NOME_FANTASIA" className="FormFilter__Input" 
                                             name="NOME_FANTASIA" value={this.state.filter.NOME_FANTASIA || ''} onChange={this.handleChange}/>
                                             <br/>
                                             <label className="FormFilter__Label" htmlFor="CNPJ">CNPJ</label>
-                                            <input autocomplete="off" type="text" id="CNPJ" className="FormFilter__Input" 
+                                            <input autoComplete="off" type="text" id="CNPJ" className="FormFilter__Input" 
                                             name="CNPJ" value={this.state.filter.CNPJ || ''} onChange={this.handleChange}/>
                                             <div>
                                                 <button className="FormField__Button" onClick={this.handleRefresh}>Pesquisar</button>  

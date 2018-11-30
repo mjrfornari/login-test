@@ -109,7 +109,7 @@ class Example extends React.Component {
 
     createSons(item, id){
         return(
-            <ListGroupItem href="#" id={id} key={id} className="FormField__Grid" onClick={this.willShow}>
+            <ListGroupItem href="#" id={id} key={id} className="FormField__Grid" componentClass='div' onClick={this.willShow}>
             <div id={id} className="row">
                 <div id={id} className="column_left">
                     Nº {id+1}
@@ -510,10 +510,12 @@ class Example extends React.Component {
                 appendData('pedidos', this.state.now, res => {this.setState({savingPhase: 2, savingShow:{}})})
                 // alert('Registro incluído com sucesso!') 
                 this.setState({ok: true, mostraTotal: false})    
+               
             } else {
                 editData('pedidos', this.state.now, this.state.id, res => {this.setState({savingPhase: 2, savingShow:{}})})
                 // alert('Registro alterado com sucesso!')  
                 this.setState({ok: true, mostraTotal: false})  
+                
             }
         }
         
@@ -658,9 +660,9 @@ class Example extends React.Component {
             }
         } else {
             if (regiao === 0) {
-                preco = produto.PRECO_VENDA_LISTA
+                preco = produto.PRECO_VENDA_LISTA*0.65;
             } else {
-                preco = produto['PRECO_REGIAO_'+regiao]
+                preco = produto['PRECO_REGIAO_'+regiao]*0.65;
             }
         }
         return preco
@@ -1108,7 +1110,7 @@ class Example extends React.Component {
                                         <Modal.Footer className="ModalBg">
                                             <div className={this.state.itemAdded}><SvgIcon size={80} icon={check} style={{ color: 'var(--cor-1)', margin: '15px 15px 15px 15px' }}/><p className='ItemMsg'>Item adicionado com sucesso!</p></div>
                                             <Button className="FormField__Button mr-20" onClick={this.closeModal}>Fechar</Button>
-                                            <Button className="FormField__Button mr-20" onClick={event => this.saveModal(event, this.state.editIte.id)}>Salvar</Button>
+                                            <Button className="FormField__Button mr-20" onClick={event => this.saveModal(event, this.state.editIte.id)}>Adicionar</Button>
                                         </Modal.Footer>
                                     </Modal.Dialog>
                                 </div>
@@ -1132,7 +1134,7 @@ class Example extends React.Component {
                                     </div>    
                                     <div className="FormField">
                                         <label className="FormField__Label" htmlFor="OBSERVACAO">OBSERVAÇÃO</label>
-                                        <textarea autocomplete="off" id="OBSERVACAO" className="FormField__Input__OBS" 
+                                        <textarea autoComplete="off" id="OBSERVACAO" className="FormField__Input__OBS" 
                                         name="OBSERVACAO" value={this.state.now.OBSERVACAO || ''} onChange={this.handleChange}/>
                                     </div>
                                     <button className="FormField__Button__Add" onClick={this.willShow}>+ Adicionar Item</button>

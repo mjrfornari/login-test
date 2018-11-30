@@ -4,6 +4,7 @@ import ReactLoading from 'react-loading';
 import {Modal, Button} from 'react-bootstrap'
 import SvgIcon from 'react-icons-kit';
 import {check} from 'react-icons-kit/metrize/check'
+import {cross} from 'react-icons-kit/metrize/cross'
 import md5 from 'md5';
 // import namor from "namor";
 // import { render } from "react-dom";
@@ -12,7 +13,8 @@ import PouchDB from 'pouchdb';
 
 // const server = 'http://187.44.93.73:8080';
 
-export const server = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname === "") ? 'http://localhost:3001/api': 'https://macropecasweb.sytes.net:8080/api';
+// export const server = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname === "") ? 'http://localhost:3001/api': 'https://macropecasweb.sytes.net:8080/api';
+export const server = window.location.protocol+'//'+window.location.hostname+':'+(window.location.hostname==='macropecasweb.sytes.net' ? '8080' : '3001')+'/api'
 const db = new PouchDB('macropecas', {auto_compaction: true});
 
 export function cryptmd5(text){
@@ -150,7 +152,7 @@ export function deletingItem(show, phase, funcao){
 }
 
 
-export function syncLoading(show, phase, funcao, texto, textopronto){
+export function syncLoading(show, phase, funcao, texto, textopronto, textoerro){
 	if (phase === 1){
 		return (
 			<div style={show}>
@@ -167,7 +169,7 @@ export function syncLoading(show, phase, funcao, texto, textopronto){
 				</Modal.Dialog>
 			</div>
 		)
-	} else {
+	} else if (phase === 2){
 		return(
 			<div style={show}>
 				<Modal.Dialog className="Modal" >
@@ -175,6 +177,22 @@ export function syncLoading(show, phase, funcao, texto, textopronto){
 					<div className="Saved">
 						<SvgIcon size={80} icon={check} style={{ color: 'var(--cor-1)', margin: '15px 15px 15px 15px' }}/>
 						<p className='ItemMsg'>{textopronto}</p>
+					</div>
+					</Modal.Body>
+					<Modal.Footer className="ModalBg">
+						<Button className="FormField__Button mr-20" onClick={() => {funcao()}}>Ok</Button>
+					</Modal.Footer>
+				</Modal.Dialog>
+			</div>
+		)		
+	} else {
+		return(
+			<div style={show}>
+				<Modal.Dialog className="Modal" >
+					<Modal.Body className="ModalBg">    
+					<div className="Saved">
+						<SvgIcon size={80} icon={cross} style={{ color: '#9b0a0a', margin: '15px 15px 15px 15px' }}/>
+						<p className='ItemMsg'>{textoerro}</p>
 					</div>
 					</Modal.Body>
 					<Modal.Footer className="ModalBg">
@@ -455,111 +473,115 @@ export function appendData(tabela, item, callback) {
 
 
 export function includeDelete(tabela,item, id, idpedidos){
+  return new Promise (resolve =>{
   createTable(Data => {
-    let create = Data
-    db.get('create').then(function(doc) {
-      let newCreate = {
-        _id: 'create',
-        data:  Data.data,
-        _rev: doc._rev
-      }
-      let table = newCreate
-      if (tabela === 'itens_ped_venda') {
-        table.data.pedidos[idpedidos].itens.forEach(function (element, index)  {
-          console.log(element)
-          console.log(id)
-          console.log('*********')
-          if (Number(element.read) === Number(id)) {
-              newCreate.data.pedidos[idpedidos].itens[index].splice(index,1)
-          } 
-        });
-        table = newCreate
-        table.data.pedidos[idpedidos].itens.forEach(function (element, index)  {
-          if (Number(element.read) > Number(id)) {
-              newCreate.data.pedidos[idpedidos].itens[index].read -= 1               
-          }  
-        });
+        let create = Data
+        db.get('create').then(function(doc) {
+          let newCreate = {
+            _id: 'create',
+            data:  Data.data,
+            _rev: doc._rev
+          }
+          let table = newCreate
+          if (tabela === 'itens_ped_venda') {
+            table.data.pedidos[idpedidos].itens.forEach(function (element, index)  {
+              console.log(element)
+              console.log(id)
+              console.log('*********')
+              if (Number(element.read) === Number(id)) {
+                  newCreate.data.pedidos[idpedidos].itens[index].splice(index,1)
+              } 
+            });
+            table = newCreate
+            table.data.pedidos[idpedidos].itens.forEach(function (element, index)  {
+              if (Number(element.read) > Number(id)) {
+                  newCreate.data.pedidos[idpedidos].itens[index].read -= 1               
+              }  
+            });
 
-      } else {
-        table.data[tabela].forEach(function (element, index)  {
-          console.log(element)
-          console.log(id)
-          console.log('*********')
-          if (Number(element.read) === Number(id)) {
-              newCreate.data[tabela].splice(index,1)
-          } 
-        });
-        table = newCreate
-        table.data[tabela].forEach(function (element, index)  {
-          if (Number(element.read) > Number(id)) {
-              newCreate.data[tabela][index].read -= 1               
-          }  
-        });
-      }
-      return db.put(newCreate)
-  }).then(function(response) {
-    console.log('Create updated!')
-  }).catch(function (err) {
-    if (err.name === 'not_found') {
-      db.put(create).then(function (response) {
-          console.log('Create Created!')
+          } else {
+            table.data[tabela].forEach(function (element, index)  {
+              console.log(element)
+              console.log(id)
+              console.log('*********')
+              if (Number(element.read) === Number(id)) {
+                  newCreate.data[tabela].splice(index,1)
+              } 
+            });
+            table = newCreate
+            table.data[tabela].forEach(function (element, index)  {
+              if (Number(element.read) > Number(id)) {
+                  newCreate.data[tabela][index].read -= 1               
+              }  
+            });
+          }
+          return db.put(newCreate)
+      }).then(function(response) {
+        console.log('Create updated!')
+        resolve()
       }).catch(function (err) {
-        console.log(err);
+        if (err.name === 'not_found') {
+          db.put(create).then(function (response) {
+              console.log('Create Created!')
+              resolve()
+          }).catch(function (err) {
+            console.log(err);
+          });
+        }
       });
-    }
-  });
+      })
+
+
+
+      updateTable(Data => {
+        let update = Data
+        db.get('update').then(function(doc) {
+          let newUpdate = {
+            _id: 'update',
+            data:  Data.data,
+            _rev: doc._rev
+          }
+          let table = newUpdate
+          if (tabela === 'itens_ped_venda') {
+            table.data.pedidos[idpedidos].itens.forEach(function (element, index)  {
+              if (Number(element.read) === Number(id)) {
+                  newUpdate.data.pedidos[idpedidos].itens[index].splice(index,1)
+              } 
+            });
+            table = newUpdate
+            table.data.pedidos[idpedidos].itens.forEach(function (element, index)  {
+              if (Number(element.read) > Number(id)) {
+                  newUpdate.data.pedidos[idpedidos].itens[index].read -= 1               
+              }  
+            });
+
+          } else {
+            table.data[tabela].forEach(function (element, index)  {
+              if (Number(element.read) === Number(id)) {
+                  newUpdate.data[tabela].splice(index,1)
+              } 
+            });
+            table = newUpdate
+            table.data[tabela].forEach(function (element, index)  {
+              if (Number(element.read) > Number(id)) {
+                  newUpdate.data[tabela][index].read -= 1               
+              }  
+            });
+          }
+          return db.put(newUpdate)
+      }).then(function(response) {
+        console.log('Update updated!')
+      }).catch(function (err) {
+        if (err.name === 'not_found') {
+          db.put(update).then(function (response) {
+              console.log('Update Created!')
+          }).catch(function (err) {
+            console.log(err);
+          });
+        }
+      });
+    })
   })
-
-
-
-  updateTable(Data => {
-    let update = Data
-    db.get('update').then(function(doc) {
-      let newUpdate = {
-        _id: 'update',
-        data:  Data.data,
-        _rev: doc._rev
-      }
-      let table = newUpdate
-      if (tabela === 'itens_ped_venda') {
-        table.data.pedidos[idpedidos].itens.forEach(function (element, index)  {
-          if (Number(element.read) === Number(id)) {
-              newUpdate.data.pedidos[idpedidos].itens[index].splice(index,1)
-          } 
-        });
-        table = newUpdate
-        table.data.pedidos[idpedidos].itens.forEach(function (element, index)  {
-          if (Number(element.read) > Number(id)) {
-              newUpdate.data.pedidos[idpedidos].itens[index].read -= 1               
-          }  
-        });
-
-      } else {
-        table.data[tabela].forEach(function (element, index)  {
-          if (Number(element.read) === Number(id)) {
-              newUpdate.data[tabela].splice(index,1)
-          } 
-        });
-        table = newUpdate
-        table.data[tabela].forEach(function (element, index)  {
-          if (Number(element.read) > Number(id)) {
-              newUpdate.data[tabela][index].read -= 1               
-          }  
-        });
-      }
-      return db.put(newUpdate)
-  }).then(function(response) {
-    console.log('Update updated!')
-  }).catch(function (err) {
-    if (err.name === 'not_found') {
-      db.put(update).then(function (response) {
-          console.log('Update Created!')
-      }).catch(function (err) {
-        console.log(err);
-      });
-    }
-  });
-})
  
 
 }
@@ -570,7 +592,7 @@ export function deleteData(tabela, item,id, idpedidos, callback) {
     readTable(Data => { 
           
           let read = Data
-          db.get('read').then(function(doc) {
+          db.get('read').then(async function(doc) {
           let newRead = {
             _id: 'read',
             data:  Data.data,
@@ -580,11 +602,11 @@ export function deleteData(tabela, item,id, idpedidos, callback) {
           if (tabela !== 'itepedidos'){
             newRead.data[tabela].splice(id, 1)
             item[0].read = id;
-            includeDelete(tabela, item[0], id)
+            await includeDelete(tabela, item[0], id)
           } else {
             // console.log('tchau')
             newRead.data.pedidos[idpedidos].itens.splice(id, 1)
-            includeDelete(tabela, item[0], id, idpedidos)
+            await includeDelete(tabela, item[0], id, idpedidos)
           }
 
           return db.put(newRead)
@@ -593,9 +615,9 @@ export function deleteData(tabela, item,id, idpedidos, callback) {
           console.log('Read updated!')
           console.log(item, 'AAAAAAAAAAAAAAAAAAAAAA')
           if (((typeof item[0].PK_PED !== 'undefined') && (item[0].PK_PED>0)) || ((typeof item[0].PK_IPE !== 'undefined') && (item[0].PK_IPE>0))){
-            
+            console.log('X')
             deleteTable(Data => {
-              
+              console.log('Z')
               let del = Data
               db.get('delete').then(function(doc) {
                 let newDelete = {
@@ -620,6 +642,8 @@ export function deleteData(tabela, item,id, idpedidos, callback) {
                     console.log(err);
                     resolve()
                   });
+                } else {
+                  console.log(err);
                 }
               })
 
@@ -801,8 +825,8 @@ export function deleteToFirebird(callback){
 
 // }
 
-function geraPk(nomepk,callback) {
-  return fetch(server+'/gerapk/'+nomepk).then(r => r.json())
+export function geraPk(nomepk,callback) {
+  return fetch(server+'/gerapk/'+nomepk).then(r => r.json()).catch(err => {throw err})
 }
 
 function criaItem(table, fields, values,callback) {

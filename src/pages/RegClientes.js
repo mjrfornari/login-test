@@ -425,17 +425,17 @@ class Example extends React.Component {
                                 <form className="FormFields" onSubmit={this.handleSubmit}>
                                 <div className="FormField">
                                     <label className="FormField__Label" htmlFor="RAZAO_SOCIAL">Razão Social</label>
-                                    <input autocomplete="off" type="text" id="RAZAO_SOCIAL" className="FormField__Input" 
+                                    <input autoComplete="off" type="text" id="RAZAO_SOCIAL" className="FormField__Input" 
                                     name="RAZAO_SOCIAL" value={this.state.now.RAZAO_SOCIAL || ''} onChange={this.handleChange}/>
                                 </div>
                                 <div className="FormField">
                                     <label className="FormField__Label" htmlFor="NOME_FANTASIA">NOME FANTASIA</label>
-                                    <input autocomplete="off" type="text" id="NOME_FANTASIA" className="FormField__Input" 
+                                    <input autoComplete="off" type="text" id="NOME_FANTASIA" className="FormField__Input" 
                                     name="NOME_FANTASIA" value={this.state.now.NOME_FANTASIA || ''} onChange={this.handleChange}/>
                                 </div>
                                 <div className="FormField">
                                     <label className="FormField__Label" htmlFor="CNPJ">CNPJ</label>
-                                    <input autocomplete="off" type="text" id="CPNJ" className="FormField__Input"
+                                    <input autoComplete="off" type="text" id="CPNJ" className="FormField__Input"
                                      pattern="\d{14}" maxLength="14" title="Digite somente os números do CNPJ (14 dígitos)"
                                      name="CNPJ" value={this.state.now.CNPJ || ''} onChange={this.handleChange}/>
                                 </div>
@@ -446,7 +446,7 @@ class Example extends React.Component {
                                 <div className='box_inverted'>
                                     <div className="FormField">
                                         <label className="FormField__Label" htmlFor="CEP">CEP</label>
-                                        <input autocomplete="off" type="text" id="CEP" className="FormField__Input" style={{width: '100px'}}
+                                        <input autoComplete="off" type="text" id="CEP" className="FormField__Input" style={{width: '100px'}}
                                         name="CEP" value={this.state.now.CEP} onChange={this.handleChange}/>
                                         <button id='buscaCEP' className='ButtonIcon' onClick={this.enviaCEP}><SvgIcon style={{transform: 'translate(0%, 30%)'}} size={26} icon={ic_search}/></button>
                                     </div>
@@ -463,16 +463,16 @@ class Example extends React.Component {
                                 <div className='box_inverted'>
                                     <div className="FormField">
                                         <label className="FormField__Label" htmlFor="FONE1">FONE 1</label>
-                                        <input autocomplete="off" type="text" id="DDD1" className="FormField__Input" style={{width: '60px', margin: '0px 5px 0px 0px'}}
+                                        <input autoComplete="off" type="text" id="DDD1" className="FormField__Input" style={{width: '60px', margin: '0px 5px 0px 0px'}}
                                         name="DDD1" value={this.state.now.DDD1 || ''} onChange={this.handleChange}/>
-                                        <input autocomplete="off" type="text" id="FONE1" className="FormField__InputTelefone"
+                                        <input autoComplete="off" type="text" id="FONE1" className="FormField__InputTelefone"
                                         name="FONE1" value={this.state.now.FONE1 || ''} onChange={this.handleChange}/>
                                     </div>
                                     <div className="FormField">
                                         <label className="FormField__Label" htmlFor="FONE2">FONE 2</label>
-                                        <input autocomplete="off" type="text" id="DDD2" className="FormField__Input" style={{width: '60px', margin: '0px 5px 0px 0px'}}
+                                        <input autoComplete="off" type="text" id="DDD2" className="FormField__Input" style={{width: '60px', margin: '0px 5px 0px 0px'}}
                                         name="DDD2" value={this.state.now.DDD2 || ''} onChange={this.handleChange}/>
-                                        <input autocomplete="off" type="text" id="FONE2" className="FormField__InputTelefone"
+                                        <input autoComplete="off" type="text" id="FONE2" className="FormField__InputTelefone"
                                         name="FONE2" value={this.state.now.FONE1 || ''} onChange={this.handleChange}/>
                                     </div>
                                     {geraInput('EMAIL','EMAIL NFE',this.state.now.EMAIL || '', this.handleChange)}

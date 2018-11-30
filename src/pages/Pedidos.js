@@ -11,7 +11,7 @@ import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_settings} from 'react-icons-kit/md/ic_settings'
 import {ListGroup, ListGroupItem, Pagination} from 'react-bootstrap'
 import {LinkContainer} from 'react-router-bootstrap'
-import { readTable, deleteData, garanteDate, now, date2str, deletingItem } from "./Utils";
+import { readTable, deleteData, garanteDate, now, date2str, deletingItem, server } from "./Utils";
 import {plus} from 'react-icons-kit/fa/plus'
 import Dropdown from 'react-dropdown'
 import {ic_keyboard_arrow_left} from 'react-icons-kit/md/ic_keyboard_arrow_left'
@@ -63,6 +63,7 @@ class Example extends React.Component {
         this.hideShow = this.hideShow.bind(this);
         this.handleBar = this.handleBar.bind(this);
         this.appBar = this.appBar.bind(this);
+        this.geraPdf = this.geraPdf.bind(this);
         this.filtroStatus = this.filtroStatus.bind(this);
         this.filtroTipo = this.filtroTipo.bind(this);
         this.setPage = this.setPage.bind(this);
@@ -136,7 +137,11 @@ class Example extends React.Component {
         }
     }
 
-
+    geraPdf(e){
+        e.stopPropagation();
+        // e.preventDefault();
+        // reqPdf(e.target.id)
+    }
 
     nextPage(){
             if(this.state.page===this.state.maxPages){
@@ -205,13 +210,14 @@ class Example extends React.Component {
                                 </LinkContainer>  
                             </div>
                             <LinkContainer to={"/macropecas/pedidos/registro/"+item.READ}><button className="Grid__Button">Editar</button></LinkContainer>
-                            <LinkContainer to={"/macropecas/pedidos/registro/r"+item.READ}><button className="Grid__Button">Replicar</button></LinkContainer>
-                            <button className={((Number(item.PK_PED) === 0 && item.ORCAMENTO === 'N') || item.ORCAMENTO === 'S') ? "Grid__Button" : "Grid__Button__Hide"} id={item.READ} onClick={this.handleExcluir}>Excluir</button> 
+                            {/* <LinkContainer to={"/macropecas/pedidos/registro/r"+item.READ}><button className="Grid__Button">Replicar</button></LinkContainer> */}
+                            <button className={((Number(item.PK_PED) === 0 && item.ORCAMENTO === 'N') || (item.ORCAMENTO === 'S' && item.WEB === 'S')) ? "Grid__Button" : "Grid__Button__Hide"} id={item.READ} onClick={this.handleExcluir}>Excluir</button> 
+                            <a href={server+'/gerapdf?ped='+item.PK_PED} download='pedido.pdf'><img src='/pdf.svg' align="right" className={(item.PK_PED>0) ? 'Pdf_Logo' : 'Pdf_Logo_Hide'} alt='Download PDF' id={item.PK_PED} onClick={this.geraPdf}/></a>                           
                         </ListGroupItem>
                     )
                 } else {
                     return (
-                       <ListGroupItem href="#" key={item.READ} className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
+                       <ListGroupItem componentclass='div' href="#" key={item.READ} className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
                             Cliente: {item.RAZAO_SOCIAL}<br/>
                             {garanteDate(item.DATA)}<br/>
                             Condição de Pagamento: {item.NOMECPG}<br/>
@@ -221,14 +227,15 @@ class Example extends React.Component {
                             Valor: {'R$ '+item.VALOR_INFORMADO.toFixed(2)}<br/>
                             Enviado para Macropeças: {(item.PK_PED>0) ? 'Sim' : 'Não' }<br/>
                             <LinkContainer to={"/macropecas/pedidos/registro/"+item.READ}><button className="Grid__Button">Editar</button></LinkContainer>
-                            <LinkContainer to={"/macropecas/pedidos/registro/r"+item.READ}><button className="Grid__Button">Replicar</button></LinkContainer>
-                            <button className={((Number(item.PK_PED) === 0 && item.ORCAMENTO === 'N') || item.ORCAMENTO === 'S') ? "Grid__Button" : "Grid__Button__Hide"} id={item.READ} onClick={this.handleExcluir}>Excluir</button> 
+                            {/* <LinkContainer to={"/macropecas/pedidos/registro/r"+item.READ}><button className="Grid__Button">Replicar</button></LinkContainer> */}
+                            <button className={((Number(item.PK_PED) === 0 && item.ORCAMENTO === 'N') || (item.ORCAMENTO === 'S' && item.WEB === 'S')) ? "Grid__Button" : "Grid__Button__Hide"} id={item.READ} onClick={this.handleExcluir}>Excluir</button> 
+                            <a href={server+'/gerapdf?ped='+item.PK_PED} download='pedido.pdf'><img src='/pdf.svg' align="right" className={(item.PK_PED>0) ? 'Pdf_Logo' : 'Pdf_Logo_Hide'} alt='Download PDF' id={item.PK_PED} onClick={this.geraPdf}/></a>
                         </ListGroupItem>
                     )
                 }
             } else {
                 return (
-                    <ListGroupItem href="#" key={item.READ} className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
+                    <ListGroupItem componentclass='div' href="#" key={item.READ} className="FormField__Grid" onClick={() => {this.masterDetail(id)}}>
                         Cliente: {item.RAZAO_SOCIAL}<br/>
                         {garanteDate(item.DATA)}<br/>
                         Condição de Pagamento: {item.NOMECPG}<br/>
@@ -238,8 +245,9 @@ class Example extends React.Component {
                         Valor: {'R$ '+item.VALOR_INFORMADO.toFixed(2)}<br/>
                         Enviado para Macropeças: {(item.PK_PED>0) ? 'Sim' : 'Não' }<br/>
                         <LinkContainer to={"/macropecas/pedidos/registro/"+item.READ}><button className="Grid__Button">Editar</button></LinkContainer>
-                        <LinkContainer to={"/macropecas/pedidos/registro/r"+item.READ}><button className="Grid__Button">Replicar</button></LinkContainer>
-                        <button className={((Number(item.PK_PED) === 0 && item.ORCAMENTO === 'N') || item.ORCAMENTO === 'S') ? "Grid__Button" : "Grid__Button__Hide"} id={item.READ} onClick={this.handleExcluir}>Excluir</button> 
+                        {/* <LinkContainer to={"/macropecas/pedidos/registro/r"+item.READ}><button className="Grid__Button">Replicar</button></LinkContainer> */}
+                        <button className={((Number(item.PK_PED) === 0 && item.ORCAMENTO === 'N') || (item.ORCAMENTO === 'S' && item.WEB === 'S')) ? "Grid__Button" : "Grid__Button__Hide"} id={item.READ} onClick={this.handleExcluir}>Excluir</button> 
+                        <a href={server+'/gerapdf?ped='+item.PK_PED} download='pedido.pdf'><img src='/pdf.svg' align="right" className={(item.PK_PED>0) ? 'Pdf_Logo' : 'Pdf_Logo_Hide'} alt='Download PDF' id={item.PK_PED} onClick={this.geraPdf}/></a>
                     </ListGroupItem>
                 )
             }
@@ -441,6 +449,7 @@ class Example extends React.Component {
     }
 
     render() {
+        console.log(server)
         let Data = this.state.filtered
         let listData = Data.map(this.createItems)
         let logou = localStorage.getItem("logou");
@@ -463,9 +472,9 @@ class Example extends React.Component {
                                     <div>
                                         Filtro:
                                         <div className='box_inverted'> 
-                                            <div className="FormField" autocomplete="off">
+                                            <div className="FormField" autoComplete="off">
                                                 <label className="FormFilter__Label" htmlFor="RAZAO_SOCIAL">Razão Social</label>
-                                                <input autocomplete="off" type="text" id="RAZAO_SOCIAL" className="FormFilter__Input" 
+                                                <input autoComplete="off" type="text" id="RAZAO_SOCIAL" className="FormFilter__Input" 
                                                 name="RAZAO_SOCIAL" value={this.state.filter.RAZAO_SOCIAL || ''} onChange={this.handleChange}/>
                                                 <label className="FormFilter__Label">PERÍODO</label>
                                                 <input id="DATA_MIN" name="DATA_MIN" className={this.state.show ? 'FormFilter__Date__Show' : 'FormFilter__Date'} type="date" value={this.state.filter.DATA_MIN || ''} onChange={this.handleChange}></input>

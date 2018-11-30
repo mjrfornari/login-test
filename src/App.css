@@ -160,6 +160,8 @@ tr:hover {background-color:var(--cor-2);}
   text-align: center;
 }
 
+
+
 .box {
     border: 1px solid var(--cor-fundo);
     padding: 15px 15px 15px 15px;
@@ -1556,3 +1558,12 @@ tr:hover {background-color:var(--cor-2);}
   margin-left: 5px;
 }
 
+.Pdf_Logo {
+  height: 60px;
+  width: 60px; 
+  margin-top: -30px;
+}
+
+.Pdf_Logo_Hide {
+  display: none;
+}

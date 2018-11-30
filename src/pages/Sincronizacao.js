@@ -9,15 +9,15 @@ import { ic_add_shopping_cart } from 'react-icons-kit/md/ic_add_shopping_cart';
 import { ic_settings } from 'react-icons-kit/md/ic_settings'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_exit_to_app} from 'react-icons-kit/md/ic_exit_to_app'
-import { teste , newCreate, newUpdate, newDelete} from "./SyncUtils"
-import { syncData, createToFirebird, updateToFirebird, syncLoading, date2str, deleteToFirebird  } from "./Utils";
+import { sync} from "./SyncUtils"
+import { syncLoading, date2str } from "./Utils";
 import Clock from 'react-live-clock';
 import ReactLoading from 'react-loading';
 import { Offline, Online } from "react-detect-offline";
+
 // import { pedirPermissaoParaReceberNotificacoes } from '../push-notification';
 // import { ic_exit_to_app } from "react-icons-kit/md/ic_exit_to_app";
 
-// const db = new PouchDB('macropecas')
 
 
 
@@ -84,28 +84,46 @@ class Example extends React.Component {
     }
 
 
-    handleSync (e) {
+    async handleSync (e) {
         
-        e.preventDefault(); 
-        navigator.getBattery().then(battery => {
-            if ((battery.level*100) >= 0) {
-                if (navigator.connection.type !== 'cellular'){
-                    this.setState({sync: true, savingPhase: 1, savingShow:{}}) 
-                    deleteToFirebird(() => {
-                        createToFirebird(() => {    
-                            updateToFirebird(() => { 
-                                syncData(localStorage.getItem('macropecas'), ()=> {this.setState({sync: false, savingPhase: 2, savingShow:{}})
-                                localStorage.setItem("macrosync", new Date())})
-                            })
-                        })
-                    })
-                } else {alert('Não foi possível iniciar a sincronização.\nMotivo: Conecte à uma rede Wi-Fi!')}
-            } else {alert('Não foi possível iniciar a sincronização.\nMotivo: Bateria abaixo de 30%!')}
-        })
-        
-        // createToFirebird(() => {
-        //     updateToFirebird(() => {console.log('A')})
+        // e.preventDefault(); 
+        // navigator.getBattery().then(battery => {
+        //     if ((battery.level*100) >= 0) {
+        //         if (navigator.connection.type !== 'cellular'){
+        //             this.setState({sync: true, savingPhase: 1, savingShow:{}}) 
+        //             deleteToFirebird(() => {
+        //                 createToFirebird(() => {    
+        //                     updateToFirebird(() => { 
+        //                         syncData(localStorage.getItem('macropecas'), ()=> {this.setState({sync: false, savingPhase: 2, savingShow:{}})
+        //                         localStorage.setItem("macrosync", new Date())})
+        //                     })
+        //                 })
+        //             })
+        //         } else {alert('Não foi possível iniciar a sincronização.\nMotivo: Conecte à uma rede Wi-Fi!')}
+        //     } else {alert('Não foi possível iniciar a sincronização.\nMotivo: Bateria abaixo de 30%!')}
         // })
+
+
+        e.preventDefault(); 
+        // navigator.getBattery().then(async battery => {
+            // if ((battery.level*100) >= 0) {
+                // if (navigator.connection.type !== 'cellular'){
+                    this.setState({sync: true, savingPhase: 1, savingShow:{}})
+                    let sincronizado = ''; 
+                    await sync().then((res)=>{sincronizado = res}).catch((err) => {sincronizado = 'ERROR'})
+                        if (sincronizado === 'ERROR'){
+                            this.setState({sync: false, savingPhase: 3, savingShow:{}})
+                        } else {
+                            this.setState({sync: false, savingPhase: 2, savingShow:{}})
+                        }
+                        
+                        localStorage.setItem("macrosync", new Date())
+                    // }) 
+                // } else {alert('Não foi possível iniciar a sincronização.\nMotivo: Conecte à uma rede Wi-Fi!')}
+            // } else {alert('Não foi possível iniciar a sincronização.\nMotivo: Bateria abaixo de 30%!')}
+        // })
+        
+        
         
     }
 
@@ -113,7 +131,7 @@ class Example extends React.Component {
 
     handleTeste(e){
         e.preventDefault();
-        teste()
+        sync()
     }
 
     hideBar(){
@@ -202,20 +220,15 @@ class Example extends React.Component {
                                         Última atualização: {localStorage.getItem("macroupdate") ? date2str(localStorage.getItem("macroupdate")) : 'Nunca atualizado.'}<br/>
                                         {this.atualizando(this.state.sync)}
                                     </div>                                    
-                                </div>
-                                <button onClick={this.handleTeste}>Teste</button>
-                                <br/>
-                                <button onClick={async (e) => {e.preventDefault(); await newCreate('teste', 'testando, testador', "'TESTE', 'JOAO'", 'PK_TES')}}>Create</button>
-                                <button onClick={async (e) => {e.preventDefault(); await newUpdate('teste', {pk_tes: 122, teste: 'testando', nome: 'gege' }, 'PK_TES', 2)}}>Update</button>
-                                <button onClick={async (e) => {e.preventDefault(); await newDelete('teste',  'PK_TES', 1)}}>Delete</button>
+                                </div>                         
                                 {/* <button className="add-button">Instalar Aplicativo</button> */}
                             </Online>
                         </div>
                         
 
 
-
-                        {syncLoading(this.state.savingShow, this.state.savingPhase, this.saving, 'Sincronizando...', 'Sincronização realizada com sucesso!')}
+                        
+                        {syncLoading(this.state.savingShow, this.state.savingPhase, this.saving, 'Sincronizando...', 'Sincronização realizada com sucesso!', 'Houve um problema na sincronização. Tente novamente.')}
                         {syncLoading(this.state.updatingShow, this.state.updatingPhase, this.updating, 'Atualizando...', 'Atualização realizada com sucesso!')}
                         </form>
                     </div>

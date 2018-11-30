@@ -35,6 +35,7 @@
     "react-loading": "^2.0.3",
     "react-loading-animation": "^1.4.0",
     "react-md": "^1.5.0",
+    "react-pdf": "^4.0.0",
     "react-pouchdb": "^0.3.0",
     "react-radio-buttons": "^1.2.2",
     "react-redux": "^5.0.7",
