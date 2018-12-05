@@ -46,6 +46,7 @@ class Example extends React.Component {
         editIte: {CODIGOPRO: '', QUANTIDADE: 0, VALOR_STICMS:0, VALOR_IPI:0, IPI:0, PERC_STICMS:0, VALOR: 0, DESCONTO1: 0, DESCONTO2: 0,DESCONTO3: 0, id:0},
         append: false,
         isLoading: true,
+        returnPage: false,
         id: 0,
         mostraFK_CPG: false,
         ok: false,
@@ -104,7 +105,7 @@ class Example extends React.Component {
     }
 
     saving(){
-        this.setState({savingShow: {display: 'none'}})
+        this.setState({savingShow: {display: 'none'}, returnPage: true})
     }
 
     createSons(item, id){
@@ -956,206 +957,211 @@ class Example extends React.Component {
             produtos = []
         } else { produtos = this.state.produtos }
         let logou = localStorage.getItem("logou");
-        if (logou === "true") {
-            return (     
-                        <div className="App">
-                           {bar}  
-                            <div className="App__Form">
-                                <div className={this.showTotal()} tabIndex="-1">
-                                    <Modal.Dialog className="Modal" >
-                                        <Modal.Body className="ModalBg">   
-                                        <div className='Saved'> 
-                                            <div className='TotaisRadio'>
-                                                <Radio label='PEDIDO' name='ORCAMENTO' style={{color: 'white'}} checked={this.state.now.ORCAMENTO === "N"} onChange={this.handleTogglePed} toggle/>
-                                                <Radio label='ORÇAMENTO' name='ORCAMENTO' style={{color: 'white'}} checked={this.state.now.ORCAMENTO === "S"} onChange={this.handleToggleOrc} toggle/>
+        if (logou === "true") { 
+            if (this.state.returnPage){
+                return <Redirect exact to="/macropecas/pedidos/"/>
+            } 
+            else {
+                return (     
+                            <div className="App">
+                            {bar}  
+                                <div className="App__Form">
+                                    <div className={this.showTotal()} tabIndex="-1">
+                                        <Modal.Dialog className="Modal" >
+                                            <Modal.Body className="ModalBg">   
+                                            <div className='Saved'> 
+                                                <div className='TotaisRadio'>
+                                                    <Radio label='PEDIDO' name='ORCAMENTO' style={{color: 'white'}} checked={this.state.now.ORCAMENTO === "N"} onChange={this.handleTogglePed} toggle/>
+                                                    <Radio label='ORÇAMENTO' name='ORCAMENTO' style={{color: 'white'}} checked={this.state.now.ORCAMENTO === "S"} onChange={this.handleToggleOrc} toggle/>
+                                                </div>
+                                                <div className='Totais'>
+                                                Total Produtos: R$ {(this.state.now.VALOR_CALCULADO||0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}<br/>
+                                                Total IPI: R$ {(this.state.now.VALOR_IPI||0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}<br/>
+                                                Total ST ICMS: R$ {(this.state.now.VALOR_ST||0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}<br/>
+                                                Total do Pedido: R$ {(this.state.now.VALOR_INFORMADO||0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}
+                                                </div>
                                             </div>
-                                            <div className='Totais'>
-                                            Total Produtos: R$ {(this.state.now.VALOR_CALCULADO||0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}<br/>
-                                            Total IPI: R$ {(this.state.now.VALOR_IPI||0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}<br/>
-                                            Total ST ICMS: R$ {(this.state.now.VALOR_ST||0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}<br/>
-                                            Total do Pedido: R$ {(this.state.now.VALOR_INFORMADO||0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}
-                                            </div>
+                                            </Modal.Body>
+                                            <Modal.Footer className="ModalBg">
+                                                <Button className="FormField__Button mr-20" onClick={this.closeModal}>Cancelar</Button>
+                                                <Button className="FormField__Button mr-20" onClick={this.handleSave}>Salvar</Button>
+                                            </Modal.Footer>
+                                        </Modal.Dialog>
+                                    </div>
+                                    <div className={this.showModal()} tabIndex="-1" >
+                                        <Modal.Dialog className="Modal">
+                                            <Modal.Header className="ModalBg">
+                                                <Modal.Title>Nº {(parseInt(this.state.editIte.id, 10)+1)}</Modal.Title>
+                                                <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={this.closeModal}>
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </Modal.Header>
+                                            <Modal.Body className="ModalBg">
+                                                <div className="FormField">
+                                                    <label className="FormField__Label" htmlFor="PRODUTO">PRODUTO</label>
+                                                    {this.autocomplete(produtos, this.state.produto, 'produto', 'FK_PRO')}
+                                                </div>
+
+                                                <div className="FormField">
+                                                        <div style={{display:'flex'}}>
+                                                            <div style={{width: '45%', display:'inline'}}>
+                                                                <label className="FormField__Label" htmlFor="QUANTIDADE">QUANTIDADE</label>
+                                                            </div>
+                                                            <div style={{width: '45%', display:'inline'}}>
+                                                                <label className="FormField__Label" htmlFor="VALOR">VALOR UNITÁRIO</label>
+                                                            </div>
+                                                        </div>
+                                                        <div style={{display:'flex'}}>
+                                                            <div style={{width: '45%', display:'inline'}}>
+                                                            <input type="number" id="QUANTIDADE" className="FormField__Input" 
+                                                                name="QUANTIDADE" value={(this.state.editIte.QUANTIDADE)} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
+                                                            </div>
+                                                            <div style={{width: '45%', display:'inline'}}>
+                                                                <input type="text" id="VALOR" className="FormField__Input"
+                                                                name="VALOR" readOnly tabIndex="-1" value={(this.state.editIte.VALOR||0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
+                                                            </div>
+                                                        </div>
+                                                </div>
+                                                <div className="FormField">
+                                                    <label className="FormField__Label" htmlFor="OBS_PROMOCIONAL">OBSERVAÇÃO PROMOCIONAL</label>
+                                                    <textarea id="OBS_PROMOCIONAL" className="FormField__Input__OBS" 
+                                                    name="OBS_PROMOCIONAL" value={this.state.produto.OBS_PROMOCIONAL||''} tabIndex="-1" readOnly/>
+                                                </div>
+
+
+                                                <div className="FormField">
+                                                        <div style={{display:'flex'}}>
+                                                            <div style={{width: '45%', display:'inline'}}>
+                                                                <label className="FormField__Label" htmlFor="DESCONTO1">DESCONTO 1</label>
+                                                            </div>
+                                                            <div style={{width: '45%', display:'inline'}}>
+                                                                <label className="FormField__Label" htmlFor="DESCONTO2">DESCONTO 2</label>
+                                                            </div>
+                                                        </div>
+                                                        <div style={{display:'flex'}}>
+                                                            <div style={{width: '45%', display:'inline'}}>
+                                                                <input type="number" data-number-to-fixed="2" id="DESCONTO1" className="FormField__InputUn"  style={{margin: '0px 5px 0px 0px', display:'inline-block' }} 
+                                                                name="DESCONTO1" value={(this.state.editIte.DESCONTO1||0)} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
+                                                                <input type="text" value="%" readOnly tabIndex='-1' className="FormField__Un" style={{margin: '0px 5px 0px 0px', display:'inline-block' }}></input>
+                                                            </div>
+                                                            <div style={{width: '45%', display:'inline'}}>
+                                                                <input type="number" id="DESCONTO2" className="FormField__InputUn"  style={{margin: '0px 5px 0px 0px'}}
+                                                                name="DESCONTO2" value={(this.state.editIte.DESCONTO2||0)} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
+                                                            <input type="text" value="%" readOnly tabIndex='-1' className="FormField__Un" style={{margin: '0px 5px 0px 0px', display:'inline-block' }}></input>
+                                                            </div>
+                                                        </div>
+                                                </div>
+                                                <div className="FormField">
+                                                        <div style={{display:'flex'}}>
+                                                            <div style={{width: '45%', display:'inline'}}>
+                                                                <label className="FormField__Label" htmlFor="DESCONTO3">DESCONTO 3</label>
+                                                            </div>
+                                                        </div>
+                                                        <div style={{display:'flex'}}>
+                                                            <div style={{width: '45%', display:'inline'}}>
+                                                                <input type="number" data-number-to-fixed="2" id="DESCONTO3" className="FormField__InputUn"  style={{margin: '0px 5px 0px 0px', display:'inline-block' }} 
+                                                                name="DESCONTO3" value={(this.state.editIte.DESCONTO3||0)} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
+                                                                <input type="text" value="%" readOnly tabIndex='-1' className="FormField__Un" style={{margin: '0px 5px 0px 0px', display:'inline-block' }}></input>
+                                                            </div>
+                                                        </div>
+                                                </div>
+                                                <div className="FormField">
+                                                        <div style={{display:'flex'}}>
+                                                            <div style={{width: '30%', display:'inline'}}>
+                                                                <label className="FormField__Label" htmlFor="PROIPI">ALIQ. IPI</label>
+                                                            </div>
+                                                            <div style={{width: '65%', display:'inline'}}>
+                                                                <label className="FormField__Label" htmlFor="IPI">VALOR IPI</label>
+                                                            </div>
+                                                        </div>
+                                                        <div style={{display:'flex'}}>
+                                                            <div style={{width: '30%', display:'inline'}}>
+                                                                <input type="text" id="PROIPI" className="FormField__Input" 
+                                                                name="PROIPI" value={(this.state.editIte.IPI+' %' || '0.00 %')} tabIndex="-1" readOnly/>
+                                                            </div>
+                                                            <div style={{width: '65%', display:'inline'}}>
+                                                                <input type="text" id="IPI" className="FormField__Input"
+                                                                name="IPI" value={(this.state.editIte.VALOR_IPI||0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})} tabIndex="-1" readOnly/>
+                                                            </div>
+                                                        </div>
+                                                </div>
+                                                <div className="FormField">
+                                                        <div style={{display:'flex'}}>
+                                                            <div style={{width: '30%', display:'inline'}}>
+                                                                <label className="FormField__Label" htmlFor="PROST_ICMS">ALIQ. ST ICMS</label>
+                                                            </div>
+                                                            <div style={{width: '65%', display:'inline'}}>
+                                                                <label className="FormField__Label" htmlFor="ST_ICMS">VALOR ST ICMS</label>
+                                                            </div>
+                                                        </div>
+                                                        <div style={{display:'flex'}}>
+                                                            <div style={{width: '30%', display:'inline'}}>
+                                                                <input type="text" id="PROIPI" className="FormField__Input" 
+                                                                name="PROST_ICMS" value={(this.state.editIte.PERC_STICMS+' %' || '0.00 %')} tabIndex="-1" readOnly/>
+                                                            </div>
+                                                            <div style={{width: '65%', display:'inline'}}>
+                                                                <input type="text" id="ST_ICMS" className="FormField__Input"
+                                                                name="ST_ICMS" value={(this.state.editIte.VALOR_STICMS||0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})} tabIndex="-1" readOnly/>
+                                                            </div>
+                                                        </div>
+                                                </div>
+                                                <div className="FormField">
+                                                    <label className="FormField__Label" htmlFor="TOTAL">VALOR TOTAL</label>
+                                                    <input type="text" id="TOTAL" className="FormField__Input" 
+                                                    name="TOTAL" value={(this.state.editIte.TOTAL||0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}) } tabIndex="-1" readOnly/>
+                                                </div>
+
+                                            </Modal.Body>
+                                            <Modal.Footer className="ModalBg">
+                                                <div className={this.state.itemAdded}><SvgIcon size={80} icon={check} style={{ color: 'var(--cor-1)', margin: '15px 15px 15px 15px' }}/><p className='ItemMsg'>Item adicionado com sucesso!</p></div>
+                                                <Button className="FormField__Button mr-20" onClick={this.closeModal}>Fechar</Button>
+                                                <Button className="FormField__Button mr-20" onClick={event => this.saveModal(event, this.state.editIte.id)}>Adicionar</Button>
+                                            </Modal.Footer>
+                                        </Modal.Dialog>
+                                    </div>
+                                    <div className="FormCenter">
+                                        <div className="FormTitle">
+                                            <Clock format={'DD/MM/YYYY - HH:mm'} ticking={true}/> 
+                                            <br/>
+                                            Última sincronização: {localStorage.getItem("macrosync") ? date2str(localStorage.getItem("macrosync")) : 'Nunca sincronizado.'}<br/>
+                                            <h1 className="FormTitle__Link--Active">Registro de Pedidos</h1>
                                         </div>
-                                        </Modal.Body>
-                                        <Modal.Footer className="ModalBg">
-                                            <Button className="FormField__Button mr-20" onClick={this.closeModal}>Cancelar</Button>
-                                            <Button className="FormField__Button mr-20" onClick={this.handleSave}>Salvar</Button>
-                                        </Modal.Footer>
-                                    </Modal.Dialog>
-                                </div>
-                                <div className={this.showModal()} tabIndex="-1" >
-                                    <Modal.Dialog className="Modal">
-                                        <Modal.Header className="ModalBg">
-                                            <Modal.Title>Nº {(parseInt(this.state.editIte.id, 10)+1)}</Modal.Title>
-                                            <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={this.closeModal}>
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </Modal.Header>
-                                        <Modal.Body className="ModalBg">
-                                            <div className="FormField">
-                                                <label className="FormField__Label" htmlFor="PRODUTO">PRODUTO</label>
-                                                {this.autocomplete(produtos, this.state.produto, 'produto', 'FK_PRO')}
-                                            </div>
+                                        <form className="FormFields" onSubmit={this.handleSubmit}>
+                                        <div className="FormField">
+                                            <Radio label='PEDIDO' name='ORCAMENTO' style={{color: 'white'}} checked={this.state.now.ORCAMENTO === "N"} onChange={this.handleTogglePed} toggle/>
+                                            <Radio label='ORÇAMENTO' name='ORCAMENTO' style={{color: 'white'}} checked={this.state.now.ORCAMENTO === "S"} onChange={this.handleToggleOrc} toggle/>
+                                        </div>                                   
+                                        <div className="FormField">
+                                            <label className="FormField__Label" htmlFor="FK_CLI">Cliente</label>
+                                            {this.autocomplete(clientes, this.state.cliente, 'cliente', 'FK_CLI')}
+                                            <label className="FormField__Label" htmlFor="FK_CPG">Condição de Pagamento</label>
+                                            {this.autocomplete(cpgs, this.state.cond_pag, 'cond_pag', 'FK_CPG',true)}
+                                        </div>    
+                                        <div className="FormField">
+                                            <label className="FormField__Label" htmlFor="OBSERVACAO">OBSERVAÇÃO</label>
+                                            <textarea autoComplete="off" id="OBSERVACAO" className="FormField__Input__OBS" 
+                                            name="OBSERVACAO" value={this.state.now.OBSERVACAO || ''} onChange={this.handleChange}/>
+                                        </div>
+                                        <button className="FormField__Button__Add" onClick={this.willShow}>+ Adicionar Item</button>
 
-                                            <div className="FormField">
-                                                    <div style={{display:'flex'}}>
-                                                        <div style={{width: '45%', display:'inline'}}>
-                                                            <label className="FormField__Label" htmlFor="QUANTIDADE">QUANTIDADE</label>
-                                                        </div>
-                                                        <div style={{width: '45%', display:'inline'}}>
-                                                            <label className="FormField__Label" htmlFor="VALOR">VALOR UNITÁRIO</label>
-                                                        </div>
-                                                    </div>
-                                                    <div style={{display:'flex'}}>
-                                                        <div style={{width: '45%', display:'inline'}}>
-                                                           <input type="number" id="QUANTIDADE" className="FormField__Input" 
-                                                            name="QUANTIDADE" value={(this.state.editIte.QUANTIDADE)} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
-                                                        </div>
-                                                        <div style={{width: '45%', display:'inline'}}>
-                                                            <input type="text" id="VALOR" className="FormField__Input"
-                                                            name="VALOR" readOnly tabIndex="-1" value={(this.state.editIte.VALOR||0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
-                                                        </div>
-                                                    </div>
-                                            </div>
-                                            <div className="FormField">
-                                                <label className="FormField__Label" htmlFor="OBS_PROMOCIONAL">OBSERVAÇÃO PROMOCIONAL</label>
-                                                <textarea id="OBS_PROMOCIONAL" className="FormField__Input__OBS" 
-                                                name="OBS_PROMOCIONAL" value={this.state.produto.OBS_PROMOCIONAL||''} tabIndex="-1" readOnly/>
-                                            </div>
-
-
-                                            <div className="FormField">
-                                                    <div style={{display:'flex'}}>
-                                                        <div style={{width: '45%', display:'inline'}}>
-                                                            <label className="FormField__Label" htmlFor="DESCONTO1">DESCONTO 1</label>
-                                                        </div>
-                                                        <div style={{width: '45%', display:'inline'}}>
-                                                            <label className="FormField__Label" htmlFor="DESCONTO2">DESCONTO 2</label>
-                                                        </div>
-                                                    </div>
-                                                    <div style={{display:'flex'}}>
-                                                        <div style={{width: '45%', display:'inline'}}>
-                                                            <input type="number" data-number-to-fixed="2" id="DESCONTO1" className="FormField__InputUn"  style={{margin: '0px 5px 0px 0px', display:'inline-block' }} 
-                                                            name="DESCONTO1" value={(this.state.editIte.DESCONTO1||0)} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
-                                                            <input type="text" value="%" readOnly tabIndex='-1' className="FormField__Un" style={{margin: '0px 5px 0px 0px', display:'inline-block' }}></input>
-                                                        </div>
-                                                        <div style={{width: '45%', display:'inline'}}>
-                                                            <input type="number" id="DESCONTO2" className="FormField__InputUn"  style={{margin: '0px 5px 0px 0px'}}
-                                                            name="DESCONTO2" value={(this.state.editIte.DESCONTO2||0)} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
-                                                        <input type="text" value="%" readOnly tabIndex='-1' className="FormField__Un" style={{margin: '0px 5px 0px 0px', display:'inline-block' }}></input>
-                                                        </div>
-                                                    </div>
-                                            </div>
-                                            <div className="FormField">
-                                                    <div style={{display:'flex'}}>
-                                                        <div style={{width: '45%', display:'inline'}}>
-                                                            <label className="FormField__Label" htmlFor="DESCONTO3">DESCONTO 3</label>
-                                                        </div>
-                                                    </div>
-                                                    <div style={{display:'flex'}}>
-                                                        <div style={{width: '45%', display:'inline'}}>
-                                                            <input type="number" data-number-to-fixed="2" id="DESCONTO3" className="FormField__InputUn"  style={{margin: '0px 5px 0px 0px', display:'inline-block' }} 
-                                                            name="DESCONTO3" value={(this.state.editIte.DESCONTO3||0)} onChange={event => this.handleChangeItem(event, this.state.editIte.id)}/>
-                                                            <input type="text" value="%" readOnly tabIndex='-1' className="FormField__Un" style={{margin: '0px 5px 0px 0px', display:'inline-block' }}></input>
-                                                        </div>
-                                                    </div>
-                                            </div>
-                                            <div className="FormField">
-                                                    <div style={{display:'flex'}}>
-                                                        <div style={{width: '30%', display:'inline'}}>
-                                                            <label className="FormField__Label" htmlFor="PROIPI">ALIQ. IPI</label>
-                                                        </div>
-                                                        <div style={{width: '65%', display:'inline'}}>
-                                                            <label className="FormField__Label" htmlFor="IPI">VALOR IPI</label>
-                                                        </div>
-                                                    </div>
-                                                    <div style={{display:'flex'}}>
-                                                        <div style={{width: '30%', display:'inline'}}>
-                                                            <input type="text" id="PROIPI" className="FormField__Input" 
-                                                            name="PROIPI" value={(this.state.editIte.IPI+' %' || '0.00 %')} tabIndex="-1" readOnly/>
-                                                        </div>
-                                                        <div style={{width: '65%', display:'inline'}}>
-                                                            <input type="text" id="IPI" className="FormField__Input"
-                                                            name="IPI" value={(this.state.editIte.VALOR_IPI||0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})} tabIndex="-1" readOnly/>
-                                                        </div>
-                                                    </div>
-                                            </div>
-                                            <div className="FormField">
-                                                    <div style={{display:'flex'}}>
-                                                        <div style={{width: '30%', display:'inline'}}>
-                                                            <label className="FormField__Label" htmlFor="PROST_ICMS">ALIQ. ST ICMS</label>
-                                                        </div>
-                                                        <div style={{width: '65%', display:'inline'}}>
-                                                            <label className="FormField__Label" htmlFor="ST_ICMS">VALOR ST ICMS</label>
-                                                        </div>
-                                                    </div>
-                                                    <div style={{display:'flex'}}>
-                                                        <div style={{width: '30%', display:'inline'}}>
-                                                            <input type="text" id="PROIPI" className="FormField__Input" 
-                                                            name="PROST_ICMS" value={(this.state.editIte.PERC_STICMS+' %' || '0.00 %')} tabIndex="-1" readOnly/>
-                                                        </div>
-                                                        <div style={{width: '65%', display:'inline'}}>
-                                                            <input type="text" id="ST_ICMS" className="FormField__Input"
-                                                            name="ST_ICMS" value={(this.state.editIte.VALOR_STICMS||0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})} tabIndex="-1" readOnly/>
-                                                        </div>
-                                                    </div>
-                                            </div>
-                                            <div className="FormField">
-                                                <label className="FormField__Label" htmlFor="TOTAL">VALOR TOTAL</label>
-                                                <input type="text" id="TOTAL" className="FormField__Input" 
-                                                name="TOTAL" value={(this.state.editIte.TOTAL||0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}) } tabIndex="-1" readOnly/>
-                                            </div>
-
-                                        </Modal.Body>
-                                        <Modal.Footer className="ModalBg">
-                                            <div className={this.state.itemAdded}><SvgIcon size={80} icon={check} style={{ color: 'var(--cor-1)', margin: '15px 15px 15px 15px' }}/><p className='ItemMsg'>Item adicionado com sucesso!</p></div>
-                                            <Button className="FormField__Button mr-20" onClick={this.closeModal}>Fechar</Button>
-                                            <Button className="FormField__Button mr-20" onClick={event => this.saveModal(event, this.state.editIte.id)}>Adicionar</Button>
-                                        </Modal.Footer>
-                                    </Modal.Dialog>
-                                </div>
-                                <div className="FormCenter">
-                                    <div className="FormTitle">
-                                        <Clock format={'DD/MM/YYYY - HH:mm'} ticking={true}/> 
-                                        <br/>
-                                        Última sincronização: {localStorage.getItem("macrosync") ? date2str(localStorage.getItem("macrosync")) : 'Nunca sincronizado.'}<br/>
-                                        <h1 className="FormTitle__Link--Active">Registro de Pedidos</h1>
+                                        <div>
+                                            ITENS:
+                                            <ListGroup>
+                                                {/* {listItens} */}
+                                                {this.loading(this.state.isLoading, listItens)}
+                                            </ListGroup>
+                                        </div>
+                                        {savingItem(this.state.savingShow, this.state.savingPhase, this.saving)}
+                                            <LinkContainer to="/macropecas/pedidos"><button className="FormField__Button mr-20">Voltar</button></LinkContainer>
+                                            {this.saveBtn(this.state.ok)}
+                                            {this.hideShow()}
+                                            <button className="FormField__Button__Fix" onClick={this.willShow}><SvgIcon className='FormField__Icon__Fix' size={24} icon={plus}/></button>                                    
+                                    </form>
                                     </div>
-                                    <form className="FormFields" onSubmit={this.handleSubmit}>
-                                    <div className="FormField">
-                                        <Radio label='PEDIDO' name='ORCAMENTO' style={{color: 'white'}} checked={this.state.now.ORCAMENTO === "N"} onChange={this.handleTogglePed} toggle/>
-                                        <Radio label='ORÇAMENTO' name='ORCAMENTO' style={{color: 'white'}} checked={this.state.now.ORCAMENTO === "S"} onChange={this.handleToggleOrc} toggle/>
-                                    </div>                                   
-                                    <div className="FormField">
-                                        <label className="FormField__Label" htmlFor="FK_CLI">Cliente</label>
-                                        {this.autocomplete(clientes, this.state.cliente, 'cliente', 'FK_CLI')}
-                                        <label className="FormField__Label" htmlFor="FK_CPG">Condição de Pagamento</label>
-                                        {this.autocomplete(cpgs, this.state.cond_pag, 'cond_pag', 'FK_CPG',true)}
-                                    </div>    
-                                    <div className="FormField">
-                                        <label className="FormField__Label" htmlFor="OBSERVACAO">OBSERVAÇÃO</label>
-                                        <textarea autoComplete="off" id="OBSERVACAO" className="FormField__Input__OBS" 
-                                        name="OBSERVACAO" value={this.state.now.OBSERVACAO || ''} onChange={this.handleChange}/>
-                                    </div>
-                                    <button className="FormField__Button__Add" onClick={this.willShow}>+ Adicionar Item</button>
-
-                                    <div>
-                                        ITENS:
-                                        <ListGroup>
-                                            {/* {listItens} */}
-                                            {this.loading(this.state.isLoading, listItens)}
-                                        </ListGroup>
-                                    </div>
-                                    {savingItem(this.state.savingShow, this.state.savingPhase, this.saving)}
-                                        <LinkContainer to="/macropecas/pedidos"><button className="FormField__Button mr-20">Voltar</button></LinkContainer>
-                                        {this.saveBtn(this.state.ok)}
-                                        {this.hideShow()}
-                                        <button className="FormField__Button__Fix" onClick={this.willShow}><SvgIcon className='FormField__Icon__Fix' size={24} icon={plus}/></button>                                    
-                                </form>
                                 </div>
                             </div>
-                        </div>
-                )
+                    )
+                }
         } else { return <Redirect exact to="/macropecas/"/>}
     }
 }

@@ -13,7 +13,6 @@ import { sync} from "./SyncUtils"
 import { syncLoading, date2str } from "./Utils";
 import Clock from 'react-live-clock';
 import ReactLoading from 'react-loading';
-import { Offline, Online } from "react-detect-offline";
 
 // import { pedirPermissaoParaReceberNotificacoes } from '../push-notification';
 // import { ic_exit_to_app } from "react-icons-kit/md/ic_exit_to_app";
@@ -203,10 +202,7 @@ class Example extends React.Component {
                             <h1 className="FormTitle__Link--Active">Sistema</h1>
                         </div>
                         <div className="FormField">
-                            <Offline>
-                                Você está sem internet. Cheque sua conexão.
-                            </Offline>
-                            <Online>
+
                                 <div className='box_inverted'>
                                     <h1>Sincronização:</h1>
                                     <div>
@@ -222,7 +218,6 @@ class Example extends React.Component {
                                     </div>                                    
                                 </div>                         
                                 {/* <button className="add-button">Instalar Aplicativo</button> */}
-                            </Online>
                         </div>
                         
 

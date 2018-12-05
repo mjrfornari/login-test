@@ -15,10 +15,10 @@ import PouchDB from 'pouchdb';
 
 // export const server = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname === "") ? 'http://localhost:3001/api': 'https://macropecasweb.sytes.net:8080/api';
 export const server = window.location.protocol+'//'+window.location.hostname+':'+(window.location.hostname==='macropecasweb.sytes.net' ? '8080' : '3001')+'/api'
-const db = new PouchDB('macropecas', {auto_compaction: true});
+const db = new PouchDB('macropecas', {auto_compaction: true, size: 50});
 
 export function cryptmd5(text){
-  let crypted = md5(text).slice(0,20)
+  let crypted = md5(text).slice(0,32)
   return crypted
 }
 

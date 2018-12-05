@@ -31,7 +31,7 @@ class EntrarForm extends Component {
             
             fetch(server+'/login/'+this.state.user+'/'+cryptmd5(this.state.password)).then(r => {return r.json()}).then(r => {
                 this.logado=false;
-
+                console.log(cryptmd5(this.state.password))
                 if (Object.keys(r).length > 0){
                     if (r[0]["PK_VEN"] !== '') {
                         this.logado=true

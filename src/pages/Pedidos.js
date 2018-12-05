@@ -212,7 +212,7 @@ class Example extends React.Component {
                             <LinkContainer to={"/macropecas/pedidos/registro/"+item.READ}><button className="Grid__Button">Editar</button></LinkContainer>
                             {/* <LinkContainer to={"/macropecas/pedidos/registro/r"+item.READ}><button className="Grid__Button">Replicar</button></LinkContainer> */}
                             <button className={((Number(item.PK_PED) === 0 && item.ORCAMENTO === 'N') || (item.ORCAMENTO === 'S' && item.WEB === 'S')) ? "Grid__Button" : "Grid__Button__Hide"} id={item.READ} onClick={this.handleExcluir}>Excluir</button> 
-                            <a href={server+'/gerapdf?ped='+item.PK_PED} download='pedido.pdf'><img src='/pdf.svg' align="right" className={(item.PK_PED>0) ? 'Pdf_Logo' : 'Pdf_Logo_Hide'} alt='Download PDF' id={item.PK_PED} onClick={this.geraPdf}/></a>                           
+                            {/* <a href={server+'/gerapdf?ped='+item.PK_PED} download='pedido.pdf'><img src='/pdf.svg' align="right" className={(item.PK_PED>0) ? 'Pdf_Logo' : 'Pdf_Logo_Hide'} alt='Download PDF' id={item.PK_PED} onClick={this.geraPdf}/></a>                            */}
                         </ListGroupItem>
                     )
                 } else {
@@ -229,7 +229,7 @@ class Example extends React.Component {
                             <LinkContainer to={"/macropecas/pedidos/registro/"+item.READ}><button className="Grid__Button">Editar</button></LinkContainer>
                             {/* <LinkContainer to={"/macropecas/pedidos/registro/r"+item.READ}><button className="Grid__Button">Replicar</button></LinkContainer> */}
                             <button className={((Number(item.PK_PED) === 0 && item.ORCAMENTO === 'N') || (item.ORCAMENTO === 'S' && item.WEB === 'S')) ? "Grid__Button" : "Grid__Button__Hide"} id={item.READ} onClick={this.handleExcluir}>Excluir</button> 
-                            <a href={server+'/gerapdf?ped='+item.PK_PED} download='pedido.pdf'><img src='/pdf.svg' align="right" className={(item.PK_PED>0) ? 'Pdf_Logo' : 'Pdf_Logo_Hide'} alt='Download PDF' id={item.PK_PED} onClick={this.geraPdf}/></a>
+                            {/* <a href={server+'/gerapdf?ped='+item.PK_PED} download='pedido.pdf'><img src='/pdf.svg' align="right" className={(item.PK_PED>0) ? 'Pdf_Logo' : 'Pdf_Logo_Hide'} alt='Download PDF' id={item.PK_PED} onClick={this.geraPdf}/></a> */}
                         </ListGroupItem>
                     )
                 }
@@ -247,7 +247,7 @@ class Example extends React.Component {
                         <LinkContainer to={"/macropecas/pedidos/registro/"+item.READ}><button className="Grid__Button">Editar</button></LinkContainer>
                         {/* <LinkContainer to={"/macropecas/pedidos/registro/r"+item.READ}><button className="Grid__Button">Replicar</button></LinkContainer> */}
                         <button className={((Number(item.PK_PED) === 0 && item.ORCAMENTO === 'N') || (item.ORCAMENTO === 'S' && item.WEB === 'S')) ? "Grid__Button" : "Grid__Button__Hide"} id={item.READ} onClick={this.handleExcluir}>Excluir</button> 
-                        <a href={server+'/gerapdf?ped='+item.PK_PED} download='pedido.pdf'><img src='/pdf.svg' align="right" className={(item.PK_PED>0) ? 'Pdf_Logo' : 'Pdf_Logo_Hide'} alt='Download PDF' id={item.PK_PED} onClick={this.geraPdf}/></a>
+                        {/* <a href={server+'/gerapdf?ped='+item.PK_PED} download='pedido.pdf'><img src='/pdf.svg' align="right" className={(item.PK_PED>0) ? 'Pdf_Logo' : 'Pdf_Logo_Hide'} alt='Download PDF' id={item.PK_PED} onClick={this.geraPdf}/></a> */}
                     </ListGroupItem>
                 )
             }

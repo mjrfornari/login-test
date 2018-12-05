@@ -924,7 +924,7 @@ export function sync(){
                                                 console.log('Create, Update and delete cleaned')
                                                 console.log('Step 4 - Start Transaction: done!')
                                                 console.log('Step 5 - Get Data: started!')
-                                                alert('Step 5 - Get Data: started!')
+                                                // alert('Step 5 - Get Data: started!')
                                                 await getData().then((res) => {
                                                     console.log('Step 5 - Get Data: done!')
                                                     console.log("*******************************")
@@ -1255,7 +1255,6 @@ function getData(){
                                 // alert('Sincronizado!')
                                 resolve(response)
                                 }).catch(function (err) {
-                                                                alert('1')
                                 if (err.name === 'not_found') {
                                     db.put(read).then(function (response) {
                                         console.log('Read created!')
