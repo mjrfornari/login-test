@@ -104,26 +104,19 @@ class Example extends React.Component {
 
 
         e.preventDefault(); 
-        // navigator.getBattery().then(async battery => {
-            // if ((battery.level*100) >= 0) {
-                // if (navigator.connection.type !== 'cellular'){
-                    this.setState({sync: true, savingPhase: 1, savingShow:{}})
-                    let sincronizado = ''; 
-                    await sync().then((res)=>{sincronizado = res}).catch((err) => {sincronizado = 'ERROR'})
-                        if (sincronizado === 'ERROR'){
-                            this.setState({sync: false, savingPhase: 3, savingShow:{}})
-                        } else {
-                            this.setState({sync: false, savingPhase: 2, savingShow:{}})
-                        }
-                        
-                        localStorage.setItem("macrosync", new Date())
-                    // }) 
-                // } else {alert('Não foi possível iniciar a sincronização.\nMotivo: Conecte à uma rede Wi-Fi!')}
-            // } else {alert('Não foi possível iniciar a sincronização.\nMotivo: Bateria abaixo de 30%!')}
-        // })
-        
-        
-        
+        let sincroniza = window.confirm('Atenção!!\n\nCertifique-se de que seu dispositivo esteja:\n   - Com bateria igual ou superior a 30% e,\n   - Conectado a uma rede Wi-Fi.\n\nDeseja iniciar a sincronização?');
+        if (sincroniza) {
+            this.setState({sync: true, savingPhase: 1, savingShow:{}})
+            let sincronizado = ''; 
+            await sync().then((res)=>{sincronizado = res}).catch((err) => {sincronizado = 'ERROR'})
+                if (sincronizado === 'ERROR'){
+                    this.setState({sync: false, savingPhase: 3, savingShow:{}})
+                } else {
+                    localStorage.setItem("macrosync", new Date())
+                    this.setState({sync: false, savingPhase: 2, savingShow:{}})
+                }
+
+        }       
     }
 
     

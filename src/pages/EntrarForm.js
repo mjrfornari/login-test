@@ -26,7 +26,7 @@ class EntrarForm extends Component {
 
     handleSubmit (e) {
         e.preventDefault();
-        
+        console.log(this.state.user, this.state.password, cryptmd5(this.state.password))
         if ((this.state.user!=='') && (this.state.password!=='')){
             
             fetch(server+'/login/'+this.state.user+'/'+cryptmd5(this.state.password)).then(r => {return r.json()}).then(r => {
