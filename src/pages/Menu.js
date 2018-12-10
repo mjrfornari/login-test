@@ -10,7 +10,7 @@ import { ic_add_shopping_cart } from 'react-icons-kit/md/ic_add_shopping_cart';
 import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_settings} from 'react-icons-kit/md/ic_settings'
-import { date2str } from "./Utils";
+import { date2str, pegaQtdOrcamento } from "./Utils";
 // Import React Table
 // import ReactTable from "react-table";
 import "react-table/react-table.css";
@@ -24,12 +24,21 @@ class Example extends React.Component {
     this.state = {
       data: [],
       pages: null,
+      qtd: 0,
       loading: true,
       show: true
     };
     this.show = false;
     this.handleExit = this.handleExit.bind(this);
   }
+
+   componentDidMount(){
+        pegaQtdOrcamento().then(res => {
+            this.setState({
+                qtd: res
+            })
+        })
+    }
 
 
   handleExit(e){
@@ -89,6 +98,9 @@ class Example extends React.Component {
                             <Clock format={'DD/MM/YYYY - HH:mm'} ticking={true}/> 
                             <br/>
                             Última sincronização: {localStorage.getItem("macrosync") ? date2str(localStorage.getItem("macrosync")) : 'Nunca sincronizado.'}<br/>
+                            <div style={{ display: this.state.qtd.nOrcamentos>0 ? 'block' : 'none' }}>Orçamentos no mês atual: {this.state.qtd.nOrcamentos}</div>
+                            <div style={{ display: this.state.qtd.nPedidos>0 ? 'block' : 'none' }}>Pedidos não sincronizados: {this.state.qtd.nPedidos}</div>
+                            <div style={{ display: this.state.qtd.nClientes>0 ? 'block' : 'none' }}>Clientes não sincronizados: {this.state.qtd.nClientes}</div>
                             <h1 className="FormTitle__Link--Active">Bem vindo!</h1>
                         </div>
                         <div className="FormField">

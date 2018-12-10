@@ -5,6 +5,7 @@ import {Modal, Button} from 'react-bootstrap'
 import SvgIcon from 'react-icons-kit';
 import {check} from 'react-icons-kit/metrize/check'
 import {cross} from 'react-icons-kit/metrize/cross'
+import moment from 'moment'
 import md5 from 'md5';
 // import namor from "namor";
 // import { render } from "react-dom";
@@ -276,6 +277,54 @@ export function zeraNull(texto){
       valor = texto
     }
     return valor
+}
+
+export function pegaQtdOrcamento(){
+  return new Promise (resolve =>{
+    db.get('read').then(function(doc) {
+      let month = (new Date ()).getMonth()
+      let year = (new Date ()).getFullYear()
+      let datamax = new Date(year, month+1, 0, 23, 59, 59);
+      let datamin = new Date(year, month, 1);
+      let orcamentos = doc.data.pedidos.filter(function (item) {
+        let data = new Date (item.DATA.split('T')[0]+'T12:00:00')
+        let maior = true
+        let menor = true
+
+        if (!isNaN(datamax.getTime())) {
+            if (moment(data).isSameOrBefore(datamax)){
+                maior = true
+            } else maior = false
+        }
+        if (!isNaN(datamin.getTime())) {
+            if (moment(data).isSameOrAfter(datamin)){
+                menor = true
+            } else menor = false
+        }
+
+        return item.ORCAMENTO === 'S' &&
+              maior &&
+              menor
+      })
+
+      let pedidos = doc.data.pedidos.filter(function (item) {
+        return item.PK_PED === 0
+      })
+
+      let clientes = doc.data.clientes.filter(function (item) {
+        return item.PK_CLI === 0
+      })
+
+      let qtd = {
+        nOrcamentos: orcamentos.length || 0,
+        nPedidos: (pedidos.length) || 0,
+        nClientes: (clientes.length) || 0
+      }
+
+      return resolve(qtd)
+    })
+  })    
+
 }
 
 export function now(aux){

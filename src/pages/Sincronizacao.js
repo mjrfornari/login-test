@@ -10,7 +10,7 @@ import { ic_settings } from 'react-icons-kit/md/ic_settings'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_exit_to_app} from 'react-icons-kit/md/ic_exit_to_app'
 import { sync} from "./SyncUtils"
-import { syncLoading, date2str } from "./Utils";
+import { syncLoading, date2str, pegaQtdOrcamento } from "./Utils";
 import Clock from 'react-live-clock';
 import ReactLoading from 'react-loading';
 
@@ -30,6 +30,7 @@ class Example extends React.Component {
       loading: true,
       sync: false,
       reload: 0,
+      qtd: {},
       savingShow: {display: 'none'},
       savingPhase: 1,
       updatingShow: {display: 'none'},
@@ -67,10 +68,15 @@ class Example extends React.Component {
 
     saving(){
         this.setState({savingShow: {display: 'none'}})
+        window.location.reload(true)
     }
 
     componentDidMount(){
-
+        pegaQtdOrcamento().then(res => {
+            this.setState({
+                qtd: res
+            })
+        })
     }
 
 
@@ -190,7 +196,10 @@ class Example extends React.Component {
                     <div className="FormCenter">
                         <form className="FormFields">
                         <div className="FormTitle"> 
-                            <Clock format={'DD/MM/YYYY - HH:mm'} ticking={true}/> 
+                            <Clock format={'DD/MM/YYYY - HH:mm'} ticking={true}/><br/>
+                            <div style={{ display: this.state.qtd.nOrcamentos>0 ? 'block' : 'none' }}>Orçamentos no mês atual: {this.state.qtd.nOrcamentos}</div>
+                            <div style={{ display: this.state.qtd.nPedidos>0 ? 'block' : 'none' }}>Pedidos não sincronizados: {this.state.qtd.nPedidos}</div>
+                            <div style={{ display: this.state.qtd.nClientes>0 ? 'block' : 'none' }}>Clientes não sincronizados: {this.state.qtd.nClientes}</div>
                             <br/>
                             <h1 className="FormTitle__Link--Active">Sistema</h1>
                         </div>

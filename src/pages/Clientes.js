@@ -12,7 +12,7 @@ import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ListGroup, ListGroupItem, Pagination} from 'react-bootstrap'
 import {LinkContainer} from 'react-router-bootstrap'
 // import PouchDB from "pouchdb"
-import { readTable, deleteData, mascaraCNPJ, date2str } from "./Utils";
+import { readTable, deleteData, mascaraCNPJ, date2str, pegaQtdOrcamento } from "./Utils";
 import {plus} from 'react-icons-kit/fa/plus'
 import {ic_keyboard_arrow_left} from 'react-icons-kit/md/ic_keyboard_arrow_left'
 import {ic_keyboard_arrow_right} from 'react-icons-kit/md/ic_keyboard_arrow_right'
@@ -44,6 +44,7 @@ class Example extends React.Component {
             },
             filtered: [],
             detailed: false,
+            qtd: {},
             iddetailed: 0,
             op: 'r',
             page: 1,
@@ -67,7 +68,11 @@ class Example extends React.Component {
     }
 
     componentDidMount(){
-        readTable(Data => {this.setState({clientes: Data.data.clientes, filtered: []})
+        let nOrcs = 0
+        pegaQtdOrcamento().then(res => {
+            nOrcs = res
+        })
+        readTable(Data => {this.setState({clientes: Data.data.clientes, filtered: [], qtd: nOrcs})
             let restoreFilter = sessionStorage.getItem("macropFilter");
             if ((restoreFilter !== '' && restoreFilter !== null) && typeof restoreFilter !== 'undefined') {
                 let restore = JSON.parse(restoreFilter)
@@ -352,6 +357,9 @@ class Example extends React.Component {
                                 <Clock format={'DD/MM/YYYY - HH:mm'} ticking={true}/> 
                                 <br/>
                                 Última sincronização: {localStorage.getItem("macrosync") ? date2str(localStorage.getItem("macrosync")) : 'Nunca sincronizado.'}<br/>
+                                <div style={{ display: this.state.qtd.nOrcamentos>0 ? 'block' : 'none' }}>Orçamentos no mês atual: {this.state.qtd.nOrcamentos}</div>
+                                <div style={{ display: this.state.qtd.nPedidos>0 ? 'block' : 'none' }}>Pedidos não sincronizados: {this.state.qtd.nPedidos}</div>
+                                <div style={{ display: this.state.qtd.nClientes>0 ? 'block' : 'none' }}>Clientes não sincronizados: {this.state.qtd.nClientes}</div>
                                 <h1 className="FormTitle__Link--Active">Clientes</h1>
                             </div>
                             {/* <form className="FormFields">   */}
