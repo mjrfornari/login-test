@@ -126,6 +126,24 @@ class Example extends React.Component {
         let showBar = this.state.show
         this.setState({show: !(showBar)})
     }
+
+    validate(evt) {
+        var theEvent = evt || window.event;
+        // Handle paste
+        if (theEvent.type === 'paste') {
+            var key = 0;
+            key = theEvent.clipboardData.getData('text/plain');
+        } else {
+        // Handle key press
+            key = theEvent.keyCode || theEvent.which;
+            key = String.fromCharCode(key);
+        }
+        var regex = /[0-9]|\./;
+        if( !regex.test(key) ) {
+            theEvent.returnValue = false;
+            if(theEvent.preventDefault) theEvent.preventDefault();
+        }
+    }
     
     hideShow(){
         let show = this.state.show
@@ -384,6 +402,7 @@ class Example extends React.Component {
                     registro.BAIRRO = bairro
                     registro.ENDERECO = logradouro
                     registro.NUMERO = ''
+                    this.salvaComplete(cid, 'FK_CID', 'cidade')
                     this.setState({now: registro, cidade: cid})
                 } else {
                     alert('CEP inválido!')
@@ -446,7 +465,7 @@ class Example extends React.Component {
                                 <div className='box_inverted'>
                                     <div className="FormField">
                                         <label className="FormField__Label" htmlFor="CEP">CEP</label>
-                                        <input autoComplete="off" type="text" id="CEP" className="FormField__Input" style={{width: '100px'}}
+                                        <input autoComplete="off" type="text" id="CEP" onKeyPress={this.validate} className="FormField__Input" style={{width: '100px'}}
                                         name="CEP" value={this.state.now.CEP} onChange={this.handleChange}/>
                                         <button id='buscaCEP' className='ButtonIcon' onClick={this.enviaCEP}><SvgIcon style={{transform: 'translate(0%, 30%)'}} size={26} icon={ic_search}/></button>
                                     </div>

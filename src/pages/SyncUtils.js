@@ -1135,6 +1135,7 @@ async function asyncForEach(array, callback) {
 function sendItem(item, usuario, type, callback){
     return new Promise (async (resolve, reject) => {
         try {
+            item = decodeURIComponent(item)
             await fetch(server+'/sendSQL?user='+usuario+'&type='+type+'&sql='+item).then(r => r.json()).then(r => {
                 console.log(r)
                 resolve(r)
