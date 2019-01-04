@@ -1,5 +1,5 @@
 import PouchDB from 'pouchdb';
-import {geraPk, dateSql} from './Utils';
+import {geraPk, dateSql, removeAcento} from './Utils';
 
 // const server = 'http://187.44.93.73:8080';
 
@@ -81,10 +81,10 @@ async function createToFirebird(callback) {
           let update = response
           for (let icreated of create.data.clientes){
             icreated.CIDADE = []
-            let propscreated = JSON.stringify(Object.getOwnPropertyNames(icreated))
-            let valuescreated = JSON.stringify(Object.values(icreated))
+            let propscreated = removeAcento(JSON.stringify(Object.getOwnPropertyNames(icreated)))
+            let valuescreated = removeAcento(JSON.stringify(Object.values(icreated)))
             let fields = propscreated.split('"').join("").split('[').join("").split(']').join("").split('CIDADE,').join("")
-            let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split("''").join("NULL")
+            let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split("''").join("NULL").split("''").join("'")
             fields = fields+",FK_VEN"
             let usuario = localStorage.getItem("macropecas")
             values = values+","+usuario
@@ -124,10 +124,10 @@ async function createToFirebird(callback) {
                 // console.log(icreated.VALOR_CALCULADO)
                 let dataped = icreated.DATA
                 icreated.DATA = dateSql(dataped)
-                let propscreated = JSON.stringify(Object.getOwnPropertyNames(icreated))
-                let valuescreated = JSON.stringify(Object.values(icreated))
+                let propscreated = removeAcento(JSON.stringify(Object.getOwnPropertyNames(icreated)))
+                let valuescreated = removeAcento(JSON.stringify(Object.values(icreated)))
                 let fields = propscreated.split('"').join("").split('[').join("").split(']').join("").split('itens,').join("").split('IMPORTADO').join("IMPORTACAO").split(',RAZAO_SOCIAL').join("").split(',NOMECPG').join("").split(',CLIREAD').join("")
-                let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",").split("''").join("null").split(',,').join(",")
+                let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",").split("''").join("null").split(',,').join(",").split("''").join("'")
                 fields = fields+",FK_VEN"
                 let usuario = localStorage.getItem("macropecas")
                 values = values+","+usuario
@@ -172,10 +172,10 @@ async function createToFirebird(callback) {
                     icreated.DESCONTO1=Number(icreated.DESCONTO1)
                     icreated.DESCONTO2=Number(icreated.DESCONTO2)
                     icreated.VALOR_IPI =[]
-                    let propscreated = JSON.stringify(Object.getOwnPropertyNames(icreated))
-                    let valuescreated = JSON.stringify(Object.values(icreated))
+                    let propscreated = removeAcento(JSON.stringify(Object.getOwnPropertyNames(icreated)))
+                    let valuescreated = removeAcento(JSON.stringify(Object.values(icreated)))
                     let fields = propscreated.split('"').join("").split('[').join("").split(']').join("").split(',DESCRICAOPRO').join("").split(',CODIGOPRO').join("").split('CODIGOPRO,').join("").split(',id').join("").split(',VALOR_IPI').join("").split(',OBS_PROMOCIONAL').join("").split(',TOTAL').join("").split(',mostraModal').join("")
-                    let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",").split(",'%$#'").join("").split("'%$#',").join("").split(',true,').join("").split(',false,').join("").split("''").join("null").split(',,').join(",")
+                    let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",").split(",'%$#'").join("").split("'%$#',").join("").split(',true,').join("").split(',false,').join("").split("''").join("null").split(',,').join(",").split("''").join("'")
                     // console.log(fields)
                     // console.log(values)
                     await newCreate('itens_ped_venda',fields, values, 'PK_IPE')
@@ -247,8 +247,8 @@ function updateToFirebird(callback) {
             update._rev = doc._rev
 
             for (let iupdated of update.data.clientes)  {
-                let propsupdated = JSON.stringify(Object.getOwnPropertyNames(iupdated))
-                let valuesupdated = JSON.stringify(Object.values(iupdated))
+                let propsupdated = removeAcento(JSON.stringify(Object.getOwnPropertyNames(iupdated)))
+                let valuesupdated = removeAcento(JSON.stringify(Object.values(iupdated)))
                 let fields = propsupdated.split('"').join("").split('[').join("").split(']').join("")
                 let values = valuesupdated.split('"').join("'").split('[').join("").split(']').join("")
                 // console.log(fields)
@@ -275,7 +275,7 @@ function updateToFirebird(callback) {
                     return ''
                     } else return fieldsnvalues[i]=x+'='+ySplited[i]
                 })
-                fieldsnvalues = JSON.stringify(fieldsnvalues).split('"').join("").split('[').join("").split(']').join("").split("=null,").join("*").split("null,").join("").split("*").join("=null,");
+                fieldsnvalues = removeAcento(JSON.stringify(fieldsnvalues).split('"').join("").split('[').join("").split(']').join("").split("=null,").join("*").split("null,").join("").split("*").join("=null,"));
                 await newUpdate('clientes',iupdated, 'PK_CLI', iupdated.PK_CLI)
             }
 
@@ -292,9 +292,9 @@ function updateToFirebird(callback) {
                     iupdatedson.DESCONTO1=Number(iupdatedson.DESCONTO1)
                     iupdatedson.DESCONTO2=Number(iupdatedson.DESCONTO2)
                     iupdatedson.VALOR_IPI =[]
-                    let propsupdatedson = JSON.stringify(Object.getOwnPropertyNames(iupdatedson))
-                    let valuesupdatedson = JSON.stringify(Object.values(iupdatedson))
-                    let fieldsson = propsupdatedson.split('"').join("").split('[').join("").split(']').join("").split(',DESCRICAOPRO').join("").split(',mostraModal').join("").split('CODIGOPRO,').join("").split(',id').join("").split(',VALOR_IPI').join("").split(',OBS_PROMOCIONAL').join("").split(',TOTAL').join("")
+                    let propsupdatedson = removeAcento(JSON.stringify(Object.getOwnPropertyNames(iupdatedson)))
+                    let valuesupdatedson = removeAcento(JSON.stringify(Object.values(iupdatedson)))
+                    let fieldsson = propsupdatedson.split('"').join("").split('[').join("").split(']').join("").split(',DESCRICAOPRO').join("").split(',mostraModal').join("").split('CODIGOPRO,').join("").split(',id').join("").split(',VALOR_IPI').join("").split(',OBS_PROMOCIONAL').join("").split(',TOTAL').join("").split('"').join("")
                     let valuesson = valuesupdatedson.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",").split(",'%$#'").join("").split("'%$#',").join("").split("''").join("null")
                     if (typeof iupdatedson.PK_IPE === 'undefined'){
                     await geraPk('PK_IPE').then(res => {
@@ -316,7 +316,7 @@ function updateToFirebird(callback) {
                         //   whereson = xson+'='+ySplitedson[ison]
                         } else fieldsnvaluesson[ison]=xson+'='+ySplitedson[ison]
                     })
-                    fieldsnvaluesson = JSON.stringify(fieldsnvaluesson).split('"').join("").split('[').join("").split(']').join("").split("=null,").join("*").split("null,").join("").split("*").join("=null,");
+                    fieldsnvaluesson = removeAcento(JSON.stringify(fieldsnvaluesson).split('"').join("").split('[').join("").split(']').join("").split("=null,").join("*").split("null,").join("").split("*").join("=null,"));
                     await newUpdate('itens_ped_venda',fieldsnvaluesson, 'PK_IPE', iupdatedson.PK_IPE)
                     //   atualizaItem('itens_ped_venda',fieldsnvaluesson, whereson)
                     }
@@ -324,9 +324,9 @@ function updateToFirebird(callback) {
                 iupdated.itens = []
                 iupdated.RAZAO_SOCIAL = []
                 iupdated.NOMECPG = []
-                let propsupdated = JSON.stringify(Object.getOwnPropertyNames(iupdated))
-                let valuesupdated = JSON.stringify(Object.values(iupdated))
-                let fields = propsupdated.split('"').join("").split('[').join("").split(']').join("").split('itens,').join("").split('IMPORTADO').join("IMPORTACAO").split(',RAZAO_SOCIAL').join("").split(',NOMECPG').join("")
+                let propsupdated = removeAcento(JSON.stringify(Object.getOwnPropertyNames(iupdated)))
+                let valuesupdated = removeAcento(JSON.stringify(Object.values(iupdated)))
+                let fields = propsupdated.split('"').join("").split('[').join("").split(']').join("").split('itens,').join("").split('IMPORTADO').join("IMPORTACAO").split(',RAZAO_SOCIAL').join("").split(',NOMECPG').join("").split('"').join("")
                 let values = valuesupdated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",").split("''").join("null")
 
                 const xSplited = fields.split(',')
@@ -342,7 +342,7 @@ function updateToFirebird(callback) {
                     fieldsnvalues[i]=x+'='+dateSql(ySplited[i].split("'").join(""), "'")
                     } else fieldsnvalues[i]=x+'='+ySplited[i]
                 })
-                fieldsnvalues = JSON.stringify(fieldsnvalues).split('"').join("").split('[').join("").split(']').join("").split("=null,").join("*").split("null,").join("").split("*").join("=null,");
+                fieldsnvalues = removeAcento(JSON.stringify(fieldsnvalues).split('"').join("").split('[').join("").split(']').join("").split("=null,").join("*").split("null,").join("").split("*").join("=null,"));
                 await newUpdate('pedidos_venda',fieldsnvalues, 'PK_PED', iupdated.PK_PED)
                 //   atualizaItem('pedidos_venda',fieldsnvalues, where)
                 
@@ -378,8 +378,8 @@ function updateToFirebird(callback) {
                     
 //                     geraPk(nomepk).then(Data => { 
 //                         i[nomepk] = Data[0].VALOR 
-//                         let fields = JSON.stringify(Object.getOwnPropertyNames(i)).split('"').join("").split('[').join("").split(']').join("")
-//                         let values = JSON.stringify(Object.values(i)).split('"').join("'").split('[').join("").split(']').join("").split("''").join("null")
+//                         let fields = removeAcento(JSON.stringify(Object.getOwnPropertyNames(i)).split('"').join("").split('[').join("").split(']').join("")
+//                         let values = removeAcento(JSON.stringify(Object.values(i)).split('"').join("'").split('[').join("").split(']').join("").split("''").join("null")
 //                         newCreate('clientes', fields, values, nomepk)
 //                         count+=1
 //                         console.log(count, itens.length)
@@ -412,8 +412,8 @@ function updateToFirebird(callback) {
                     
 //                     geraPk(nomepk).then(async Data => { 
 //                         i[nomepk] = Data[0].VALOR 
-//                         let fields = JSON.stringify(Object.getOwnPropertyNames(i)).split('"').join("").split('[').join("").split(']').join("")
-//                         let values = JSON.stringify(Object.values(i)).split('"').join("'").split('[').join("").split(']').join("").split("''").join("null")
+//                         let fields = removeAcento(JSON.stringify(Object.getOwnPropertyNames(i)).split('"').join("").split('[').join("").split(']').join("")
+//                         let values = removeAcento(JSON.stringify(Object.values(i)).split('"').join("'").split('[').join("").split(']').join("").split("''").join("null")
 //                         newCreate('pedidos_venda', fields, values, nomepk)
 //                         count+=1
 //                         let itemcount = 0
@@ -431,8 +431,8 @@ function updateToFirebird(callback) {
 //                             geraPk('PK_IPE').then(Data => { 
 //                                 itemped.PK_IPE = Data[0].VALOR
 //                                 itemped.FK_PED = i[nomepk]
-//                                 let itemfields = JSON.stringify(Object.getOwnPropertyNames(itemped)).split('"').join("").split('[').join("").split(']').join("")
-//                                 let itemvalues = JSON.stringify(Object.values(itemped)).split('"').join("'").split('[').join("").split(']').join("").split("''").join("null")
+//                                 let itemfields = removeAcento(JSON.stringify(Object.getOwnPropertyNames(itemped)).split('"').join("").split('[').join("").split(']').join("")
+//                                 let itemvalues = removeAcento(JSON.stringify(Object.values(itemped)).split('"').join("'").split('[').join("").split(']').join("").split("''").join("null")
 //                                 newCreate('itens_ped_venda', itemfields, itemvalues, 'PK_IPE')
 //                                 itemcount += 1
 //                             })
@@ -458,8 +458,8 @@ function updateToFirebird(callback) {
                     
 //                     geraPk(nomepk).then(Data => { 
 //                         i[nomepk] = Data[0].VALOR 
-//                         let fields = JSON.stringify(Object.getOwnPropertyNames(i)).split('"').join("").split('[').join("").split(']').join("")
-//                         let values = JSON.stringify(Object.values(i)).split('"').join("'").split('[').join("").split(']').join("").split("''").join("null")
+//                         let fields = removeAcento(JSON.stringify(Object.getOwnPropertyNames(i)).split('"').join("").split('[').join("").split(']').join("")
+//                         let values = removeAcento(JSON.stringify(Object.values(i)).split('"').join("'").split('[').join("").split(']').join("").split("''").join("null")
 //                         newCreate('itens_ped_venda', fields, values, nomepk)
 //                         count+=1
 //                         if (count === itens.length) {
@@ -601,8 +601,8 @@ export async function newCreate(tabela, fields, values, nomepk){
 
 export function newUpdate(tabela, fieldsnvalues, nomepk, valorpk){
     return new Promise ((resolve, reject) => {
-        // let fields = JSON.stringify(Object.getOwnPropertyNames(item))
-        // let values = JSON.stringify(Object.values(item))
+        // let fields = removeAcento(JSON.stringify(Object.getOwnPropertyNames(item))
+        // let values = removeAcento(JSON.stringify(Object.values(item))
         // let update = []
         // fields = fields.split('"').join('').split('[').join('').split(']').join('').split(',')
         // values = values.split('[').join('').split(']').join('').split(',')
@@ -611,7 +611,7 @@ export function newUpdate(tabela, fieldsnvalues, nomepk, valorpk){
         // fields.map((element, index) => {
         //     return update[index]= element+'='+values[index]
         // })
-        // update = JSON.stringify(update).split('"').join("").split('[').join("").split(']').join("").split('\\').join("'")
+        // update = removeAcento(JSON.stringify(update).split('"').join("").split('[').join("").split(']').join("").split('\\').join("'")
         let update = fieldsnvalues
         let sql = 'UPDATE '+tabela+' SET '+update+' WHERE '+nomepk+'='+valorpk
         db.get('log').then(function(doc) {

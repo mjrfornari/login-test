@@ -207,13 +207,15 @@ export function syncLoading(show, phase, funcao, texto, textopronto, textoerro){
 
 export function removeAcento (text)
 {       
-    text = text.toLowerCase();                                                         
+    text = text.toLowerCase();  
+    text = text.replace(new RegExp('[~`´^¨]','gi'), '');                                                        
     text = text.replace(new RegExp('[ÁÀÂÃ]','gi'), 'a');
     text = text.replace(new RegExp('[ÉÈÊ]','gi'), 'e');
     text = text.replace(new RegExp('[ÍÌÎ]','gi'), 'i');
     text = text.replace(new RegExp('[ÓÒÔÕ]','gi'), 'o');
     text = text.replace(new RegExp('[ÚÙÛ]','gi'), 'u');
     text = text.replace(new RegExp('[Ç]','gi'), 'c');
+    text = text.toUpperCase();
     return text;                 
 }
 
@@ -290,7 +292,7 @@ export function now(aux){
 export function date2str(data){
     let date = new Date(data)
     let year = date.getFullYear()
-    let month = date.getMonth()+1<10 ? '0'+date.getMonth()+1 : date.getMonth()+1
+    let month = date.getMonth()+1<10 ? '0'+String(date.getMonth()+1) : date.getMonth()+1
     let day = date.getDate()<10 ? '0'+date.getDate() : date.getDate()
     let hour = date.getHours()<10 ? '0'+date.getHours() : date.getHours()
     let min = date.getMinutes()<10 ? '0'+date.getMinutes() : date.getMinutes()
