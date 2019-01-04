@@ -11,7 +11,7 @@ import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_settings} from 'react-icons-kit/md/ic_settings'
 import {ListGroup, ListGroupItem, Pagination} from 'react-bootstrap'
 import {LinkContainer} from 'react-router-bootstrap'
-import { readTable, deleteData, garanteDate, now, date2str, deletingItem, server } from "./Utils";
+import { readTable, deleteData, garanteDate, now, date2str, deletingItem, server, pegaQtdOrcamento } from "./Utils";
 import {plus} from 'react-icons-kit/fa/plus'
 import Dropdown from 'react-dropdown'
 import {ic_keyboard_arrow_left} from 'react-icons-kit/md/ic_keyboard_arrow_left'
@@ -45,6 +45,7 @@ class Example extends React.Component {
             },
             filtered: [],
             detailed: false,
+            qtd: [],
             iddetailed: 0,
             op: 'r',
             deletingShow: {display: 'none'},
@@ -74,13 +75,18 @@ class Example extends React.Component {
 
     }
 
+
     componentDidMount(){
+        let nOrcs = 0
+        pegaQtdOrcamento().then(res => {
+            nOrcs = res
+        })
         readTable(Data => {
             let pedidosread = Data.data.pedidos
             pedidosread.forEach((item, index)=>{
                 item.READ = index
             })
-            this.setState({pedidos: pedidosread, filtered: []})
+            this.setState({pedidos: pedidosread, filtered: [], qtd: nOrcs})
             let restoreFilter = sessionStorage.getItem("macropFilter");
             if ((restoreFilter !== '' && restoreFilter !== null) && typeof restoreFilter !== 'undefined') {
                 let restore = JSON.parse(restoreFilter)
@@ -212,7 +218,7 @@ class Example extends React.Component {
                             <LinkContainer to={"/macropecas/pedidos/registro/"+item.READ}><button className="Grid__Button">Editar</button></LinkContainer>
                             {/* <LinkContainer to={"/macropecas/pedidos/registro/r"+item.READ}><button className="Grid__Button">Replicar</button></LinkContainer> */}
                             <button className={((Number(item.PK_PED) === 0 && item.ORCAMENTO === 'N') || (item.ORCAMENTO === 'S' && item.WEB === 'S')) ? "Grid__Button" : "Grid__Button__Hide"} id={item.READ} onClick={this.handleExcluir}>Excluir</button> 
-                            {/* <a href={server+'/gerapdf?ped='+item.PK_PED} download='pedido.pdf'><img src='/pdf.svg' align="right" className={(item.PK_PED>0) ? 'Pdf_Logo' : 'Pdf_Logo_Hide'} alt='Download PDF' id={item.PK_PED} onClick={this.geraPdf}/></a>                            */}
+                            <div><a href={server+'/gerapdf?ped='+item.PK_PED} download='pedido.pdf'><img src='pdf.svg' align="right" className={(item.PK_PED>0) ? 'Pdf_Logo_Detailed' : 'Pdf_Logo_Hide'} alt='Download PDF' id={item.PK_PED} onClick={this.geraPdf}/></a></div>                           
                         </ListGroupItem>
                     )
                 } else {
@@ -229,7 +235,7 @@ class Example extends React.Component {
                             <LinkContainer to={"/macropecas/pedidos/registro/"+item.READ}><button className="Grid__Button">Editar</button></LinkContainer>
                             {/* <LinkContainer to={"/macropecas/pedidos/registro/r"+item.READ}><button className="Grid__Button">Replicar</button></LinkContainer> */}
                             <button className={((Number(item.PK_PED) === 0 && item.ORCAMENTO === 'N') || (item.ORCAMENTO === 'S' && item.WEB === 'S')) ? "Grid__Button" : "Grid__Button__Hide"} id={item.READ} onClick={this.handleExcluir}>Excluir</button> 
-                            {/* <a href={server+'/gerapdf?ped='+item.PK_PED} download='pedido.pdf'><img src='/pdf.svg' align="right" className={(item.PK_PED>0) ? 'Pdf_Logo' : 'Pdf_Logo_Hide'} alt='Download PDF' id={item.PK_PED} onClick={this.geraPdf}/></a> */}
+                            <a href={server+'/gerapdf?ped='+item.PK_PED} download='pedido.pdf'><img src='pdf.svg' align="right" className={(item.PK_PED>0) ? 'Pdf_Logo' : 'Pdf_Logo_Hide'} alt='Download PDF' id={item.PK_PED} onClick={this.geraPdf}/></a>
                         </ListGroupItem>
                     )
                 }
@@ -247,7 +253,7 @@ class Example extends React.Component {
                         <LinkContainer to={"/macropecas/pedidos/registro/"+item.READ}><button className="Grid__Button">Editar</button></LinkContainer>
                         {/* <LinkContainer to={"/macropecas/pedidos/registro/r"+item.READ}><button className="Grid__Button">Replicar</button></LinkContainer> */}
                         <button className={((Number(item.PK_PED) === 0 && item.ORCAMENTO === 'N') || (item.ORCAMENTO === 'S' && item.WEB === 'S')) ? "Grid__Button" : "Grid__Button__Hide"} id={item.READ} onClick={this.handleExcluir}>Excluir</button> 
-                        {/* <a href={server+'/gerapdf?ped='+item.PK_PED} download='pedido.pdf'><img src='/pdf.svg' align="right" className={(item.PK_PED>0) ? 'Pdf_Logo' : 'Pdf_Logo_Hide'} alt='Download PDF' id={item.PK_PED} onClick={this.geraPdf}/></a> */}
+                        <a href={server+'/gerapdf?ped='+item.PK_PED} download='pedido.pdf'><img src='pdf.svg' align="right" className={(item.PK_PED>0) ? 'Pdf_Logo' : 'Pdf_Logo_Hide'} alt='Download PDF' id={item.PK_PED} onClick={this.geraPdf}/></a>
                     </ListGroupItem>
                 )
             }
@@ -309,6 +315,7 @@ class Example extends React.Component {
             )
         }
     }
+
 
 
     hideShow(){
@@ -449,7 +456,7 @@ class Example extends React.Component {
     }
 
     render() {
-        console.log(server)
+        // console.log(server)
         let Data = this.state.filtered
         let listData = Data.map(this.createItems)
         let logou = localStorage.getItem("logou");
@@ -466,6 +473,9 @@ class Example extends React.Component {
                                 <Clock format={'DD/MM/YYYY - HH:mm'} ticking={true}/> 
                                 <br/>
                                 Última sincronização: {localStorage.getItem("macrosync") ? date2str(localStorage.getItem("macrosync")) : 'Nunca sincronizado.'}<br/>
+                                <div style={{ display: this.state.qtd.nOrcamentos>0 ? 'block' : 'none' }}>Orçamentos no mês atual: {this.state.qtd.nOrcamentos}</div>
+                                <div style={{ display: this.state.qtd.nPedidos>0 ? 'block' : 'none' }}>Pedidos não sincronizados: {this.state.qtd.nPedidos}</div>
+                                <div style={{ display: this.state.qtd.nClientes>0 ? 'block' : 'none' }}>Clientes não sincronizados: {this.state.qtd.nClientes}</div>
                                 <h1 className="FormTitle__Link--Active">Pedidos</h1>
                             </div>
                             {/* <form className="FormFields">   */}
