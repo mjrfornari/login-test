@@ -2,7 +2,7 @@
   "name": "login-test",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://macropecasweb.sytes.net/macropecas/",
+  "homepage": "https://macropecas.com.br/macropecas-web/",
   "dependencies": {
     "@material-ui/core": "^3.1.0",
     "axios": "^0.18.0",

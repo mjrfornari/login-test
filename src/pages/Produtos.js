@@ -206,8 +206,8 @@ class Example extends React.Component {
                                         onItemSelection={ (id, parent) => {
                                             if (id==='exit'){  
                                                 localStorage.setItem("logou", false);    
-                                                this.props.history.push('/macropecas/')
-                                            } else {this.props.history.push('/macropecas/'+id)
+                                                this.props.history.push('/macropecas-web/')
+                                            } else {this.props.history.push('/macropecas-web/'+id)
                             }}}>                      
                                 <Nav id='home'>
                                     <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_home}/></NavIcon>    
@@ -439,7 +439,7 @@ class Example extends React.Component {
                 </div>
             </div>
 
-    );} else { return <Redirect exact to="/macropecas/"/>}
+    );} else { return <Redirect exact to="/macropecas-web/"/>}
   }
 }
 

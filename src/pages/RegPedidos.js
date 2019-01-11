@@ -169,8 +169,8 @@ class Example extends React.Component {
                                         onItemSelection={ (id, parent) => {
                                             if (id==='exit'){  
                                                 localStorage.setItem("logou", false);    
-                                                this.props.history.push('/macropecas/')
-                                            } else {this.props.history.push('/macropecas/'+id)
+                                                this.props.history.push('/macropecas-web/')
+                                            } else {this.props.history.push('/macropecas-web/'+id)
                             }}}>                      
                                 <Nav id='home'>
                                     <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_home}/></NavIcon>    
@@ -229,8 +229,8 @@ class Example extends React.Component {
         let pathname = this.props.location.pathname
         if (pathname.includes('pedidos')) {           
             if (this.state.isLoading === true) {
-                if (this.props.location.pathname !== '/macropecas/pedidos/registro') {
-                    let ID = this.props.location.pathname.replace('/macropecas/pedidos/registro/','');
+                if (this.props.location.pathname !== '/macropecas-web/pedidos/registro') {
+                    let ID = this.props.location.pathname.replace('/macropecas-web/pedidos/registro/','');
                     let replicacao = false;
                     if (ID.indexOf('r') !== -1){
                         replicacao = true;
@@ -363,7 +363,7 @@ class Example extends React.Component {
                                     alert('Pedido já sincronizado. Edição bloqueada.')
                                 }
                                 this.setState({isLoading: false, ok: true})
-                                this.props.history.push('/macropecas/pedidos')
+                                this.props.history.push('/macropecas-web/pedidos')
                             }
                             
                         }
@@ -959,7 +959,7 @@ class Example extends React.Component {
         let logou = localStorage.getItem("logou");
         if (logou === "true") { 
             if (this.state.returnPage){
-                return <Redirect exact to="/macropecas/pedidos/"/>
+                return <Redirect exact to="/macropecas-web/pedidos/"/>
             } 
             else {
                 return (     
@@ -1152,7 +1152,7 @@ class Example extends React.Component {
                                             </ListGroup>
                                         </div>
                                         {savingItem(this.state.savingShow, this.state.savingPhase, this.saving)}
-                                            <LinkContainer to="/macropecas/pedidos"><button className="FormField__Button mr-20">Voltar</button></LinkContainer>
+                                            <LinkContainer to="/macropecas-web/pedidos"><button className="FormField__Button mr-20">Voltar</button></LinkContainer>
                                             {this.saveBtn(this.state.ok)}
                                             {this.hideShow()}
                                             <button className="FormField__Button__Fix" onClick={this.willShow}><SvgIcon className='FormField__Icon__Fix' size={24} icon={plus}/></button>                                    
@@ -1162,7 +1162,7 @@ class Example extends React.Component {
                             </div>
                     )
                 }
-        } else { return <Redirect exact to="/macropecas/"/>}
+        } else { return <Redirect exact to="/macropecas-web/"/>}
     }
 }
 

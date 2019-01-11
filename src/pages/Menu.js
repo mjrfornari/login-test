@@ -11,9 +11,11 @@ import { ic_exit_to_app } from 'react-icons-kit/md/ic_exit_to_app'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_settings} from 'react-icons-kit/md/ic_settings'
 import { date2str, pegaQtdOrcamento } from "./Utils";
+// import { getServer } from "./SyncUtils";
 // Import React Table
 // import ReactTable from "react-table";
 import "react-table/react-table.css";
+
 
 
 
@@ -32,12 +34,13 @@ class Example extends React.Component {
     this.handleExit = this.handleExit.bind(this);
   }
 
-   componentDidMount(){
+   async componentDidMount(){
         pegaQtdOrcamento().then(res => {
             this.setState({
                 qtd: res
             })
         })
+
     }
 
 
@@ -61,8 +64,8 @@ class Example extends React.Component {
                         onItemSelection={ (id, parent) => {
                             if (id==='exit'){  
                                 localStorage.setItem("logou", false);    
-                                this.props.history.push('/macropecas/')
-                            } else this.props.history.push('/macropecas/'+id)
+                                this.props.history.push('/macropecas-web/')
+                            } else this.props.history.push('/macropecas-web/'+id)
                         }}>       
                              <Nav id='home'>
                                     <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_home}/></NavIcon>    
@@ -112,7 +115,7 @@ class Example extends React.Component {
             </div>
 
 
-    );} else { return <Redirect exact to="/macropecas/"/>}
+    );} else { return <Redirect exact to="/macropecas-web/"/>}
   }
 }
 

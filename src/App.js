@@ -13,28 +13,29 @@ import RegPedidos from './pages/RegPedidos'
 import './App.css';
 
 
+
 class App extends Component {
-           
+    
 
     render() {
         return (
         <Router>
             <Switch>  
-                <Route exact path="/macropecas" component={EntrarForm}>
+                <Route exact path="/macropecas-web" component={EntrarForm}>
                 </Route>
-                <Route path="/macropecas/home" component={Menu}>
+                <Route path="/macropecas-web/home" component={Menu}>
                 </Route>
-                <Route path="/macropecas/clientes/registro" component={RegClientes}>
+                <Route path="/macropecas-web/clientes/registro" component={RegClientes}>
                 </Route>
-                <Route exact path="/macropecas/clientes" component={Clientes}>
+                <Route exact path="/macropecas-web/clientes" component={Clientes}>
                 </Route>
-                <Route path="/macropecas/pedidos/registro" component={RegPedidos}>
+                <Route path="/macropecas-web/pedidos/registro" component={RegPedidos}>
                 </Route>
-                <Route exact path="/macropecas/pedidos" component={Pedidos}>
+                <Route exact path="/macropecas-web/pedidos" component={Pedidos}>
                 </Route>
-                <Route path="/macropecas/produtos" component={Produtos}>
+                <Route path="/macropecas-web/produtos" component={Produtos}>
                 </Route>
-                <Route path="/macropecas/sync" component={Sync}>
+                <Route path="/macropecas-web/sync" component={Sync}>
                 </Route>
                 <Route component={Menu}>
                 </Route>

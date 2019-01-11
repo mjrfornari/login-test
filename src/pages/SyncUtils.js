@@ -3,7 +3,36 @@ import {geraPk, dateSql, removeAcento} from './Utils';
 
 // const server = 'http://187.44.93.73:8080';
 
-export const server = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname === "") ? 'http://localhost:3001/api': 'https://macropecasweb.sytes.net:8080/api';
+
+
+// export async function server() {   let sv = await testServer().then( r => {return r})
+//    sv}
+
+export const server = 'https://macropecas.herokuapp.com/api'
+
+
+// export async function getServer() {
+//     return new Promise ( (res, rej) => {
+//         fetch('https://api.ipify.org?format=json').then(r => r.json()).then( r => {
+//             let server = 'https://macropecasweb.sytes.net:8080/api'
+//             if (window.location.hostname === "localhost") {
+//                server = 'http://localhost:3001/api'
+//             //    server = 'https://macropecasweb.sytes.net:8080/api'
+//             }
+//             if (r.ip === '187.44.93.73') {
+//                 server = 'https://192.168.0.254:8080/api'
+//             }
+//             console.log('colocado: '+server)
+//             res(server)
+//         })
+//     })
+ 
+// }
+
+// export let server = localStorage.getItem("macroserver") || 'https://macropecasweb.sytes.net:8080/api'
+
+
+
 const db = new PouchDB('macropecas', {auto_compaction: true});
 
 
@@ -19,6 +48,7 @@ function createTable(table, callback){
 
 async function createToFirebird(callback) {
   return new Promise(async (resolve, reject)=>{
+    console.log(server)
     let create = {
         _id: 'create',
         data:  [],
@@ -81,9 +111,11 @@ async function createToFirebird(callback) {
           let update = response
           for (let icreated of create.data.clientes){
             icreated.CIDADE = []
+            icreated.ID = ''
+            icreated.id = ''
             let propscreated = removeAcento(JSON.stringify(Object.getOwnPropertyNames(icreated)))
             let valuescreated = removeAcento(JSON.stringify(Object.values(icreated)))
-            let fields = propscreated.split('"').join("").split('[').join("").split(']').join("").split('CIDADE,').join("")
+            let fields = propscreated.split('"').join("").split('[').join("").split(']').join("").split('CIDADE,').join("").split('ID,').join("").split('id,').join("")
             let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split("''").join("NULL").split("''").join("'")
             fields = fields+",FK_VEN"
             let usuario = localStorage.getItem("macropecas")
@@ -111,8 +143,11 @@ async function createToFirebird(callback) {
             //   create.data.pedidos.forEach(async function (icreated, idcreate)
               for (let icreated of create.data.pedidos)  {
                 icreated.itens = []
+                icreated.ITENS = []
                 icreated.RAZAO_SOCIAL = []
                 icreated.NOMECPG = []
+                icreated.ID = ''
+                icreated.id =''
                 if (icreated.FK_CLI === 0) {
                   let cli = create.data.clientes.filter((value)=>{return value.read === icreated.CLIREAD})
                   console.log(icreated.CLIREAD, cli[0])
@@ -126,7 +161,8 @@ async function createToFirebird(callback) {
                 icreated.DATA = dateSql(dataped)
                 let propscreated = removeAcento(JSON.stringify(Object.getOwnPropertyNames(icreated)))
                 let valuescreated = removeAcento(JSON.stringify(Object.values(icreated)))
-                let fields = propscreated.split('"').join("").split('[').join("").split(']').join("").split('itens,').join("").split('IMPORTADO').join("IMPORTACAO").split(',RAZAO_SOCIAL').join("").split(',NOMECPG').join("").split(',CLIREAD').join("")
+                let fields = propscreated.split('"').join("").split('[').join("").split(']').join("").split('itens,').join("").split('ITENS,').join("").split('IMPORTADO').join("IMPORTACAO").split(',RAZAO_SOCIAL').join("").split(',id').join("").split(',NOMECPG').join("").split(',CLIREAD').join("").split(',ID').join("")
+                console.log(fields)
                 let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",").split("''").join("null").split(',,').join(",").split("''").join("'")
                 fields = fields+",FK_VEN"
                 let usuario = localStorage.getItem("macropecas")
@@ -167,6 +203,7 @@ async function createToFirebird(callback) {
                     icreated.CODIGOPRO = '%$#'
                     icreated.OBS_PROMOCIONAL = '%$#'
                     icreated.TOTAL = '%$#'
+                    icreated.ID = []
                     icreated.id = []
                     icreated.QUANTIDADE=Number(icreated.QUANTIDADE)
                     icreated.DESCONTO1=Number(icreated.DESCONTO1)
@@ -174,7 +211,7 @@ async function createToFirebird(callback) {
                     icreated.VALOR_IPI =[]
                     let propscreated = removeAcento(JSON.stringify(Object.getOwnPropertyNames(icreated)))
                     let valuescreated = removeAcento(JSON.stringify(Object.values(icreated)))
-                    let fields = propscreated.split('"').join("").split('[').join("").split(']').join("").split(',DESCRICAOPRO').join("").split(',CODIGOPRO').join("").split('CODIGOPRO,').join("").split(',id').join("").split(',VALOR_IPI').join("").split(',OBS_PROMOCIONAL').join("").split(',TOTAL').join("").split(',mostraModal').join("")
+                    let fields = propscreated.split('"').join("").split('[').join("").split(']').join("").split(',DESCRICAOPRO').join("").split(',CODIGOPRO').join("").split('CODIGOPRO,').join("").split(',id').join("").split(',ID').join("").split(',VALOR_IPI').join("").split(',OBS_PROMOCIONAL').join("").split(',TOTAL').join("").split(',mostraModal').join("")
                     let values = valuescreated.split('"').join("'").split('[').join("").split(']').join("").split(',,').join(",").split(',,').join(",").split(",'%$#'").join("").split("'%$#',").join("").split(',true,').join("").split(',false,').join("").split("''").join("null").split(',,').join(",").split("''").join("'")
                     // console.log(fields)
                     // console.log(values)

@@ -28,14 +28,15 @@ class EntrarForm extends Component {
         e.preventDefault();
         console.log(this.state.user, this.state.password, cryptmd5(this.state.password))
         if ((this.state.user!=='') && (this.state.password!=='')){
-            
+            console.log(server)
             fetch(server+'/login/'+this.state.user+'/'+cryptmd5(this.state.password)).then(r => {return r.json()}).then(r => {
                 this.logado=false;
+                
                 console.log(cryptmd5(this.state.password))
                 if (Object.keys(r).length > 0){
                     if (r[0]["PK_VEN"] !== '') {
                         this.logado=true
-                        this.props.history.push('/macropecas/home') 
+                        this.props.history.push('/macropecas-web/home') 
                         localStorage.setItem("macropecas", r[0]["PK_VEN"]);                  
                     }
 
@@ -79,7 +80,7 @@ class EntrarForm extends Component {
     
     componentWillMount(){
         let logou = localStorage.getItem("logou");
-        if (logou === "true") {this.props.history.push('/macropecas/home')}
+        if (logou === "true") {this.props.history.push('/macropecas-web/home')}
     }
   
    

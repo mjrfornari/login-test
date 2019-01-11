@@ -209,14 +209,14 @@ class Example extends React.Component {
                             Valor ST ICMS: {'R$ '+item.VALOR_ST.toFixed(2)}<br/>
                             <div>
                                 Itens:
-                                <LinkContainer to={"/macropecas/pedidos/registro/"+item.READ}>
+                                <LinkContainer to={"/macropecas-web/pedidos/registro/"+item.READ}>
                                     <ListGroup>
                                         {listItens}
                                     </ListGroup>
                                 </LinkContainer>  
                             </div>
-                            <LinkContainer to={"/macropecas/pedidos/registro/"+item.READ}><button className="Grid__Button">Editar</button></LinkContainer>
-                            {/* <LinkContainer to={"/macropecas/pedidos/registro/r"+item.READ}><button className="Grid__Button">Replicar</button></LinkContainer> */}
+                            <LinkContainer to={"/macropecas-web/pedidos/registro/"+item.READ}><button className="Grid__Button">Editar</button></LinkContainer>
+                            {/* <LinkContainer to={"/macropecas-web/pedidos/registro/r"+item.READ}><button className="Grid__Button">Replicar</button></LinkContainer> */}
                             <button className={((Number(item.PK_PED) === 0 && item.ORCAMENTO === 'N') || (item.ORCAMENTO === 'S' && item.WEB === 'S')) ? "Grid__Button" : "Grid__Button__Hide"} id={item.READ} onClick={this.handleExcluir}>Excluir</button> 
                             <div><a href={server+'/gerapdf?ped='+item.PK_PED} download='pedido.pdf'><img src='pdf.svg' align="right" className={(item.PK_PED>0) ? 'Pdf_Logo_Detailed' : 'Pdf_Logo_Hide'} alt='Download PDF' id={item.PK_PED} onClick={this.geraPdf}/></a></div>                           
                         </ListGroupItem>
@@ -232,8 +232,8 @@ class Example extends React.Component {
                             Tipo: {(item.ORCAMENTO==='N') ? 'Pedido' : 'Orçamento' }<br/>
                             Valor: {'R$ '+item.VALOR_INFORMADO.toFixed(2)}<br/>
                             Enviado para Macropeças: {(item.PK_PED>0) ? 'Sim' : 'Não' }<br/>
-                            <LinkContainer to={"/macropecas/pedidos/registro/"+item.READ}><button className="Grid__Button">Editar</button></LinkContainer>
-                            {/* <LinkContainer to={"/macropecas/pedidos/registro/r"+item.READ}><button className="Grid__Button">Replicar</button></LinkContainer> */}
+                            <LinkContainer to={"/macropecas-web/pedidos/registro/"+item.READ}><button className="Grid__Button">Editar</button></LinkContainer>
+                            {/* <LinkContainer to={"/macropecas-web/pedidos/registro/r"+item.READ}><button className="Grid__Button">Replicar</button></LinkContainer> */}
                             <button className={((Number(item.PK_PED) === 0 && item.ORCAMENTO === 'N') || (item.ORCAMENTO === 'S' && item.WEB === 'S')) ? "Grid__Button" : "Grid__Button__Hide"} id={item.READ} onClick={this.handleExcluir}>Excluir</button> 
                             <a href={server+'/gerapdf?ped='+item.PK_PED} download='pedido.pdf'><img src='pdf.svg' align="right" className={(item.PK_PED>0) ? 'Pdf_Logo' : 'Pdf_Logo_Hide'} alt='Download PDF' id={item.PK_PED} onClick={this.geraPdf}/></a>
                         </ListGroupItem>
@@ -250,8 +250,8 @@ class Example extends React.Component {
                         Tipo: {(item.ORCAMENTO==='N') ? 'Pedido' : 'Orçamento' }<br/>
                         Valor: {'R$ '+item.VALOR_INFORMADO.toFixed(2)}<br/>
                         Enviado para Macropeças: {(item.PK_PED>0) ? 'Sim' : 'Não' }<br/>
-                        <LinkContainer to={"/macropecas/pedidos/registro/"+item.READ}><button className="Grid__Button">Editar</button></LinkContainer>
-                        {/* <LinkContainer to={"/macropecas/pedidos/registro/r"+item.READ}><button className="Grid__Button">Replicar</button></LinkContainer> */}
+                        <LinkContainer to={"/macropecas-web/pedidos/registro/"+item.READ}><button className="Grid__Button">Editar</button></LinkContainer>
+                        {/* <LinkContainer to={"/macropecas-web/pedidos/registro/r"+item.READ}><button className="Grid__Button">Replicar</button></LinkContainer> */}
                         <button className={((Number(item.PK_PED) === 0 && item.ORCAMENTO === 'N') || (item.ORCAMENTO === 'S' && item.WEB === 'S')) ? "Grid__Button" : "Grid__Button__Hide"} id={item.READ} onClick={this.handleExcluir}>Excluir</button> 
                         <a href={server+'/gerapdf?ped='+item.PK_PED} download='pedido.pdf'><img src='pdf.svg' align="right" className={(item.PK_PED>0) ? 'Pdf_Logo' : 'Pdf_Logo_Hide'} alt='Download PDF' id={item.PK_PED} onClick={this.geraPdf}/></a>
                     </ListGroupItem>
@@ -277,8 +277,8 @@ class Example extends React.Component {
                                         onItemSelection={ (id, parent) => {
                                             if (id==='exit'){  
                                                 localStorage.setItem("logou", false);    
-                                                this.props.history.push('/macropecas/')
-                                            } else {this.props.history.push('/macropecas/'+id)
+                                                this.props.history.push('/macropecas-web/')
+                                            } else {this.props.history.push('/macropecas-web/'+id)
                             }}}>                      
                                 <Nav id='home'>
                                     <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_home}/></NavIcon>    
@@ -505,7 +505,7 @@ class Example extends React.Component {
                                     <br/>
                                     {this.hideShow()}
                                     {deletingItem(this.state.deletingShow, this.state.deletingPhase, this.deleting)}
-                                    <LinkContainer to={"/macropecas/pedidos/registro"}><button className="FormField__Button__Fix" onClick={this.handleShow}><SvgIcon className='FormField__Icon__Fix' size={24} icon={plus}/></button></LinkContainer>                       
+                                    <LinkContainer to={"/macropecas-web/pedidos/registro"}><button className="FormField__Button__Fix" onClick={this.handleShow}><SvgIcon className='FormField__Icon__Fix' size={24} icon={plus}/></button></LinkContainer>                       
                                 </div>
                                 <div>                    
                                     <ListGroup>
@@ -520,7 +520,7 @@ class Example extends React.Component {
                     </div>
                 </div>
 
-        );} else { return <Redirect exact to="/macropecas/"/>}
+        );} else { return <Redirect exact to="/macropecas-web/"/>}
     }
 }
 
