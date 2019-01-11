@@ -9,7 +9,7 @@ import { ic_add_shopping_cart } from 'react-icons-kit/md/ic_add_shopping_cart';
 import { ic_settings } from 'react-icons-kit/md/ic_settings'
 import {ic_build} from 'react-icons-kit/md/ic_build'
 import {ic_exit_to_app} from 'react-icons-kit/md/ic_exit_to_app'
-import { sync } from "./SyncUtils"
+import { sync} from "./SyncUtils"
 import { syncLoading, date2str, pegaQtdOrcamento } from "./Utils";
 import Clock from 'react-live-clock';
 import ReactLoading from 'react-loading';
@@ -80,6 +80,9 @@ class Example extends React.Component {
     }
 
 
+    componentWillMount(){
+        
+    }
 
     updating(){
         window.location.reload(true)
@@ -104,6 +107,7 @@ class Example extends React.Component {
         //         } else {alert('Não foi possível iniciar a sincronização.\nMotivo: Conecte à uma rede Wi-Fi!')}
         //     } else {alert('Não foi possível iniciar a sincronização.\nMotivo: Bateria abaixo de 30%!')}
         // })
+
 
         e.preventDefault(); 
         let sincroniza = window.confirm('Atenção!!\n\nCertifique-se de que seu dispositivo esteja:\n   - Com bateria igual ou superior a 30% e,\n   - Conectado a uma rede Wi-Fi.\n\nDeseja iniciar a sincronização?');
@@ -158,8 +162,8 @@ class Example extends React.Component {
                         onItemSelection={ (id, parent) => {
                             if (id==='exit'){  
                                 localStorage.setItem("logou", false);    
-                                this.props.history.push('/macropecas-web/')
-                            } else this.props.history.push('/macropecas-web/'+id)
+                                this.props.history.push('/macropecas/')
+                            } else this.props.history.push('/macropecas/'+id)
                         }}>       
                                 <Nav id='home'>
                                     <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_home}/></NavIcon>    
@@ -228,7 +232,7 @@ class Example extends React.Component {
                 </div>
             </div>
 
-    );} else { return <Redirect exact to="/macropecas-web/"/>}
+    );} else { return <Redirect exact to="/macropecas/"/>}
   }
 }
 

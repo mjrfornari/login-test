@@ -147,7 +147,7 @@ class Example extends React.Component {
                                 Email Financeiro: {item.EMAIL_FINANCEIRO}                            
                             </li>
                             
-                            <LinkContainer to={"/macropecas-web/clientes/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
+                            <LinkContainer to={"/macropecas/clientes/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
                             </ListGroupItem>
                             )
                         } else {
@@ -156,7 +156,7 @@ class Example extends React.Component {
                                 Sincronizado: {(item.PK_CLI>0) ? 'Sim' : 'Não' }<br/>
                                 Nome Fantasia: {item.NOME_FANTASIA}<br/>
                                 CNPJ: {mascaraCNPJ(item.CNPJ)}<br/>
-                                <LinkContainer to={"/macropecas-web/clientes/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
+                                <LinkContainer to={"/macropecas/clientes/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
                                 </ListGroupItem>
                             )
                         }
@@ -166,7 +166,7 @@ class Example extends React.Component {
                             Sincronizado: {(item.PK_CLI>0) ? 'Sim' : 'Não' }<br/>
                             Nome Fantasia: {item.NOME_FANTASIA}<br/>
                             CNPJ: {mascaraCNPJ(item.CNPJ)}<br/>
-                            <LinkContainer to={"/macropecas-web/clientes/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
+                            <LinkContainer to={"/macropecas/clientes/registro/"+id}><button className="Grid__Button">Editar</button></LinkContainer>
                             </ListGroupItem>
                         )
                     }
@@ -198,8 +198,8 @@ class Example extends React.Component {
                                         onItemSelection={ (id, parent) => {
                                             if (id==='exit'){  
                                                 localStorage.setItem("logou", false);    
-                                                this.props.history.push('/macropecas-web/')
-                                            } else {this.props.history.push('/macropecas-web/'+id)
+                                                this.props.history.push('/macropecas/')
+                                            } else {this.props.history.push('/macropecas/'+id)
                             }}}>                      
                                 <Nav id='home'>
                                     <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_home}/></NavIcon>    
@@ -390,7 +390,7 @@ class Example extends React.Component {
                                     
                                     <br/>
                                     {this.hideShow()}
-                                    <LinkContainer to={"/macropecas-web/clientes/registro"}><button className="FormField__Button__Fix" onClick={this.handleShow}><SvgIcon className='FormField__Icon__Fix' size={24} icon={plus}/></button></LinkContainer>                       
+                                    <LinkContainer to={"/macropecas/clientes/registro"}><button className="FormField__Button__Fix" onClick={this.handleShow}><SvgIcon className='FormField__Icon__Fix' size={24} icon={plus}/></button></LinkContainer>                       
                                 </div>
                                 <div>                    
                                     <ListGroup>
@@ -405,7 +405,7 @@ class Example extends React.Component {
                     </div>
                 </div>
 
-        );} else { return <Redirect exact to="/macropecas-web/"/>}
+        );} else { return <Redirect exact to="/macropecas/"/>}
     }
 }
 

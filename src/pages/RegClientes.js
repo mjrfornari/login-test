@@ -82,8 +82,8 @@ class Example extends React.Component {
                                         onItemSelection={ (id, parent) => {
                                             if (id==='exit'){  
                                                 localStorage.setItem("logou", false);    
-                                                this.props.history.push('/macropecas-web/')
-                                            } else {this.props.history.push('/macropecas-web/'+id)
+                                                this.props.history.push('/macropecas/')
+                                            } else {this.props.history.push('/macropecas/'+id)
                             }}}>                      
                                 <Nav id='home'>
                                     <NavIcon className='BarIcon'><SvgIcon size={30} icon={ic_home}/></NavIcon>    
@@ -160,8 +160,8 @@ class Example extends React.Component {
         if (pathname.includes('clientes')) {           
             if (this.state.isLoading === true) {
                 readTable(Data => { this.setState({clientes: Data.data.clientes, isLoading: true})
-                    if (this.props.location.pathname !== '/macropecas-web/clientes/registro') {
-                        let ID = this.props.location.pathname.replace('/macropecas-web/clientes/registro/','');  
+                    if (this.props.location.pathname !== '/macropecas/clientes/registro') {
+                        let ID = this.props.location.pathname.replace('/macropecas/clientes/registro/','');  
                         this.setState({now: Data.data.clientes[ID], id: ID, isLoading: false})  
                         if (Number(Data.data.clientes[ID].PK_CLI) === 0){
                             let listCidades = []
@@ -185,7 +185,7 @@ class Example extends React.Component {
                             this.setState({cidades:listCidades.sort((a,b)=>{if (a.display>b.display) {return 1}; if (a.display<b.display) {return -1}; return 0})})
                         } else {alert('Cliente já sincronizado. Edição bloqueada.')
                             this.setState({isLoading: false, ok: true})
-                            this.props.history.push('/macropecas-web/clientes')}
+                            this.props.history.push('/macropecas/clientes')}
                     } else {
                         let listCidades = []
                         Data.data.cidades.forEach((element, elementid) => {
@@ -500,14 +500,14 @@ class Example extends React.Component {
 
                                 {savingItem(this.state.savingShow, this.state.savingPhase, this.saving)}
                                 {this.hideShow()}
-                                <LinkContainer to="/macropecas-web/clientes"><button className="FormField__Button mr-20">Voltar</button></LinkContainer>
+                                <LinkContainer to="/macropecas/clientes"><button className="FormField__Button mr-20">Voltar</button></LinkContainer>
                                 {this.saveBtn(this.state.ok)}
                             </form>
                             </div>
                         </div>
                     </div>
             )
-    } else { return <Redirect exact to="/macropecas-web/"/>}
+    } else { return <Redirect exact to="/macropecas/"/>}
   }
 }
 

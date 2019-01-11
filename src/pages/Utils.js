@@ -14,34 +14,8 @@ import PouchDB from 'pouchdb';
 
 // const server = 'http://187.44.93.73:8080';
 
-// export const server = window.location.protocol+'//'+(window.location.hostname==='localhost' ? 'localhost':'macropecasweb.sytes.net')+':'+(window.location.hostname==='localhost' ? '3001' : '8080')+'/api'
-
-
-// export const server = localStorage.getItem("macroserver") || 'https://macropecasweb.sytes.net:8080/api'
-
-export const server = 'https://macropecas.herokuapp.com/api'
-
-// async function getServer() {
-//   let sv = await testServer()
-//   return sv
-// }
-
-// export async function testServer() {
-//     return new Promise ( (res, rej) => {
-//         fetch('https://api.ipify.org?format=json').then(r => r.json()).then( r => {
-//             let server = 'https://macropecasweb.sytes.net:8080/api'
-//             if (window.location.hostname === "localhost") {
-//                server = 'http://localhost:3001/api'
-//             }
-//             if (r.ip === '187.44.93.73') {
-//                 server = 'https://192.168.0.254:8080/api'
-//             }
-//             res(server)
-//         })
-//     })
- 
-// }
-
+// export const server = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname === "") ? 'http://localhost:3001/api': 'https://macropecasweb.sytes.net:8080/api';
+export const server = window.location.protocol+'//'+window.location.hostname+':'+(window.location.hostname==='macropecasweb.sytes.net' ? '8080' : '3001')+'/api'
 const db = new PouchDB('macropecas', {auto_compaction: true, size: 50});
 
 export function cryptmd5(text){
@@ -359,7 +333,7 @@ export function now(aux){
     let now = new Date ()
     now.setDate(now.getDate() + aux)
     let year = now.getFullYear()
-    let month = now.getMonth()+1<10 ? '0'+String(now.getMonth()+1) : now.getMonth()+1
+    let month = now.getMonth()+1<10 ? '0'+now.getMonth()+1 : now.getMonth()+1
     let day = now.getDate()<10 ? '0'+now.getDate() : now.getDate()
     return year+'-'+month+'-'+day
 }
